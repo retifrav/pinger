@@ -1,2 +1,3 @@
 # pinger
-Cross-platform GUI for ping utility
+
+Cross-platform GUI for `ping` utility.
