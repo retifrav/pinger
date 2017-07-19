@@ -1,7 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QDebug>
-#include <QProcess>
 #include <QScreen>
 #include "functions.h"
 
@@ -22,6 +21,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->lbl_lost->setStyleSheet("QLabel { color: red }");
     ui->lbl_received->setStyleSheet("QLabel { color: green }");
+
+    timer.setSingleShot(false);
+    connect(&timer, &QTimer::timeout,this, &MainWindow::startPing);
+//    connect(&ping, static_cast<void (QProcess::*)(int)>(&QProcess::finished), this, &MainWindow::pinged);
+    connect(&ping, QOverload<int>::of(&QProcess::finished), this, &MainWindow::pinged);
 }
 
 MainWindow::~MainWindow()
@@ -29,19 +33,11 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_btn_ping_clicked()
+void MainWindow::pinged(int exitCode)
 {
-    QProcess ping;
-    QString command("ping");
-    QStringList args = getArgs4ping() << ui->txt_host->text();
-
-    ping.start(command, args);
-    ping.waitForFinished();
-
-    qDebug() << ping.exitCode();
-
     QListWidgetItem *item = new QListWidgetItem();
-    switch (ping.exitCode())
+    effect.setSource(QUrl("qrc:/sounds/error.wav"));
+    switch (exitCode)
     {
     case 68:
         item->setText("Unknown host");
@@ -52,8 +48,9 @@ void MainWindow::on_btn_ping_clicked()
         item->setBackgroundColor(QColor("red"));
         break;
     case 0:
-        item->setText("ololo");
+        item->setText("Packet successfully received");
         item->setBackgroundColor(QColor("green"));
+        effect.setSource(QUrl("qrc:/sounds/done.wav"));
         break;
     default:
         item->setText("Something else");
@@ -61,4 +58,19 @@ void MainWindow::on_btn_ping_clicked()
         break;
     }
     ui->lw_output->addItem(item);
+    effect.play();
+}
+
+void MainWindow::startPing()
+{
+    QString command("ping");
+    QStringList args = getArgs4ping() << ui->txt_host->text();
+
+    ping.start(command, args);
+//    qDebug() << ping.exitCode();
+}
+
+void MainWindow::on_btn_ping_clicked()
+{
+    timer.start(1001);
 }
