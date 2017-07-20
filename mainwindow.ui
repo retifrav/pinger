@@ -80,7 +80,7 @@
           <property name="minimumSize">
            <size>
             <width>0</width>
-            <height>40</height>
+            <height>0</height>
            </size>
           </property>
           <property name="toolTip">
@@ -88,6 +88,13 @@
           </property>
           <property name="text">
            <string>ping</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btn_stop">
+          <property name="text">
+           <string>stop</string>
           </property>
          </widget>
         </item>

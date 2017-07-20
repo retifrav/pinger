@@ -20,8 +20,14 @@ public:
 
 private slots:
     void on_btn_ping_clicked();
-    void pinged(int exitCode);
+    void pinged();
     void startPing();
+
+    void on_btn_stop_clicked();
+
+protected:
+    // just in case overriding the close event to kill the pinging process
+     void closeEvent(QCloseEvent *event);
 
 private:
     Ui::MainWindow *ui;

@@ -10,3 +10,9 @@ QStringList getArgs4ping()
                              << "-t" << "1";
     #endif
 }
+
+int parsePingOutput(int pungExitCode, QString pingOutput)
+{
+    // TODO parse the output on Windows
+    return 0;
+}
