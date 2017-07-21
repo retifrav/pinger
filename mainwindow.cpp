@@ -37,44 +37,37 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-//void MainWindow::pinged(int exitCode)
 void MainWindow::pinged()
 {
-    // TODO move all processing outside the UI
+    // if ping process was killed, do nothing
+//    qDebug() << "code:" << ping.exitCode() << "status:" << ping.exitStatus();
+    if (ping.exitStatus() == 1) { return; }
 
     QListWidgetItem *item = new QListWidgetItem();
     effect.setSource(QUrl("qrc:/sounds/error.wav"));
 
-    int exitCode = ping.exitCode();
-    qDebug() << exitCode;
+//    qDebug() << ping.exitCode();
 
-    // if it's Windows, then exit code is useless - we need to parse the output
-    #if defined(Q_OS_WIN)
-        exitCode = parsePingOutput(exitCode, ping.readAllStandardOutput());
-    #endif
+    QPair<int, QString> rez = parsePingOutput(
+                ping.exitCode(),
+                ping.readAllStandardOutput()
+                );
 
-    switch (exitCode)
+    switch (rez.first)
     {
-    case 64:
-        item->setText("The command was used incorrectly");
-        item->setBackgroundColor(QColor("blue"));
-        break;
-    case 68:
-        item->setText("Host name unknown");
-        item->setBackgroundColor(QColor("yellow"));
-        break;
-    case 2:
-        item->setText("Packet lost");
-        item->setBackgroundColor(QColor("red"));
-        break;
     case 0:
-        item->setText("Packet successfully received");
+        item->setText(QString("%1 | %2").arg("Packet successfully received").arg(rez.second));
         item->setBackgroundColor(QColor("green"));
         effect.setSource(QUrl("qrc:/sounds/done.wav"));
         break;
-    default:
-        item->setText("Something else");
-        item->setBackgroundColor(QColor("blue"));
+    case 1:
+        item->setText("Packet lost");
+        item->setBackgroundColor(QColor("red"));
+        break;
+    default: // 2
+//        qDebug() << rez.second;
+        item->setText(rez.second);
+        item->setBackgroundColor(QColor("yellow"));
         break;
     }
 
