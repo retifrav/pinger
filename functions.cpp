@@ -13,7 +13,7 @@ QStringList getArgs4ping()
 
 QPair<int, QString> parsePingOutput(int pingExitCode, QString pingOutput)
 {
-    qDebug() << "- - -\n" << pingExitCode << "\n" << pingOutput << "\n- - -";
+    //qDebug() << "- - -\n" << pingExitCode << "\n" << pingOutput << "\n- - -";
 
     QPair<int, QString> rez(2, "Default value");
 
@@ -21,7 +21,7 @@ QPair<int, QString> parsePingOutput(int pingExitCode, QString pingOutput)
     QString lost;
 
     #if defined(Q_OS_WIN) // exit code is useless on Windows, we need to parse the output
-        qDebug() << "[windows]";
+        //qDebug() << "[windows]";
         if (pingExitCode == 0)
         {
             QRegularExpression re("time(=|<)\\d+\\w+|Lost = \\d+");
@@ -49,19 +49,18 @@ QPair<int, QString> parsePingOutput(int pingExitCode, QString pingOutput)
             rez.second = pingOutput;
         }
     #else // we can rely on exit code, no need to parse the output
-        qDebug() << "[not windows]";
+        //qDebug() << "[not windows]";
         switch (pingExitCode)
         {
         case 0:
         {
             rez.first = 0;
             QRegularExpression re("time=\\d+\\.\\d+ \\w+");
-            QRegularExpressionMatch match = re.match("pingOutput");
-            // FIXME doesn't find the RegExp match
+            QRegularExpressionMatch match = re.match(pingOutput);
             if (match.hasMatch())
             {
                 latency = match.captured().replace("time=", "");
-                qDebug() << "latency:" << latency;
+                //qDebug() << "latency:" << latency;
                 rez.second = latency;
             }
             break;

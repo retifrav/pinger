@@ -26,11 +26,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    functions.cpp
+    functions.cpp \
+    pingdata.cpp
 
 HEADERS += \
         mainwindow.h \
-    functions.h
+    functions.h \
+    pingdata.h
 
 FORMS += \
         mainwindow.ui
