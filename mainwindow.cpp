@@ -4,6 +4,10 @@
 #include <QScreen>
 #include "functions.h"
 
+// TODO menu or toolbar
+// TODO settings (how much packets/latency to save, pinging timer value, debug-log on/off)
+// TODO logs
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -22,7 +26,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QFont font("Verdana", fontSize);
     ui->centralWidget->setFont(font);
 
-    // TODO get to the bottom of colors for labels
+    // TODO proper handling colors for labels
+    ui->lbl_sent->setStyleSheet("QLabel { color: blue }");
     ui->lbl_lost->setStyleSheet("QLabel { color: red }");
     ui->lbl_received->setStyleSheet("QLabel { color: green }");
 
@@ -48,15 +53,16 @@ void MainWindow::pinged()
 
 //    qDebug() << ping.exitCode();
 
-    QPair<int, QString> rez = parsePingOutput(
+    QPair<int, QString> pckt = parsePingOutput(
                 ping.exitCode(),
                 ping.readAllStandardOutput()
                 );
 
-    switch (rez.first)
+    pingData.addPacket(pckt);
+    switch (pckt.first)
     {
     case 0:
-        item->setText(QString("%1 | %2").arg("Packet successfully received").arg(rez.second));
+        item->setText(QString("%1 | %2").arg("Packet successfully received").arg(pckt.second));
         item->setBackgroundColor(QColor("green"));
         effect.setSource(QUrl("qrc:/sounds/done.wav"));
         break;
@@ -66,12 +72,17 @@ void MainWindow::pinged()
         break;
     default: // 2
 //        qDebug() << rez.second;
-        item->setText(rez.second);
+        item->setText(pckt.second);
         item->setBackgroundColor(QColor("yellow"));
         break;
     }
 
+    ui->lbl_lost->setText(QString::number(pingData.get_pcktLost()));
+    ui->lbl_received->setText(QString::number(pingData.get_pcktReceived()));
+    ui->lbl_sent->setText(QString::number(pingData.get_pcktSent()));
+
     ui->lw_output->addItem(item);
+    if (ui->lw_output->count() > pingData.get_packetsQueueSize()) { delete ui->lw_output->item(0); }
     ui->lw_output->scrollToBottom();
 
     effect.play();
@@ -94,6 +105,8 @@ void MainWindow::on_btn_ping_clicked()
     ui->btn_stop->setVisible(true);
     ui->btn_ping->setVisible(false);
 
+    pingData.resetEverything();
+
     ping.setProgram("ping");
     ping.setArguments(getArgs4ping() << ui->txt_host->text());
 
@@ -107,6 +120,12 @@ void MainWindow::on_btn_stop_clicked()
 
     timer.stop();
     ping.kill();
+
+//    QQueue< QPair<int, QString> > pckts = pingData.get_packets();
+//    for (int i = 1; i < pckts.count(); i++)
+//    {
+//        qDebug() << pckts.at(i);//.first << pckts.at(i).second;
+//    }
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

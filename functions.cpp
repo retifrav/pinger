@@ -13,13 +13,14 @@ QStringList getArgs4ping()
 
 QPair<int, QString> parsePingOutput(int pingExitCode, QString pingOutput)
 {
-    //qDebug() << "- - -\n" << pingExitCode << "\n" << pingOutput << "\n- - -";
+    qDebug() << "- - -\n" << pingExitCode << "\n" << pingOutput << "\n- - -";
 
-    QPair<int, QString> rez(2, "Default value");
+    QPair<int, QString> rez(2, "");
 
     QString latency;
     QString lost;
 
+    // WARNING check exit codes and situations for Windows 10 (it's different from Windows 7)
     #if defined(Q_OS_WIN) // exit code is useless on Windows, we need to parse the output
         //qDebug() << "[windows]";
         if (pingExitCode == 0)
@@ -45,8 +46,16 @@ QPair<int, QString> parsePingOutput(int pingExitCode, QString pingOutput)
         }
         else
         {
-            rez.first = 2;
-            rez.second = pingOutput;
+            if (pingOutput.contains("timed out")) // because exit code for this != 0
+            {
+                rez.first = 1;
+            }
+            //if (pingOutput.contains("unreachable"))
+            else
+            {
+                rez.first = 2;
+                rez.second = pingOutput;
+            }
         }
     #else // we can rely on exit code, no need to parse the output
         //qDebug() << "[not windows]";

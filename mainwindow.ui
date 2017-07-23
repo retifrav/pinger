@@ -122,9 +122,9 @@
          </spacer>
         </item>
         <item>
-         <widget class="QLabel" name="lbl_lost">
+         <widget class="QLabel" name="lbl_sent">
           <property name="toolTip">
-           <string>Packets lost</string>
+           <string>Packets sent</string>
           </property>
           <property name="text">
            <string>0</string>
@@ -156,15 +156,16 @@
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="lbl_sent">
+         <widget class="QLabel" name="lbl_lost">
           <property name="font">
            <font>
+            <pointsize>15</pointsize>
             <weight>75</weight>
             <bold>true</bold>
            </font>
           </property>
           <property name="toolTip">
-           <string>Total packets sent</string>
+           <string>Packets lost</string>
           </property>
           <property name="text">
            <string>0</string>

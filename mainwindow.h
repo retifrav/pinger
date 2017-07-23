@@ -5,6 +5,7 @@
 #include <QProcess>
 #include <QTimer>
 #include <QSoundEffect>
+#include "pingdata.h"
 
 namespace Ui {
 class MainWindow;
@@ -34,6 +35,7 @@ private:
     QProcess ping;
     QTimer timer;
     QSoundEffect effect;
+    PingData pingData;
 };
 
 #endif // MAINWINDOW_H
