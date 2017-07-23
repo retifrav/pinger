@@ -31,30 +31,34 @@ QPair<int, QString> parsePingOutput(int pingExitCode, QString pingOutput)
             {
                 latency = i.next().captured().replace("time=", "").replace("time<", "");
                 //qDebug() << "latency:" << latency;
-                lost = i.next().captured().replace("Lost = ", "");
+//                lost = i.next().captured().replace("Lost = ", "");
                 //qDebug() << "lost:" << lost;
-                if (lost == "0")
-                {
+//                if (lost == "0")
+//                {
                     rez.first = 0;
                     rez.second = latency;
-                }
-                else
-                {
-                    rez.first = 1;
-                }
+//                }
+//                else
+//                {
+//                    qDebug() << "TRULLY LOST";
+//                    rez.first = 1;
+//                }
             }
         }
         else
         {
-            if (pingOutput.contains("timed out")) // because exit code for this != 0
+            if (pingOutput.contains("Request timed out"))
             {
                 rez.first = 1;
             }
-            //if (pingOutput.contains("unreachable"))
             else
             {
                 rez.first = 2;
                 rez.second = pingOutput;
+                if (pingOutput.contains("Destination host unreachable"))
+                {
+                    rez.second = "Destination host unreachable";
+                }
             }
         }
     #else // we can rely on exit code, no need to parse the output

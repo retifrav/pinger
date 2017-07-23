@@ -107,9 +107,14 @@ void MainWindow::on_btn_ping_clicked()
 
     pingData.resetEverything();
 
+    ui->lbl_lost->setText("0");
+    ui->lbl_received->setText("0");
+    ui->lbl_sent->setText("0");
+
     ping.setProgram("ping");
     ping.setArguments(getArgs4ping() << ui->txt_host->text());
 
+    // TODO make the timeout value a variable in config
     timer.start(1001);
 }
 
