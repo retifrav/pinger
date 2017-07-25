@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>504</width>
-    <height>354</height>
+    <width>800</width>
+    <height>500</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -15,6 +15,18 @@
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>350</width>
+    <height>150</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>16777215</width>
+    <height>16777215</height>
+   </size>
   </property>
   <property name="baseSize">
    <size>
@@ -122,9 +134,41 @@
          </spacer>
         </item>
         <item>
-         <widget class="QLabel" name="lbl_sent">
+         <widget class="QLabel" name="lbl_lostPercentage">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="toolTip">
-           <string>Packets sent</string>
+           <string>Percentage of packets lost</string>
+          </property>
+          <property name="text">
+           <string>0%</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="Line" name="line">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="lbl_lost">
+          <property name="toolTip">
+           <string>Packets lost</string>
           </property>
           <property name="text">
            <string>0</string>
@@ -132,7 +176,7 @@
          </widget>
         </item>
         <item>
-         <widget class="Line" name="line">
+         <widget class="Line" name="line_2">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
@@ -149,23 +193,16 @@
          </widget>
         </item>
         <item>
-         <widget class="Line" name="line_2">
+         <widget class="Line" name="line_3">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="lbl_lost">
-          <property name="font">
-           <font>
-            <pointsize>15</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
-           </font>
-          </property>
+         <widget class="QLabel" name="lbl_sent">
           <property name="toolTip">
-           <string>Packets lost</string>
+           <string>Packets sent</string>
           </property>
           <property name="text">
            <string>0</string>
@@ -178,6 +215,11 @@
     </item>
    </layout>
   </widget>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>

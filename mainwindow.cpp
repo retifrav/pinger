@@ -7,13 +7,20 @@
 // TODO menu or toolbar
 // TODO settings (how much packets/latency to save, pinging timer value, debug-log on/off)
 // TODO logs
+// TODO some visual indicator (like a bulb) that will show the status of network connection (using analytics)
+// WARNING menubar doesn't appear and also disables ⌘+Q
+// TODO application icon
+// TODO about windows
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    this->setFixedSize(550, 350);
+
+    // TODO restore window geometry
+    //this->move(500, 500);
+    //this->resize(300, 300);
 
     ui->btn_stop->setVisible(false);
 
@@ -28,8 +35,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // TODO proper handling colors for labels
     ui->lbl_sent->setStyleSheet("QLabel { color: blue }");
-    ui->lbl_lost->setStyleSheet("QLabel { color: red }");
     ui->lbl_received->setStyleSheet("QLabel { color: green }");
+    ui->lbl_lost->setStyleSheet("QLabel { color: red }");
+    ui->lbl_lostPercentage->setStyleSheet("QLabel { color: red }");
 
     timer.setSingleShot(false);
     connect(&timer, &QTimer::timeout,this, &MainWindow::startPing);
@@ -77,9 +85,12 @@ void MainWindow::pinged()
         break;
     }
 
-    ui->lbl_lost->setText(QString::number(pingData.get_pcktLost()));
-    ui->lbl_received->setText(QString::number(pingData.get_pcktReceived()));
     ui->lbl_sent->setText(QString::number(pingData.get_pcktSent()));
+    ui->lbl_received->setText(QString::number(pingData.get_pcktReceived()));
+    ui->lbl_lost->setText(QString::number(pingData.get_pcktLost()));
+    QString lostPercentage = QString::number(pingData.get_lostPercentage(), 'f', 2);
+    if (lostPercentage.endsWith(".00")) { lostPercentage.chop(3); }
+    ui->lbl_lostPercentage->setText(QString("%1%").arg(lostPercentage));
 
     ui->lw_output->addItem(item);
     if (ui->lw_output->count() > pingData.get_packetsQueueSize()) { delete ui->lw_output->item(0); }
@@ -106,16 +117,18 @@ void MainWindow::on_btn_ping_clicked()
     ui->btn_ping->setVisible(false);
 
     pingData.resetEverything();
+    ui->lw_output->clear();
 
-    ui->lbl_lost->setText("0");
-    ui->lbl_received->setText("0");
     ui->lbl_sent->setText("0");
+    ui->lbl_received->setText("0");
+    ui->lbl_lost->setText("0");
+    ui->lbl_lostPercentage->setText("0%");
 
     ping.setProgram("ping");
     ping.setArguments(getArgs4ping() << ui->txt_host->text());
 
-    // TODO make the timeout value a variable in config
-    timer.start(1001);
+    // TODO make the timer value a variable in config
+    timer.start(1000);
 }
 
 void MainWindow::on_btn_stop_clicked()
@@ -137,4 +150,12 @@ void MainWindow::closeEvent(QCloseEvent *event)
 {
     // kill the ping process when MainWindow closes
     ping.kill();
+
+    // to get rid of "unused variable" warning
+    qDebug() << "Application closed:" << event;
+
+    // TODO save window geometry
+//    qDebug() << "current position:" << this->pos();
+//    qDebug() << "current width:" << this->width();
+//    qDebug() << "current height:" << this->height();
 }

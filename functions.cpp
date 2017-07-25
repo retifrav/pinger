@@ -13,18 +13,17 @@ QStringList getArgs4ping()
 
 QPair<int, QString> parsePingOutput(int pingExitCode, QString pingOutput)
 {
-    qDebug() << "- - -\n" << pingExitCode << "\n" << pingOutput << "\n- - -";
+//    qDebug() << "- - -\n" << pingExitCode << "|" << pingOutput << "\n- - -";
 
     QPair<int, QString> rez(2, "");
 
-    QString latency;
-    QString lost;
+    QString latency, /*lost,*/ error;
 
-    // WARNING check exit codes and situations for Windows 10 (it's different from Windows 7)
     #if defined(Q_OS_WIN) // exit code is useless on Windows, we need to parse the output
         //qDebug() << "[windows]";
         if (pingExitCode == 0)
         {
+            /* old version
             QRegularExpression re("time(=|<)\\d+\\w+|Lost = \\d+");
             QRegularExpressionMatchIterator i = re.globalMatch(pingOutput);
             if (i.hasNext())
@@ -33,7 +32,7 @@ QPair<int, QString> parsePingOutput(int pingExitCode, QString pingOutput)
                 //qDebug() << "latency:" << latency;
 //                lost = i.next().captured().replace("Lost = ", "");
                 //qDebug() << "lost:" << lost;
-//                if (lost == "0")
+//                if (lost == "0") // it's always 0 here
 //                {
                     rez.first = 0;
                     rez.second = latency;
@@ -44,21 +43,41 @@ QPair<int, QString> parsePingOutput(int pingExitCode, QString pingOutput)
 //                    rez.first = 1;
 //                }
             }
+            */
+            QRegularExpression re("(?:time(?:=|<))(\\d+\\w+)");
+            QRegularExpressionMatch match = re.match(pingOutput);
+            if (match.hasMatch())
+            {
+                latency = match.captured(1);
+                //qDebug() << "latency:" << latency;
+                rez.first = 0;
+                rez.second = latency;
+            }
+            else
+            {
+                rez.first = 2;
+                rez.second = pingOutput;
+            }
         }
         else
         {
-            if (pingOutput.contains("Request timed out"))
+            QRegularExpression re("(?:bytes of data:\r\n)(.*)\\.\r\n");
+            QRegularExpressionMatch match = re.match(pingOutput);
+            if (match.hasMatch())
+            {
+                error = match.captured(1);
+                qDebug() << "error:" << error;
+            }
+            else { error = pingOutput; }
+
+            if (error == "Request timed out")
             {
                 rez.first = 1;
             }
             else
             {
                 rez.first = 2;
-                rez.second = pingOutput;
-                if (pingOutput.contains("Destination host unreachable"))
-                {
-                    rez.second = "Destination host unreachable";
-                }
+                rez.second = error;
             }
         }
     #else // we can rely on exit code, no need to parse the output

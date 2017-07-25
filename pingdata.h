@@ -16,6 +16,7 @@ public:
     int get_pcktLost();
     int get_pcktReceived();
     int get_pcktSent();
+    double get_lostPercentage();
     int get_packetsQueueSize();
     QQueue< QPair<int, QString> > get_packets();
 
