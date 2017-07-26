@@ -5,6 +5,12 @@
 #include <QProcess>
 #include <QTimer>
 #include <QSoundEffect>
+#include <QSettings>
+#include <QDir>
+#include <QDebug>
+#include <QScreen>
+#include <QDesktopWidget>
+#include "functions.h"
 #include "pingdata.h"
 
 namespace Ui {
@@ -26,6 +32,8 @@ private slots:
 
     void on_btn_stop_clicked();
 
+    void on_actionExit_triggered();
+
 protected:
     // just in case overriding the close event to kill the pinging process
      void closeEvent(QCloseEvent *event);
@@ -36,6 +44,7 @@ private:
     QTimer timer;
     QSoundEffect effect;
     PingData pingData;
+    QSettings *settings;
 };
 
 #endif // MAINWINDOW_H

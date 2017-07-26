@@ -1,8 +1,5 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <QDebug>
-#include <QScreen>
-#include "functions.h"
 
 // TODO menu or toolbar
 // TODO settings (how much packets/latency to save, pinging timer value, debug-log on/off)
@@ -10,7 +7,10 @@
 // TODO some visual indicator (like a bulb) that will show the status of network connection (using analytics)
 // WARNING menubar doesn't appear and also disables ⌘+Q
 // TODO application icon
-// TODO about windows
+// TODO about window (plus standard About Qt)
+
+// NOTE list of packets should be a narrow column just showing colors and latency values (errors should go somewhere else?)
+// NOTE 3(4)-value statistics should have a very big size and be in the center part
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -18,9 +18,26 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    // TODO restore window geometry
-    //this->move(500, 500);
-    //this->resize(300, 300);
+    settings = new QSettings(QDir(QDir::currentPath()).filePath("config.ini"), QSettings::IniFormat);
+
+    // restore window geometry
+    int x = 0,
+        y = 0,
+        width = settings->value("window/width", 800).toInt(),
+        height = settings->value("window/height", 500).toInt();
+    if (!settings->contains("window/x") || !settings->contains("window/y"))
+    {
+        QDesktopWidget dw;
+        QRect scr = dw.availableGeometry();
+        x = scr.width();
+        y = scr.height();
+    }
+    // TODO check two monitors
+    this->move(
+                settings->value("window/x", x / 2 - width / 2).toInt(),
+                settings->value("window/y", y / 2 - height / 2).toInt()
+                );
+    this->resize(width, height);
 
     ui->btn_stop->setVisible(false);
 
@@ -151,11 +168,17 @@ void MainWindow::closeEvent(QCloseEvent *event)
     // kill the ping process when MainWindow closes
     ping.kill();
 
+    // save window geometry
+    settings->setValue("window/x", this->pos().rx());
+    settings->setValue("window/y", this->pos().ry());
+    settings->setValue("window/width", this->width());
+    settings->setValue("window/height", this->height());
+
     // to get rid of "unused variable" warning
     qDebug() << "Application closed:" << event;
+}
 
-    // TODO save window geometry
-//    qDebug() << "current position:" << this->pos();
-//    qDebug() << "current width:" << this->width();
-//    qDebug() << "current height:" << this->height();
+void MainWindow::on_actionExit_triggered()
+{
+    this->close();
 }
