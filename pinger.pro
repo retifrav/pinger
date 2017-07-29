@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui multimedia
+QT       += core gui multimedia svg
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -27,15 +27,20 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     functions.cpp \
-    pingdata.cpp
+    pingdata.cpp \
+    about.cpp \
+    clickablelabel.cpp
 
 HEADERS += \
         mainwindow.h \
     functions.h \
-    pingdata.h
+    pingdata.h \
+    about.h \
+    clickablelabel.h
 
 FORMS += \
-        mainwindow.ui
+        mainwindow.ui \
+    about.ui
 
 RESOURCES += \
     reses.qrc

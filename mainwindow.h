@@ -9,9 +9,9 @@
 #include <QDir>
 #include <QDebug>
 #include <QScreen>
-#include <QDesktopWidget>
 #include "functions.h"
 #include "pingdata.h"
+#include "about.h"
 
 namespace Ui {
 class MainWindow;
@@ -33,6 +33,8 @@ private slots:
     void on_btn_stop_clicked();
 
     void on_actionExit_triggered();
+
+    void on_actionAbout_triggered();
 
 protected:
     // just in case overriding the close event to kill the pinging process

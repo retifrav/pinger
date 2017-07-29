@@ -109,3 +109,35 @@ QPair<int, QString> parsePingOutput(int pingExitCode, QString pingOutput)
 
     return rez;
 }
+
+QList<int> checkWindowGeometry(
+        int defaultWidth,
+        int defaultHeight,
+        int x2check,
+        int y2check,
+        int width2check,
+        int height2check
+        )
+{
+    int screenX = 0, defaultX = 0,
+        screenY = 0, defaultY = 0;
+
+    QDesktopWidget dw;
+    QRect scr = dw.availableGeometry();
+    screenX = scr.width();
+    screenY = scr.height();
+
+    if (width2check <= 0 || width2check > screenX) { width2check = defaultWidth; }
+    defaultX = screenX / 2 - width2check / 2;
+    if (height2check <= 0 || height2check > screenY) { height2check = defaultHeight; }
+    defaultY = screenY / 2 - height2check / 2;
+
+    if (x2check < 0 || x2check >= screenX) { x2check = defaultX; }
+    if (y2check < 0 || y2check >= screenY) { y2check = defaultY; }
+
+//    rez.append(x);
+//    rez.append(y);
+//    rez.append(width);
+//    rez.append(height);
+    return QList<int>() << x2check << y2check << width2check << height2check;
+}

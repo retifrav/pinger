@@ -5,9 +5,8 @@
 // TODO settings (how much packets/latency to save, pinging timer value, debug-log on/off)
 // TODO logs
 // TODO some visual indicator (like a bulb) that will show the status of network connection (using analytics)
-// WARNING menubar doesn't appear and also disables ⌘+Q
 // TODO application icon
-// TODO about window (plus standard About Qt)
+// TODO standard About Qt
 
 // NOTE list of packets should be a narrow column just showing colors and latency values (errors should go somewhere else?)
 // NOTE 3(4)-value statistics should have a very big size and be in the center part
@@ -18,26 +17,26 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+//    qDebug() << QDir(QDir::currentPath()).filePath("config.ini");
     settings = new QSettings(QDir(QDir::currentPath()).filePath("config.ini"), QSettings::IniFormat);
 
     // restore window geometry
-    int x = 0,
-        y = 0,
-        width = settings->value("window/width", 800).toInt(),
-        height = settings->value("window/height", 500).toInt();
-    if (!settings->contains("window/x") || !settings->contains("window/y"))
+    if (settings->value("window/fullscreen").toInt() != 1)
     {
-        QDesktopWidget dw;
-        QRect scr = dw.availableGeometry();
-        x = scr.width();
-        y = scr.height();
+        QList<int> checkedWindowGeometry = checkWindowGeometry(
+                    800,
+                    500,
+                    settings->value("window/x").toInt(),
+                    settings->value("window/y").toInt(),
+                    settings->value("window/width").toInt(),
+                    settings->value("window/height").toInt()
+                    );
+        //qDebug() << checkedWindowGeometry;
+
+        this->move(checkedWindowGeometry.at(0), checkedWindowGeometry.at(1));
+        this->resize(checkedWindowGeometry.at(2), checkedWindowGeometry.at(3));
     }
-    // TODO check two monitors
-    this->move(
-                settings->value("window/x", x / 2 - width / 2).toInt(),
-                settings->value("window/y", y / 2 - height / 2).toInt()
-                );
-    this->resize(width, height);
+    else { this->showMaximized(); }
 
     ui->btn_stop->setVisible(false);
 
@@ -169,10 +168,18 @@ void MainWindow::closeEvent(QCloseEvent *event)
     ping.kill();
 
     // save window geometry
-    settings->setValue("window/x", this->pos().rx());
-    settings->setValue("window/y", this->pos().ry());
-    settings->setValue("window/width", this->width());
-    settings->setValue("window/height", this->height());
+    if (this->windowState() == Qt::WindowMaximized ||this->windowState() == Qt::WindowFullScreen)
+    {
+        settings->setValue("window/fullscreen", 1);
+    }
+    else
+    {
+        settings->setValue("window/fullscreen", 0);
+        settings->setValue("window/x", this->pos().rx());
+        settings->setValue("window/y", this->pos().ry());
+        settings->setValue("window/width", this->width());
+        settings->setValue("window/height", this->height());
+    }
 
     // to get rid of "unused variable" warning
     qDebug() << "Application closed:" << event;
@@ -181,4 +188,10 @@ void MainWindow::closeEvent(QCloseEvent *event)
 void MainWindow::on_actionExit_triggered()
 {
     this->close();
+}
+
+void MainWindow::on_actionAbout_triggered()
+{
+    About *about = new About(this);
+    about->show();
 }

@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include <QApplication>
 
+// TODO command line arguments
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
