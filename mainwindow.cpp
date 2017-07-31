@@ -182,7 +182,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     }
 
     // to get rid of "unused variable" warning
-    qDebug() << "Application closed:" << event;
+    qInfo() << "Application closed:" << event;
 }
 
 void MainWindow::on_actionExit_triggered()

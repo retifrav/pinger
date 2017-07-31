@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -121,29 +121,32 @@
       </widget>
      </item>
      <item>
+      <spacer name="verticalSpacer_3">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Fixed</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>5</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
       <widget class="QLabel" name="lbl_description">
        <property name="text">
-        <string>Checks the internet connection using &lt;code&gt;ping&lt;/code&gt; utility.&lt;br/&gt;&lt;br/&gt;
-&lt;b&gt;License:&lt;/b&gt; &lt;a href=&quot;https://www.gnu.org/licenses/gpl-3.0.en.html&quot;&gt;GPLv3&lt;/a&gt;&lt;br/&gt;
-&lt;b&gt;Source code:&lt;/b&gt; &lt;a href=&quot;https://github.com/retifrav/pinger&quot;&gt;GitHub&lt;/a&gt;</string>
+        <string>&lt;p&gt;Checks the internet connection using &lt;code&gt;ping&lt;/code&gt; utility.&lt;/p&gt;
+&lt;p&gt;&lt;b&gt;License:&lt;/b&gt; &lt;a href=&quot;https://www.gnu.org/licenses/gpl-3.0.en.html&quot;&gt;GPLv3&lt;/a&gt;&lt;br/&gt;
+&lt;b&gt;Source code:&lt;/b&gt; &lt;a href=&quot;https://github.com/retifrav/pinger&quot;&gt;GitHub&lt;/a&gt;&lt;p&gt;</string>
        </property>
        <property name="wordWrap">
         <bool>true</bool>
        </property>
       </widget>
-     </item>
-     <item>
-      <spacer name="verticalSpacer">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>40</height>
-        </size>
-       </property>
-      </spacer>
      </item>
     </layout>
    </item>

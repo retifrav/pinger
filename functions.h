@@ -8,6 +8,8 @@
 
 QStringList getArgs4ping();
 
+const char* string2char(QString str);
+
 // <int> in QPair:
 //  - 0: packet received
 //  - 1: packet lost

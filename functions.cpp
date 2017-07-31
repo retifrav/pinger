@@ -1,5 +1,11 @@
 #include "functions.h"
 
+const char* string2char(QString str)
+{
+    QByteArray ba = str.toLatin1();
+    return ba.data();
+}
+
 QStringList getArgs4ping()
 {
     #if defined(Q_OS_WIN)

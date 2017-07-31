@@ -2,7 +2,6 @@
 #define ABOUT_H
 
 #include <QDialog>
-#include <QSvgWidget>
 #include <QDebug>
 #include <QDateTime>
 #include "clickablelabel.h"
