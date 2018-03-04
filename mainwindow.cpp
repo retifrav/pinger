@@ -66,6 +66,38 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+QList<int> MainWindow::checkWindowGeometry(
+        int defaultWidth,
+        int defaultHeight,
+        int x2check,
+        int y2check,
+        int width2check,
+        int height2check
+        )
+{
+    int screenX = 0, defaultX = 0,
+        screenY = 0, defaultY = 0;
+
+    QDesktopWidget dw;
+    QRect scr = dw.availableGeometry();
+    screenX = scr.width();
+    screenY = scr.height();
+
+    if (width2check <= 0 || width2check > screenX) { width2check = defaultWidth; }
+    defaultX = screenX / 2 - width2check / 2;
+    if (height2check <= 0 || height2check > screenY) { height2check = defaultHeight; }
+    defaultY = screenY / 2 - height2check / 2;
+
+    if (x2check < 0 || x2check >= screenX) { x2check = defaultX; }
+    if (y2check < 0 || y2check >= screenY) { y2check = defaultY; }
+
+//    rez.append(x);
+//    rez.append(y);
+//    rez.append(width);
+//    rez.append(height);
+    return QList<int>() << x2check << y2check << width2check << height2check;
+}
+
 void MainWindow::pinged()
 {
     // if ping process was killed, do nothing
@@ -74,6 +106,7 @@ void MainWindow::pinged()
 
     QListWidgetItem *item = new QListWidgetItem();
     effect.setSource(QUrl("qrc:/sounds/error.wav"));
+    bool makeSound = true;
 
 //    qDebug() << ping.exitCode();
 
@@ -88,7 +121,8 @@ void MainWindow::pinged()
     case 0:
         item->setText(QString("%1 | %2").arg("Packet successfully received").arg(pckt.second));
         item->setBackgroundColor(QColor("green"));
-        effect.setSource(QUrl("qrc:/sounds/done.wav"));
+//        effect.setSource(QUrl("qrc:/sounds/done.wav"));
+        makeSound = false;
         break;
     case 1:
         item->setText("Packet lost");
@@ -112,7 +146,7 @@ void MainWindow::pinged()
     if (ui->lw_output->count() > pingData.get_packetsQueueSize()) { delete ui->lw_output->item(0); }
     ui->lw_output->scrollToBottom();
 
-    effect.play();
+    if (makeSound) { effect.play(); }
 }
 
 void MainWindow::startPing()

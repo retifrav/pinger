@@ -17,18 +17,5 @@ const char* string2char(QString str);
 // QString: what to display
 QPair<int, QString> parsePingOutput(int pingExitCode, QString pingOutput);
 
-// list:
-//  (0) - x
-//  (1) - y
-//  (2) - width
-//  (3) - height
-QList<int> checkWindowGeometry(
-        int defaultWidth,
-        int defaultHeight,
-        int x2check,
-        int y2check,
-        int width2check,
-        int height2check
-        );
 
 #endif // FUNCTIONS_H

@@ -36,6 +36,21 @@ private slots:
 
     void on_actionAbout_triggered();
 
+private:
+    // list:
+    //  (0) - x
+    //  (1) - y
+    //  (2) - width
+    //  (3) - height
+    QList<int> checkWindowGeometry(
+            int defaultWidth,
+            int defaultHeight,
+            int x2check,
+            int y2check,
+            int width2check,
+            int height2check
+            );
+
 protected:
     // just in case overriding the close event to kill the pinging process
      void closeEvent(QCloseEvent *event);
