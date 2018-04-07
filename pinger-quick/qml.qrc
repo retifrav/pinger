@@ -1,0 +1,20 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>LayoutRegion.qml</file>
+        <file>LayoutVertical.qml</file>
+        <file>LayoutHorizontal.qml</file>
+        <file>FormLabel.qml</file>
+        <file>HalfRoundedButton.qml</file>
+        <file>images/menu.png</file>
+        <file>IconButton.qml</file>
+        <file>images/export.png</file>
+        <file>images/info.png</file>
+        <file>images/reload.png</file>
+        <file>images/settings.png</file>
+        <file>styles.qml</file>
+        <file>HalfRounded.qml</file>
+        <file>FormText.qml</file>
+        <file>qmldir</file>
+    </qresource>
+</RCC>
