@@ -1,0 +1,5 @@
+links
+
+- https://stackoverflow.com/questions/33654060/create-pdf-document-for-printing-in-qt-from-template
+- https://wiki.qt.io/Exporting_a_document_to_PDF
+- http://doc.qt.io/qt-5/qpdfwriter.html

@@ -8,7 +8,7 @@ Rectangle {
 //    Layout.bottomMargin: 5
 //    Layout.fillWidth: true
     color: "#37474F"
-    radius: 8
+    radius: 15
 //    border.color: "gray"
 //    border.width: 1
 }

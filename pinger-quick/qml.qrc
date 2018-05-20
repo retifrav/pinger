@@ -16,5 +16,8 @@
         <file>HalfRounded.qml</file>
         <file>FormText.qml</file>
         <file>qmldir</file>
+        <file>images/loading.png</file>
+        <file>sounds/done.wav</file>
+        <file>sounds/error.wav</file>
     </qresource>
 </RCC>

@@ -5,15 +5,43 @@ import QtQuick.Layouts 1.3
 import QtGraphicalEffects 1.0
 //import QtQuick.Controls 1.4 as QQC1
 //import QtQuick.Controls.Styles 1.4 as QQC1S
+import io.qt.Backend 1.0
 import AppStyle 1.0
 
-Window {
+ApplicationWindow {
     visible: true
     width: 1100
-    minimumWidth: 800
+    minimumWidth: 900
     height: 650
     minimumHeight: 500
     title: qsTr("pinger")
+
+    ListModel { id: packetsModel }
+
+    onClosing: {
+        backend.closeEvent();
+    }
+
+    Backend {
+        id: backend
+
+        onGotPingResults: {
+            packetsModel.append({
+                "status":status,
+                "time":time,
+                "packetColor":packetColor
+            });
+            //if (packetsModel.count > queueSize) { packetsModel.remove(0); }
+            // TODO improve behaviour for resizing window
+            if (packets.contentHeight > packets.height) { packetsModel.remove(0); }
+
+            avgTime.text = averageTime;
+            percentageLost.text = lostPercentage;
+            percentageReceived.text = receivedPercentage;
+            packetsLost.text = lostPackets;
+            packetsReceived.text = receivedPackets;
+        }
+    }
 
     Rectangle {
         id: root
@@ -102,6 +130,41 @@ Window {
                                 horizontalAlignment: Text.AlignHCenter
                                 anchors.fill: parent
                             }
+                            onClicked: {
+                                packetsModel.clear();
+
+                                avgTime.text = "0 ms";
+                                percentageLost.text = "0%";
+                                percentageReceived.text = "0%";
+
+                                visible = false;
+                                loadingAnimation.running = true;
+                                loading.visible = true;
+                                backend.on_btn_ping_clicked(host.text);
+                            }
+                        }
+                        HalfRoundedButton {
+                            id: btn_stop
+                            Layout.preferredWidth: parent.width * 0.3
+                            Layout.preferredHeight: parent.height// * 0.55
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            Text {
+                                text: "STOP"
+                                font.pixelSize: Styles.secondaryFontSize
+                                //font.bold: true
+                                color: "#CFD8DC"
+                                verticalAlignment: Text.AlignVCenter
+                                horizontalAlignment: Text.AlignHCenter
+                                anchors.fill: parent
+                            }
+                            visible: !btn_ping.visible
+                            onClicked: {
+                                backend.on_btn_stop_clicked();
+                                loading.visible = false;
+                                loadingAnimation.running = false;
+                                btn_ping.visible = true;
+                            }
                         }
                     }
                 }
@@ -151,7 +214,7 @@ Window {
                 }
 
             LayoutVertical {
-                Layout.preferredWidth: parent.width * 0.35
+                Layout.preferredWidth: parent.width * 0.4
                 Layout.maximumWidth: 450
 
                 LayoutRegion {
@@ -170,7 +233,25 @@ Window {
                                 text: "Packets"
                             }
 
+                            Image {
+                                id: loading
+                                anchors.right: lbl_headerPackets.left
+                                Layout.preferredWidth: lbl_headerPackets.height
+                                Layout.preferredHeight: lbl_headerPackets.height
+                                source: "qrc:/images/loading.png"
+                                fillMode: Image.PreserveAspectFit
+                                visible: false
+                                RotationAnimator {
+                                    id: loadingAnimation
+                                    target: loading;
+                                    from: 0;
+                                    to: 360;
+                                    duration: 2000
+                                    loops: Animation.Infinite
+                                }
+                            }
                             FormLabel {
+                                id: lbl_headerPackets
                                 anchors.right: parent.right
                                 text: "⋮"
                             }
@@ -197,7 +278,7 @@ Window {
                         }
 
                         ListView {
-                            id: stats
+                            id: packets
                             model: packetsModel
                             Layout.topMargin: -10
                             Layout.bottomMargin: 10
@@ -218,13 +299,13 @@ Window {
                                     width: 15
                                     height: 15
                                     radius: width * 0.5
-                                    color: lost ? "#E57373" : "#81C784"
+                                    color: packetColor
                                 }
                                 Glow {
                                     anchors.fill: packetStatus
                                     radius: 20
                                     samples: 20
-                                    color: lost ? "#E57373" : "#81C784"
+                                    color: packetStatus.color
                                     spread: 0.1
                                     source: packetStatus
                                 }
@@ -249,16 +330,57 @@ Window {
                             layoutDirection: Qt.RightToLeft
                             spacing: 5
 
-                            FormText { text: "22.545 ms"; }
-                            FormText { text: "|"; }
                             FormText {
-                                text: "20%";
-                                color: "#E57373"
+                                id: avgTime;
+                                text: "0 ms";
                             }
                             FormText { text: "|"; }
                             FormText {
-                                text: "80%";
+                                id: percentageLost
+                                text: "0%";
+                                color: "#E57373"
+                                MouseArea {
+                                    anchors.fill: parent
+                                    onClicked: {
+                                        switchToPacketsLost(true);
+                                    }
+                                }
+                            }
+                            FormText {
+                                id: packetsLost
+                                text: "0";
+                                color: "#E57373"
+                                visible: !percentageLost.visible
+                                MouseArea {
+                                    anchors.fill: parent
+                                    onClicked: {
+                                        switchToPacketsLost(false);
+                                    }
+                                }
+                            }
+                            FormText { text: "|"; }
+                            FormText {
+                                id: percentageReceived
+                                text: "0%";
                                 color: "#81C784"
+                                MouseArea {
+                                    anchors.fill: parent
+                                    onClicked: {
+                                        switchToPacketsReceived(true);
+                                    }
+                                }
+                            }
+                            FormText {
+                                id: packetsReceived
+                                text: "0";
+                                color: "#81C784"
+                                visible: !percentageReceived.visible
+                                MouseArea {
+                                    anchors.fill: parent
+                                    onClicked: {
+                                        switchToPacketsReceived(false);
+                                    }
+                                }
                             }
                         }
 
@@ -362,20 +484,10 @@ Window {
                         IconButton {
                             id: btn_info
                             source: "qrc:/images/info.png"
-                            onClicked: {
-                                packetsModel.append({
-                                    "status":"Received",
-                                    "time":"31.345",
-                                    "lost":false
-                                });
-                            }
                         }
                         IconButton {
                             id: btn_export
                             source: "qrc:/images/export.png"
-                            onClicked: {
-                                packetsModel.remove(0);
-                            }
                         }
                     }
                 }
@@ -407,23 +519,20 @@ Window {
         }
     }
 
-    ListModel {
-        id: packetsModel
 
-        ListElement {
-            status: "Received"
-            time: "31.345"
-            lost: false
-        }
-        ListElement {
-            status: "Lost"
-            time: ""
-            lost: true
-        }
-        ListElement {
-            status: "Received"
-            time: "22.124"
-            lost: false
-        }
+    function switchToPacketsLost(toPackets)
+    {
+        if (toPackets === true)
+        { percentageLost.visible = false; }
+        else
+        { percentageLost.visible = true; }
+    }
+
+    function switchToPacketsReceived(toPackets)
+    {
+        if (toPackets === true)
+        { percentageReceived.visible = false; }
+        else
+        { percentageReceived.visible = true; }
     }
 }
