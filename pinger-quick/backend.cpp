@@ -26,18 +26,20 @@ void Backend::pinged()
 
     pingData.addPacket(pckt);
 
-    QString status = "error", packetColor = "#CFE573";
+    QString status = "error";
+    int packetColor = 2;
+
     switch (pckt.first)
     {
     case 0:
         status = "Received";
-        packetColor = "#81C784";
+        packetColor = 0;
         effect.setSource(QUrl("qrc:/sounds/done.wav"));
         makeSound = false;
         break;
     case 1:
         status = "Lost";
-        packetColor = "#E57373";
+        packetColor = 1;
         break;
     default: // 2
 //        qDebug() << rez.second;
@@ -64,7 +66,9 @@ void Backend::pinged()
                 lostPercentage,
                 receivedPercentage,
                 pingData.get_pcktLost(),
-                pingData.get_pcktReceived()
+                pingData.get_pcktReceived(),
+                pingData.get_pcktSent(),
+                pingData.get_lastPacketTime()
                 );
 }
 

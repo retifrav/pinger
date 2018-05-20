@@ -37,6 +37,11 @@ int PingData::get_pcktReceived() { return pcktReceived; }
 int PingData::get_pcktSent() { return pcktSent; }
 int PingData::get_packetsQueueSize() { return packetsQueueSize; }
 
+float PingData::get_lastPacketTime()
+{
+    return lastPacketTime;
+}
+
 float PingData::get_avgTime()
 {
     return avgTime;
@@ -76,6 +81,7 @@ void PingData::addPacket(QPair<int, QString> pckt)
             pcktReceived++;
             bool conversionResult = true;
             float tmp = pckt.second.replace(" ms", QString()).toFloat(&conversionResult);
+            lastPacketTime = tmp;
             if (conversionResult)
             {
                 totalTime += tmp;

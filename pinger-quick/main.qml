@@ -3,6 +3,7 @@ import QtQuick.Window 2.10
 import QtQuick.Controls 2.3
 import QtQuick.Layouts 1.3
 import QtGraphicalEffects 1.0
+import QtCharts 2.2
 //import QtQuick.Controls 1.4 as QQC1
 //import QtQuick.Controls.Styles 1.4 as QQC1S
 import io.qt.Backend 1.0
@@ -26,10 +27,21 @@ ApplicationWindow {
         id: backend
 
         onGotPingResults: {
+            var pcktColor = Styles.colorError;
+            switch (packetColor)
+            {
+            case 0:
+                pcktColor = Styles.colorReceived;
+                break;
+            case 1:
+                pcktColor = Styles.colorLost;
+                break;
+            }
+
             packetsModel.append({
                 "status":status,
                 "time":time,
-                "packetColor":packetColor
+                "packetColor":pcktColor
             });
             //if (packetsModel.count > queueSize) { packetsModel.remove(0); }
             // TODO improve behaviour for resizing window
@@ -38,8 +50,12 @@ ApplicationWindow {
             avgTime.text = averageTime;
             percentageLost.text = lostPercentage;
             percentageReceived.text = receivedPercentage;
-            packetsLost.text = lostPackets;
-            packetsReceived.text = receivedPackets;
+            packetsLost.text = pieLost.value = lostPackets;
+            packetsReceived.text = pieReceived.value = receivedPackets;
+
+            seriesLost.append(totalPackets, lastPacketTime);
+//            console.log(totalPackets);
+//            console.log(lastPacketTime);
         }
     }
 
@@ -130,18 +146,7 @@ ApplicationWindow {
                                 horizontalAlignment: Text.AlignHCenter
                                 anchors.fill: parent
                             }
-                            onClicked: {
-                                packetsModel.clear();
-
-                                avgTime.text = "0 ms";
-                                percentageLost.text = "0%";
-                                percentageReceived.text = "0%";
-
-                                visible = false;
-                                loadingAnimation.running = true;
-                                loading.visible = true;
-                                backend.on_btn_ping_clicked(host.text);
-                            }
+                            onClicked: { clearPreviousData(); }
                         }
                         HalfRoundedButton {
                             id: btn_stop
@@ -161,8 +166,8 @@ ApplicationWindow {
                             visible: !btn_ping.visible
                             onClicked: {
                                 backend.on_btn_stop_clicked();
-                                loading.visible = false;
-                                loadingAnimation.running = false;
+                                //loading.visible = false;
+                                //loadingAnimation.running = false;
                                 btn_ping.visible = true;
                             }
                         }
@@ -188,6 +193,28 @@ ApplicationWindow {
                             FormLabel {
                                 anchors.right: parent.right
                                 text: "⋮"
+                            }
+                        }
+
+                        ChartView {
+                            id: chartSeriesLost
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            antialiasing: true
+                            backgroundColor: "transparent"
+                            margins.top: 0
+                            margins.bottom: 0
+                            margins.left: 0
+                            margins.right: 0
+                            legend.visible: false
+
+                            SplineSeries {
+                                id: seriesLost
+                                axisX: ValueAxis { min: 0; max: 100; }
+                                axisY: ValueAxis { min: 0; max: 1000; }
+                                width: 5
+                                color: "pink"
+                                XYPoint { x: 0; y: 0; }
                             }
                         }
                     }
@@ -233,23 +260,34 @@ ApplicationWindow {
                                 text: "Packets"
                             }
 
-                            Image {
-                                id: loading
+                            IconButton {
+                                id: btn_pieChart
                                 anchors.right: lbl_headerPackets.left
                                 Layout.preferredWidth: lbl_headerPackets.height
                                 Layout.preferredHeight: lbl_headerPackets.height
                                 source: "qrc:/images/loading.png"
-                                fillMode: Image.PreserveAspectFit
-                                visible: false
-                                RotationAnimator {
-                                    id: loadingAnimation
-                                    target: loading;
-                                    from: 0;
-                                    to: 360;
-                                    duration: 2000
-                                    loops: Animation.Infinite
+
+                                onClicked: {
+                                    packets.visible = !packets.visible;
                                 }
                             }
+//                            Image {
+//                                id: loading
+//                                anchors.right: lbl_headerPackets.left
+//                                Layout.preferredWidth: lbl_headerPackets.height
+//                                Layout.preferredHeight: lbl_headerPackets.height
+//                                source: "qrc:/images/loading.png"
+//                                fillMode: Image.PreserveAspectFit
+//                                visible: false
+//                                RotationAnimator {
+//                                    id: loadingAnimation
+//                                    target: loading;
+//                                    from: 0;
+//                                    to: 360;
+//                                    duration: 2000
+//                                    loops: Animation.Infinite
+//                                }
+//                            }
                             FormLabel {
                                 id: lbl_headerPackets
                                 anchors.right: parent.right
@@ -315,6 +353,42 @@ ApplicationWindow {
                                 }
                             }
                         }
+                        ChartView {
+                            id: packetsPieChart
+                            //title: "Top-5 car brand shares in Finland"
+                            Layout.topMargin: -15
+                            Layout.bottomMargin: -20
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            legend.visible: false
+                            antialiasing: true
+                            backgroundColor: "transparent"
+                            margins.top: 0
+                            margins.bottom: 0
+                            margins.right: 0
+                            margins.left: 0
+                            visible: !packets.visible
+
+                            PieSeries {
+                                id: packetsPieChartSeries
+                                size: 1.0
+                                holeSize: 0.7
+                                PieSlice {
+                                    id: pieReceived
+                                    label: "Received"
+                                    value: 1
+                                    color: Styles.colorReceived
+                                    borderColor: color
+                                }
+                                PieSlice {
+                                    id: pieLost
+                                    label: "Lost"
+                                    value: 1
+                                    color: Styles.colorLost
+                                    borderColor: color
+                                }
+                            }
+                        }
 
                         Rectangle {
                             Layout.fillWidth: true
@@ -338,7 +412,7 @@ ApplicationWindow {
                             FormText {
                                 id: percentageLost
                                 text: "0%";
-                                color: "#E57373"
+                                color: Styles.colorLost
                                 MouseArea {
                                     anchors.fill: parent
                                     onClicked: {
@@ -349,7 +423,7 @@ ApplicationWindow {
                             FormText {
                                 id: packetsLost
                                 text: "0";
-                                color: "#E57373"
+                                color: Styles.colorLost
                                 visible: !percentageLost.visible
                                 MouseArea {
                                     anchors.fill: parent
@@ -362,7 +436,7 @@ ApplicationWindow {
                             FormText {
                                 id: percentageReceived
                                 text: "0%";
-                                color: "#81C784"
+                                color: Styles.colorReceived
                                 MouseArea {
                                     anchors.fill: parent
                                     onClicked: {
@@ -373,7 +447,7 @@ ApplicationWindow {
                             FormText {
                                 id: packetsReceived
                                 text: "0";
-                                color: "#81C784"
+                                color: Styles.colorReceived
                                 visible: !percentageReceived.visible
                                 MouseArea {
                                     anchors.fill: parent
@@ -519,6 +593,23 @@ ApplicationWindow {
         }
     }
 
+    function clearPreviousData()
+    {
+        packetsModel.clear();
+
+        avgTime.text = "0 ms";
+        packetsLost.text = "0";
+        packetsReceived.text = "0";
+        percentageLost.text = "0%";
+        percentageReceived.text = "0%";
+        pieLost.value = 0;
+        pieReceived.value = 0;
+
+        btn_ping.visible = false;
+        //loadingAnimation.running = true;
+        //loading.visible = true;
+        backend.on_btn_ping_clicked(host.text);
+    }
 
     function switchToPacketsLost(toPackets)
     {

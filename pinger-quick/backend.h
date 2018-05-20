@@ -17,14 +17,16 @@ public:
 signals:
     void gotPingResults(
             QString status,
-            QString packetColor,
+            int packetColor,
             QString time,
             int queueSize,
             QString averageTime,
             QString lostPercentage,
             QString receivedPercentage,
             int lostPackets,
-            int receivedPackets
+            int receivedPackets,
+            int totalPackets,
+            float lastPacketTime
             );
 
 public slots:

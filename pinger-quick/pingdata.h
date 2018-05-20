@@ -19,6 +19,7 @@ public:
     float get_lostPercentage();
     float get_receivedPercentage();
     int get_packetsQueueSize();
+    float get_lastPacketTime();
     float get_avgTime();
     QQueue< QPair<int, QString> > get_packets();
 
@@ -33,6 +34,7 @@ private:
     int pcktSent;
     int packetsQueueSize;
     float avgTime;
+    float lastPacketTime;
     float totalTime;
     QQueue< QPair<int, QString> > packetsQueue;
 
