@@ -16,8 +16,7 @@ public:
 
 signals:
     void gotPingResults(
-            QString status,
-            int packetColor,
+            int status,
             QString time,
             int queueSize,
             QString averageTime,
@@ -26,7 +25,9 @@ signals:
             int lostPackets,
             int receivedPackets,
             int totalPackets,
-            float lastPacketTime
+            float lastPacketTime,
+            int minAxisY,
+            int maxAxisY
             );
 
 public slots:

@@ -10,7 +10,8 @@ void PingData::resetEverything()
     pcktLost = 0;
     pcktReceived = 0;
     pcktSent = 0;
-    packetsQueueSize = 20;
+    //TODO this should be customizable
+    packetsQueueSize = 50;
     totalTime = 0;
     avgTime = 0;
 
@@ -36,6 +37,16 @@ int PingData::get_pcktLost() { return pcktLost; }
 int PingData::get_pcktReceived() { return pcktReceived; }
 int PingData::get_pcktSent() { return pcktSent; }
 int PingData::get_packetsQueueSize() { return packetsQueueSize; }
+
+QList<float>* PingData::get_packetsQueueTimes()
+{
+    QList<float> *times = new QList<float>();
+    for(const QPair<int, QString>& item : packetsQueue)
+    {
+        times->append(item.second.toFloat());
+    }
+    return times;
+}
 
 float PingData::get_lastPacketTime()
 {
@@ -90,6 +101,9 @@ void PingData::addPacket(QPair<int, QString> pckt)
         }
         else
         {
+            // TODO this should be customizable
+            pckt.second = "1000";
+            lastPacketTime = 1000;
             pcktLost++;
         }
     }

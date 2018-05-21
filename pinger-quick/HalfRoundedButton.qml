@@ -11,6 +11,8 @@ Button {
     bottomPadding: padding + 10
 
     property alias color: back.color
+    property alias colorGlow: glow.color
+    property alias buttonDown: control.down
 
     contentItem: Text {
         text: control.text
@@ -21,14 +23,14 @@ Button {
         color: "transparent"
         HalfRounded {
             id: back
-            color: down ? "#677A86" : Styles.labelsColor
+            color: control.down ? "#677A86" : Styles.labelsColor
         }
         Glow {
             id: glow
             anchors.fill: back
             radius: 15
             samples: 15
-            color: control.down ? "#677A86" : Styles.labelsColor
+            color: back.color//control.down ? "#677A86" : Styles.labelsColor
             spread: 0.1
             source: back
             visible: false

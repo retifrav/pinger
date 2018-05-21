@@ -26,20 +26,17 @@ void Backend::pinged()
 
     pingData.addPacket(pckt);
 
-    QString status = "error";
-    int packetColor = 2;
+    int status = 2;
 
     switch (pckt.first)
     {
     case 0:
-        status = "Received";
-        packetColor = 0;
+        status = 0;
         effect.setSource(QUrl("qrc:/sounds/done.wav"));
         makeSound = false;
         break;
     case 1:
-        status = "Lost";
-        packetColor = 1;
+        status = 1;
         break;
     default: // 2
 //        qDebug() << rez.second;
@@ -56,19 +53,27 @@ void Backend::pinged()
 
     if (makeSound) { effect.play(); }
 
+    // min latency value
+    QList<float> *times = pingData.get_packetsQueueTimes();
+    int minLatency = (int)(*std::min_element(times->begin(), times->end()) - 5),
+        maxLatency = (int)(*std::max_element(times->begin(), times->end()) + 5);
+    delete times;
+
 //    qDebug() << pckt.first << " | " << pckt.second;
     emit gotPingResults(
                 status,
-                packetColor,
                 pckt.second,
                 pingData.get_packetsQueueSize(),
-                QString("%1 ms").arg(QString::number(pingData.get_avgTime(), 'g', 5)),
+                //QString("%1 ms").arg(QString::number(pingData.get_avgTime(), 'g', 5)),
+                QString::number(pingData.get_avgTime(), 'g', 5),
                 lostPercentage,
                 receivedPercentage,
                 pingData.get_pcktLost(),
                 pingData.get_pcktReceived(),
                 pingData.get_pcktSent(),
-                pingData.get_lastPacketTime()
+                pingData.get_lastPacketTime(),
+                minLatency,
+                maxLatency
                 );
 }
 

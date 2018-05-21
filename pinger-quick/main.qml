@@ -27,35 +27,55 @@ ApplicationWindow {
         id: backend
 
         onGotPingResults: {
-            var pcktColor = Styles.colorError;
-            switch (packetColor)
+            var statusVal = "error";
+            var packetColor = Styles.colorError;
+            switch (status)
             {
             case 0:
-                pcktColor = Styles.colorReceived;
+                statusVal = "Received";
+                packetColor = Styles.colorReceived;
                 break;
             case 1:
-                pcktColor = Styles.colorLost;
+                statusVal = "Lost";
+                packetColor = Styles.colorLost;
                 break;
             }
 
             packetsModel.append({
-                "status":status,
+                "status":statusVal,
                 "time":time,
-                "packetColor":pcktColor
+                "packetColor":packetColor
             });
             //if (packetsModel.count > queueSize) { packetsModel.remove(0); }
             // TODO improve behaviour for resizing window
             if (packets.contentHeight > packets.height) { packetsModel.remove(0); }
 
-            avgTime.text = averageTime;
+            avgTime.text = averageTime + " ms";
+
             percentageLost.text = lostPercentage;
             percentageReceived.text = receivedPercentage;
             packetsLost.text = pieLost.value = lostPackets;
             packetsReceived.text = pieReceived.value = receivedPackets;
 
-            seriesLost.append(totalPackets, lastPacketTime);
-//            console.log(totalPackets);
-//            console.log(lastPacketTime);
+            if (lostPackets > receivedPackets)
+                { glowPacketsPieChart.color = Styles.colorLost; }
+            else
+                { glowPacketsPieChart.color = Styles.colorReceived; }
+
+            chartSeriesLatencyAxisY.min = minAxisY;
+            chartSeriesLatencyAxisY.max = maxAxisY;
+            // TODO this value should not be hardcoded
+            if (seriesLatency.count > 49)
+            {
+                chartSeriesLatencyAxisX.min++;
+                chartSeriesLatencyAxisX.max++;
+                seriesLatency.remove(0);
+            }
+            //console.log(seriesLatency.at(totalPackets - 1));
+            seriesLatency.append(totalPackets, lastPacketTime);
+
+            //console.log(totalPackets);
+            //console.log(lastPacketTime);
         }
     }
 
@@ -140,8 +160,8 @@ ApplicationWindow {
                             Text {
                                 text: "PING"
                                 font.pixelSize: Styles.secondaryFontSize
-                                //font.bold: true
-                                color: "#CFD8DC"
+                                font.bold: true
+                                color: "#D8D8D8"
                                 verticalAlignment: Text.AlignVCenter
                                 horizontalAlignment: Text.AlignHCenter
                                 anchors.fill: parent
@@ -154,11 +174,13 @@ ApplicationWindow {
                             Layout.preferredHeight: parent.height// * 0.55
                             anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
+                            color: buttonDown ? "#CC817E" : "#E57373"
+                            colorGlow: buttonDown ? "#CC817E" : "#E57373"
                             Text {
                                 text: "STOP"
                                 font.pixelSize: Styles.secondaryFontSize
-                                //font.bold: true
-                                color: "#CFD8DC"
+                                font.bold: true
+                                color: "#D8D8D8"
                                 verticalAlignment: Text.AlignVCenter
                                 horizontalAlignment: Text.AlignHCenter
                                 anchors.fill: parent
@@ -197,7 +219,7 @@ ApplicationWindow {
                         }
 
                         ChartView {
-                            id: chartSeriesLost
+                            id: chartSeriesLatency
                             Layout.fillWidth: true
                             Layout.fillHeight: true
                             antialiasing: true
@@ -208,15 +230,50 @@ ApplicationWindow {
                             margins.right: 0
                             legend.visible: false
 
+                            Component.onCompleted: {
+                                // so it wouldn't start from a point in void
+                                scrollRight(15);
+                            }
+
+                            ValueAxis {
+                                id: chartSeriesLatencyAxisX
+                                min: 0
+                                max: 50
+                                visible: false
+                                //minorGridVisible: true
+                                //gridVisible: false
+                                //lineVisible: false
+                                //labelsColor: Styles.labelsColor
+                            }
+
+                            ValueAxis {
+                                id: chartSeriesLatencyAxisY
+                                min: 0
+                                max: 100
+                                tickCount: 4
+                                //visible: false
+                                minorGridVisible: true
+                                //gridVisible: false
+                                //lineVisible: false
+                                labelsColor: Styles.labelsColor
+                            }
+
                             SplineSeries {
-                                id: seriesLost
-                                axisX: ValueAxis { min: 0; max: 100; }
-                                axisY: ValueAxis { min: 0; max: 1000; }
-                                width: 5
-                                color: "pink"
-                                XYPoint { x: 0; y: 0; }
+                                id: seriesLatency
+                                axisX: chartSeriesLatencyAxisX
+                                axisY: chartSeriesLatencyAxisY
+                                width: 4
+                                color: Styles.colorReceived
                             }
                         }
+                        // labels are glowing too, unfortunatelly
+//                        Glow {
+//                            anchors.fill: chartSeriesLatency
+//                            radius: 18
+//                            samples: 37
+//                            color: Styles.labelsColor
+//                            source: chartSeriesLatency
+//                        }
                     }
                 }
 
@@ -353,40 +410,56 @@ ApplicationWindow {
                                 }
                             }
                         }
-                        ChartView {
-                            id: packetsPieChart
-                            //title: "Top-5 car brand shares in Finland"
-                            Layout.topMargin: -15
-                            Layout.bottomMargin: -20
+                        Rectangle {
                             Layout.fillWidth: true
                             Layout.fillHeight: true
-                            legend.visible: false
-                            antialiasing: true
-                            backgroundColor: "transparent"
-                            margins.top: 0
-                            margins.bottom: 0
-                            margins.right: 0
-                            margins.left: 0
+                            Layout.topMargin: -10
+                            Layout.bottomMargin: -20
+                            color: "transparent"
                             visible: !packets.visible
 
-                            PieSeries {
-                                id: packetsPieChartSeries
-                                size: 1.0
-                                holeSize: 0.7
-                                PieSlice {
-                                    id: pieReceived
-                                    label: "Received"
-                                    value: 1
-                                    color: Styles.colorReceived
-                                    borderColor: color
+                            ChartView {
+                                id: packetsPieChart
+                                legend.visible: false
+                                antialiasing: true
+                                backgroundColor: "transparent"
+
+                                // crutch for ChartView margins
+                                x: -10; width: parent.width + 20;
+                                y: -10; height: parent.height + 20;
+
+                                margins.top: 0
+                                margins.bottom: 0
+                                margins.right: 0
+                                margins.left: 0
+
+                                PieSeries {
+                                    id: packetsPieChartSeries
+                                    size: 1.0
+                                    holeSize: 0.7
+                                    PieSlice {
+                                        id: pieReceived
+                                        label: "Received"
+                                        value: 1
+                                        color: Styles.colorReceived
+                                        borderColor: color
+                                    }
+                                    PieSlice {
+                                        id: pieLost
+                                        label: "Lost"
+                                        value: 1
+                                        color: Styles.colorLost
+                                        borderColor: color
+                                    }
                                 }
-                                PieSlice {
-                                    id: pieLost
-                                    label: "Lost"
-                                    value: 1
-                                    color: Styles.colorLost
-                                    borderColor: color
-                                }
+                            }
+                            Glow {
+                                id: glowPacketsPieChart
+                                anchors.fill: packetsPieChart
+                                radius: 18
+                                samples: 37
+                                color: Styles.colorLost
+                                source: packetsPieChart
                             }
                         }
 
@@ -609,6 +682,9 @@ ApplicationWindow {
         //loadingAnimation.running = true;
         //loading.visible = true;
         backend.on_btn_ping_clicked(host.text);
+
+        seriesLatency.removePoints(0, seriesLatency.count);
+        //seriesLatency.append(0, 0);
     }
 
     function switchToPacketsLost(toPackets)
