@@ -4,18 +4,28 @@ import QtQuick.Controls 2.3
 import QtQuick.Layouts 1.3
 import QtGraphicalEffects 1.0
 import QtCharts 2.2
+import QtQuick.Dialogs 1.3
+import Qt.labs.settings 1.0
 //import QtQuick.Controls 1.4 as QQC1
 //import QtQuick.Controls.Styles 1.4 as QQC1S
-import io.qt.Backend 1.0
+import io.decovar.Backend 1.0
 import AppStyle 1.0
 
 ApplicationWindow {
+    id: mainWindow
     visible: true
     width: 1100
     minimumWidth: 900
     height: 650
     minimumHeight: 500
     title: qsTr("pinger")
+
+    Settings {
+        property alias x: mainWindow.x
+        property alias y: mainWindow.y
+        property alias width: mainWindow.width
+        property alias height: mainWindow.height
+    }
 
     ListModel { id: packetsModel }
 
@@ -160,13 +170,13 @@ ApplicationWindow {
                             Text {
                                 text: "PING"
                                 font.pixelSize: Styles.secondaryFontSize
-                                font.bold: true
+                                //font.bold: true
                                 color: "#D8D8D8"
                                 verticalAlignment: Text.AlignVCenter
                                 horizontalAlignment: Text.AlignHCenter
                                 anchors.fill: parent
                             }
-                            onClicked: { clearPreviousData(); }
+                            onClicked: { clearPreviousData(); dialog.open(); }
                         }
                         HalfRoundedButton {
                             id: btn_stop
@@ -179,7 +189,7 @@ ApplicationWindow {
                             Text {
                                 text: "STOP"
                                 font.pixelSize: Styles.secondaryFontSize
-                                font.bold: true
+                                //font.bold: true
                                 color: "#D8D8D8"
                                 verticalAlignment: Text.AlignVCenter
                                 horizontalAlignment: Text.AlignHCenter
@@ -623,6 +633,7 @@ ApplicationWindow {
                         IconButton {
                             id: btn_settings
                             source: "qrc:/images/settings.png"
+                            onClicked: { dialogSettings.show(); }
                         }
                         IconButton {
                             id: btn_reload
@@ -666,6 +677,36 @@ ApplicationWindow {
         }
     }
 
+//    MessageDialog {
+//        id: messageDialog
+//        title: "May I have your attention please"
+//        text: "It's so cool that you are using Qt Quick."
+//        onAccepted: {
+//            console.log("And of course you could only agree.")
+//            messageDialog.close();
+//        }
+//        Component.onCompleted: visible = true
+//    }
+
+    Window {
+        id: dialogSettings
+        visible: false
+        modality: Qt.WindowModal
+
+        width: 500
+        minimumWidth: 500
+        maximumWidth: 500
+        height: 200
+        minimumHeight: 200
+        maximumHeight: 200
+
+        Button {
+            anchors.centerIn: parent
+            text: "Ok"
+            onClicked: { dialogSettings.close(); }
+        }
+    }
+
     function clearPreviousData()
     {
         packetsModel.clear();
@@ -678,13 +719,13 @@ ApplicationWindow {
         pieLost.value = 0;
         pieReceived.value = 0;
 
+        seriesLatency.removePoints(0, seriesLatency.count);
+        //seriesLatency.append(0, 0);
+
         btn_ping.visible = false;
         //loadingAnimation.running = true;
         //loading.visible = true;
         backend.on_btn_ping_clicked(host.text);
-
-        seriesLatency.removePoints(0, seriesLatency.count);
-        //seriesLatency.append(0, 0);
     }
 
     function switchToPacketsLost(toPackets)
