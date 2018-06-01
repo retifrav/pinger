@@ -32,6 +32,7 @@ signals:
 
 public slots:
     void on_btn_ping_clicked(QString host);
+    int calculateAxisAdjusment(int diff);
     void on_btn_stop_clicked();
     void pinged();
     void startPing();

@@ -1,9 +1,17 @@
 import QtQuick 2.10
 import QtQuick.Controls 2.3
 import QtGraphicalEffects 1.0
+import QtQuick.Layouts 1.3
 
 Button {
     id: control
+
+    anchors.right: parent.right
+    anchors.verticalCenter: parent.verticalCenter
+
+    Layout.preferredWidth: parent.width * 0.25
+    Layout.maximumWidth: 200
+    Layout.preferredHeight: parent.height// * 0.55
 
     leftPadding: padding + 10
     topPadding: padding + 10
@@ -23,7 +31,7 @@ Button {
         color: "transparent"
         HalfRounded {
             id: back
-            color: control.down ? "#677A86" : Styles.labelsColor
+            color: Styles.labelsColor//control.down ? "#677A86" : Styles.labelsColor
         }
         Glow {
             id: glow

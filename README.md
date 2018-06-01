@@ -1,3 +1,3 @@
-# pinger
+# Pinger
 
-Cross-platform GUI for `ping` utility.
+Cross-platform network connection quality analyser.

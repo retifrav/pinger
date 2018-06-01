@@ -58,7 +58,8 @@ ApplicationWindow {
             });
             //if (packetsModel.count > queueSize) { packetsModel.remove(0); }
             // TODO improve behaviour for resizing window
-            if (packets.contentHeight > packets.height) { packetsModel.remove(0); }
+            packets.positionViewAtEnd();
+            //if (packets.contentHeight > packets.height) { packetsModel.remove(0); }
 
             avgTime.text = averageTime + " ms";
 
@@ -74,6 +75,8 @@ ApplicationWindow {
 
             chartSeriesLatencyAxisY.min = minAxisY;
             chartSeriesLatencyAxisY.max = maxAxisY;
+//            console.log(minAxisY + " | " + maxAxisY);
+
             // TODO this value should not be hardcoded
             if (seriesLatency.count > 49)
             {
@@ -104,8 +107,9 @@ ApplicationWindow {
 
                 LayoutRegion {
                     Layout.fillWidth: true
-                    Layout.preferredHeight: parent.height * 0.15
-                    Layout.maximumHeight: 80
+                    Layout.preferredHeight: parent.height * 0.1
+                    Layout.minimumHeight: 50
+                    Layout.maximumHeight: 70
 
                     RowLayout {
                         anchors.fill: parent
@@ -125,13 +129,14 @@ ApplicationWindow {
 
                             TextInput {
                                 id: host
+                                enabled: btn_ping.visible
                                 text: "ya.ru"
                                 anchors.verticalCenter: parent.verticalCenter
                                 leftPadding: 10
                                 rightPadding: 10
                                 width: parent.width
                                 font.pointSize: 18
-                                color: "#B3BFC5"
+                                color: Styles.buttonsTextColor
                                 clip: true
                             }
                         }
@@ -163,34 +168,38 @@ ApplicationWindow {
 
                         HalfRoundedButton {
                             id: btn_ping
-                            Layout.preferredWidth: parent.width * 0.3
-                            Layout.preferredHeight: parent.height// * 0.55
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
                             Text {
                                 text: "PING"
                                 font.pixelSize: Styles.secondaryFontSize
                                 //font.bold: true
-                                color: "#D8D8D8"
+                                color: Styles.buttonsTextColor
                                 verticalAlignment: Text.AlignVCenter
                                 horizontalAlignment: Text.AlignHCenter
                                 anchors.fill: parent
                             }
-                            onClicked: { clearPreviousData(); dialog.open(); }
+                            onClicked: {
+                                if (host.text.length === 0)
+                                {
+                                    dialogNoHost.open();
+                                    return;
+                                }
+                                else
+                                {
+                                    clearPreviousData();
+                                    btn_ping.visible = false;
+                                    backend.on_btn_ping_clicked(host.text);
+                                }
+                            }
                         }
                         HalfRoundedButton {
                             id: btn_stop
-                            Layout.preferredWidth: parent.width * 0.3
-                            Layout.preferredHeight: parent.height// * 0.55
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            color: buttonDown ? "#CC817E" : "#E57373"
-                            colorGlow: buttonDown ? "#CC817E" : "#E57373"
+                            color: Styles.colorLost//buttonDown ? "#CC817E" : "#E57373"
+                            //colorGlow: buttonDown ? "#CC817E" : "#E57373"
                             Text {
                                 text: "STOP"
                                 font.pixelSize: Styles.secondaryFontSize
                                 //font.bold: true
-                                color: "#D8D8D8"
+                                color: Styles.buttonsTextColor
                                 verticalAlignment: Text.AlignVCenter
                                 horizontalAlignment: Text.AlignHCenter
                                 anchors.fill: parent
@@ -242,7 +251,7 @@ ApplicationWindow {
 
                             Component.onCompleted: {
                                 // so it wouldn't start from a point in void
-                                scrollRight(15);
+                                scrollRight(20);
                             }
 
                             ValueAxis {
@@ -260,7 +269,7 @@ ApplicationWindow {
                                 id: chartSeriesLatencyAxisY
                                 min: 0
                                 max: 100
-                                tickCount: 4
+                                tickCount: 5
                                 //visible: false
                                 minorGridVisible: true
                                 //gridVisible: false
@@ -385,11 +394,17 @@ ApplicationWindow {
                         ListView {
                             id: packets
                             model: packetsModel
+
                             Layout.topMargin: -10
-                            Layout.bottomMargin: 10
+                            Layout.bottomMargin: -20
                             Layout.fillWidth: true
                             Layout.fillHeight: true
-                            interactive: false
+                            //interactive: false
+
+                            //flickableDirection: Flickable.VerticalFlick
+                            //boundsBehavior: Flickable.StopAtBounds
+                            //ScrollBar.vertical: ScrollBar {}
+                            clip: true
 
                             delegate: Item {
                                 height: 30
@@ -447,18 +462,20 @@ ApplicationWindow {
                                     id: packetsPieChartSeries
                                     size: 1.0
                                     holeSize: 0.7
+
+                                    PieSlice {
+                                        id: pieLost
+                                        label: "Lost"
+                                        value: 0
+                                        color: Styles.colorLost
+                                        borderColor: color
+                                    }
+
                                     PieSlice {
                                         id: pieReceived
                                         label: "Received"
                                         value: 1
                                         color: Styles.colorReceived
-                                        borderColor: color
-                                    }
-                                    PieSlice {
-                                        id: pieLost
-                                        label: "Lost"
-                                        value: 1
-                                        color: Styles.colorLost
                                         borderColor: color
                                     }
                                 }
@@ -468,8 +485,9 @@ ApplicationWindow {
                                 anchors.fill: packetsPieChart
                                 radius: 18
                                 samples: 37
-                                color: Styles.colorLost
+                                color: Styles.colorReceived
                                 source: packetsPieChart
+                                visible: pieLost.value === 0 || pieReceived === 0
                             }
                         }
 
@@ -677,16 +695,18 @@ ApplicationWindow {
         }
     }
 
-//    MessageDialog {
-//        id: messageDialog
-//        title: "May I have your attention please"
-//        text: "It's so cool that you are using Qt Quick."
-//        onAccepted: {
-//            console.log("And of course you could only agree.")
-//            messageDialog.close();
-//        }
-//        Component.onCompleted: visible = true
-//    }
+    MessageDialog {
+        id: dialogNoHost
+        icon: StandardIcon.Warning
+        title: "No host provided"
+        text: "You haven't provided any host to ping."
+        informativeText: "In order to ping some host, you should provide either its domain name or its IP address."
+        //detailedText: "For example: ya.ru or 87.250.250.242"
+        //standardButtons: StandardButton.Close
+        onAccepted: {
+            this.close();
+        }
+    }
 
     Window {
         id: dialogSettings
@@ -722,10 +742,8 @@ ApplicationWindow {
         seriesLatency.removePoints(0, seriesLatency.count);
         //seriesLatency.append(0, 0);
 
-        btn_ping.visible = false;
         //loadingAnimation.running = true;
         //loading.visible = true;
-        backend.on_btn_ping_clicked(host.text);
     }
 
     function switchToPacketsLost(toPackets)
