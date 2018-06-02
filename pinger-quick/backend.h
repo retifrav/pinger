@@ -5,6 +5,7 @@
 #include <QProcess>
 #include <QTimer>
 #include <QSoundEffect>
+#include <QSettings>
 #include "pingdata.h"
 #include "functions.h"
 
@@ -44,7 +45,7 @@ private:
     QTimer timer;
     QSoundEffect effect;
     PingData pingData;
-    //QSettings *settings;
+    QSettings settings;
 };
 
 #endif // BACKEND_H

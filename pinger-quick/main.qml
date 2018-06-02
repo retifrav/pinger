@@ -4,7 +4,6 @@ import QtQuick.Controls 2.3
 import QtQuick.Layouts 1.3
 import QtGraphicalEffects 1.0
 import QtCharts 2.2
-import QtQuick.Dialogs 1.3
 import Qt.labs.settings 1.0
 //import QtQuick.Controls 1.4 as QQC1
 //import QtQuick.Controls.Styles 1.4 as QQC1S
@@ -21,10 +20,15 @@ ApplicationWindow {
     title: qsTr("pinger")
 
     Settings {
+        id: settings
+
         property alias x: mainWindow.x
         property alias y: mainWindow.y
         property alias width: mainWindow.width
         property alias height: mainWindow.height
+
+        property bool makeSoundReceived: false
+        property bool makeSoundLost: false
     }
 
     ListModel { id: packetsModel }
@@ -117,7 +121,8 @@ ApplicationWindow {
                         anchors.leftMargin: 20
 
                         FormLabel {
-                            anchors.verticalCenter: parent.verticalCenter
+                            //anchors.verticalCenter: parent.verticalCenter
+                            //Layout.alignment: Qt.AlignVCenter
                             text: "Host"
                         }
 
@@ -180,7 +185,7 @@ ApplicationWindow {
                             onClicked: {
                                 if (host.text.length === 0)
                                 {
-                                    dialogNoHost.open();
+                                    dialogNoHost.show();
                                     return;
                                 }
                                 else
@@ -558,84 +563,6 @@ ApplicationWindow {
                                 }
                             }
                         }
-
-// --- option with table view
-//                        QQC1.TableView {
-//                            id:tabl
-//                            Layout.fillWidth: true
-//                            Layout.fillHeight: true
-//                            backgroundVisible: false
-//                            frameVisible: false
-////                            headerVisible: false
-
-//                            style: QQC1S.TableViewStyle {
-//                                backgroundColor: "transparent"
-//                                alternateBackgroundColor: "transparent"
-//                                textColor: Styles.labelsColor
-////                                frame: Rectangle {
-////                                    color: "transparent"
-////                                }
-//                                headerDelegate: Rectangle {
-//                                    height: 30
-////                                    width: textItem.implicitWidth
-//                                    color: "transparent"
-//                                    Text {
-//                                        id: textItem
-//                                        anchors.fill: parent
-//                                        verticalAlignment: Text.AlignVCenter
-//                                        horizontalAlignment: styleData.textAlignment
-////                                        anchors.leftMargin: 12
-//                                        text: styleData.value
-//                                        font.pointSize: Styles.secondaryFontSize
-//                                        elide: Text.ElideRight
-//                                        color: textColor
-////                                        renderType: Text.NativeRendering
-//                                    }
-//                                    Rectangle {
-//                                        anchors.right: parent.right
-//                                        anchors.top: parent.top
-//                                        anchors.bottom: parent.bottom
-////                                        anchors.bottomMargin: 1
-////                                        anchors.topMargin: 1
-////                                        width: 1
-////                                        color: "#ccc"
-//                                    }
-//                                }
-//                            }
-
-//                            QQC1.TableViewColumn {
-//                                role: "status"
-//                                title: "Status"
-//                                width: tabl.width / 3
-//                            }
-//                            QQC1.TableViewColumn {
-//                                role: "statusImg"
-//                                //title: "Image"
-//                                width: tabl.width / 3
-//                            }
-//                            QQC1.TableViewColumn {
-//                                role: "time"
-//                                title: "Time"
-//                                width: tabl.width / 3
-//                            }
-//                            model: packetsModel
-//                            rowDelegate: Rectangle {
-//                                height: 30
-//                                color: "transparent"
-//                            }
-//                            itemDelegate: Item {
-//                                Text {
-////                                    anchors.verticalCenter: parent.verticalCenter
-//                                    color: styleData.textColor
-//                                    elide: styleData.elideMode
-//                                    text: styleData.value
-//                                    font.pixelSize: Style.secondaryFontSize
-//                                    //topPadding: 15
-//                                    //bottomPadding: 15
-//                                }
-//                            }
-//                        }
-// ---
                     }
                 }
 
@@ -656,6 +583,7 @@ ApplicationWindow {
                         IconButton {
                             id: btn_reload
                             source: "qrc:/images/reload.png"
+                            //onClicked: { settings.makeSoundReceived = true; }
                         }
                         IconButton {
                             id: btn_info
@@ -695,17 +623,12 @@ ApplicationWindow {
         }
     }
 
-    MessageDialog {
+    MessageBox {
         id: dialogNoHost
-        icon: StandardIcon.Warning
         title: "No host provided"
-        text: "You haven't provided any host to ping."
-        informativeText: "In order to ping some host, you should provide either its domain name or its IP address."
-        //detailedText: "For example: ya.ru or 87.250.250.242"
-        //standardButtons: StandardButton.Close
-        onAccepted: {
-            this.close();
-        }
+        textHeader: "You haven't provided any host to ping."
+        textMain: "In order to ping some host, you should provide either its domain name or its IP address."
+        source: "/images/warning.png"
     }
 
     Window {
@@ -713,17 +636,53 @@ ApplicationWindow {
         visible: false
         modality: Qt.WindowModal
 
-        width: 500
-        minimumWidth: 500
-        maximumWidth: 500
-        height: 200
-        minimumHeight: 200
-        maximumHeight: 200
+        width: 400
+        minimumWidth: width
+        maximumWidth: width
+        height: 220
+        minimumHeight: height
+        maximumHeight: height
 
-        Button {
-            anchors.centerIn: parent
-            text: "Ok"
-            onClicked: { dialogSettings.close(); }
+        ColumnLayout
+        {
+            anchors.fill: parent
+
+            Column {
+                Layout.leftMargin: 20
+                Layout.rightMargin: 20
+                Text {
+                    text: "Sounds"
+                    font.bold: true
+                }
+                Switch {
+                    id: switchSoundReceived
+                    text: qsTr("packet received")
+                }
+                Switch {
+                    id: switchSoundLost
+                    text: qsTr("packet lost")
+                }
+            }
+
+            Row {
+                Layout.fillWidth: true
+                anchors.bottom: parent.bottom
+                layoutDirection: Qt.RightToLeft
+                spacing: 5
+
+                Button {
+                    text: "Save"
+                    onClicked: {
+                        settings.makeSoundReceived = switchSoundReceived.position;
+                        settings.makeSoundLost = switchSoundLost.position;
+                        dialogSettings.close();
+                    }
+                }
+                Button {
+                    text: "Cancel"
+                    onClicked: { dialogSettings.close(); }
+                }
+            }
         }
     }
 

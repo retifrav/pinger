@@ -1,8 +1,10 @@
 #include "backend.h"
+#include <QApplication>
 
 Backend::Backend()
 {
     timer.setSingleShot(false);
+
     connect(&timer, &QTimer::timeout,this, &Backend::startPing);
 //    connect(&ping, static_cast<void (QProcess::*)(int)>(&QProcess::finished), this, &Backend::pinged);
     connect(&ping, QOverload<int>::of(&QProcess::finished), this, &Backend::pinged);
@@ -33,13 +35,15 @@ void Backend::pinged()
     case 0:
         status = 0;
         effect.setSource(QUrl("qrc:/sounds/done.wav"));
-        makeSound = false;
+        makeSound = settings.value("makeSoundReceived").toBool();
         break;
     case 1:
         status = 1;
+        makeSound = settings.value("makeSoundLost").toBool();
         break;
     default: // 2
 //        qDebug() << rez.second;
+        makeSound = settings.value("makeSoundLost").toBool();
         break;
     }
 

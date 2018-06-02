@@ -4,6 +4,7 @@
         <file>LayoutRegion.qml</file>
         <file>LayoutVertical.qml</file>
         <file>LayoutHorizontal.qml</file>
+        <file>MessageBox.qml</file>
         <file>FormLabel.qml</file>
         <file>HalfRoundedButton.qml</file>
         <file>images/menu.png</file>
@@ -19,5 +20,6 @@
         <file>images/loading.png</file>
         <file>sounds/done.wav</file>
         <file>sounds/error.wav</file>
+        <file>images/warning.png</file>
     </qresource>
 </RCC>
