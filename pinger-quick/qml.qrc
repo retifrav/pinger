@@ -21,5 +21,8 @@
         <file>sounds/done.wav</file>
         <file>sounds/error.wav</file>
         <file>images/warning.png</file>
+        <file>DialogButton.qml</file>
+        <file>DialogText.qml</file>
+        <file>DialogSwitch.qml</file>
     </qresource>
 </RCC>

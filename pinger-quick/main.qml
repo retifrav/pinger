@@ -99,7 +99,7 @@ ApplicationWindow {
     Rectangle {
         id: root
         anchors.fill: parent
-        color: "#263238"
+        color: Styles.mainBackground
 
         RowLayout {
             anchors.fill: parent
@@ -636,51 +636,71 @@ ApplicationWindow {
         visible: false
         modality: Qt.WindowModal
 
-        width: 400
+        width: 350
         minimumWidth: width
         maximumWidth: width
-        height: 220
+        height: 240
         minimumHeight: height
         maximumHeight: height
 
-        ColumnLayout
-        {
+        Rectangle {
             anchors.fill: parent
+            color: Styles.regionBackground
+            border.color: Styles.mainBackground
+            border.width: 3
 
-            Column {
-                Layout.leftMargin: 20
-                Layout.rightMargin: 20
-                Text {
-                    text: "Sounds"
+            ColumnLayout
+            {
+                anchors.fill: parent
+                anchors.topMargin: 15
+                anchors.leftMargin: 20
+                anchors.rightMargin: 15
+                anchors.bottomMargin: 15
+
+                DialogText {
+                    text: "Settings"
+                    font.pixelSize: 20
                     font.bold: true
                 }
-                Switch {
-                    id: switchSoundReceived
-                    text: qsTr("packet received")
-                }
-                Switch {
-                    id: switchSoundLost
-                    text: qsTr("packet lost")
-                }
-            }
 
-            Row {
-                Layout.fillWidth: true
-                anchors.bottom: parent.bottom
-                layoutDirection: Qt.RightToLeft
-                spacing: 5
-
-                Button {
-                    text: "Save"
-                    onClicked: {
-                        settings.makeSoundReceived = switchSoundReceived.position;
-                        settings.makeSoundLost = switchSoundLost.position;
-                        dialogSettings.close();
+                ColumnLayout {
+                    DialogText {
+                        text: "Sounds"
+                        font.bold: true
+                    }
+                    Item { height: 3 }
+                    DialogSwitch {
+                        id: switchSoundReceived
+                        text: qsTr("packet received")
+                    }
+                    DialogSwitch {
+                        id: switchSoundLost
+                        text: qsTr("packet lost")
                     }
                 }
-                Button {
-                    text: "Cancel"
-                    onClicked: { dialogSettings.close(); }
+
+                Row {
+                    Layout.fillWidth: true
+                    anchors.bottom: parent.bottom
+                    layoutDirection: Qt.RightToLeft
+                    spacing: 5
+
+                    DialogButton {
+                        text: "Save"
+                        onClicked: {
+                            settings.makeSoundReceived = switchSoundReceived.checked;
+                            settings.makeSoundLost = switchSoundLost.checked;
+                            dialogSettings.close();
+                        }
+                    }
+                    DialogButton {
+                        text: "Cancel"
+                        onClicked: {
+                            dialogSettings.close();
+                            switchSoundReceived.checked = settings.makeSoundReceived;
+                            switchSoundLost.checked = settings.makeSoundLost;
+                        }
+                    }
                 }
             }
         }

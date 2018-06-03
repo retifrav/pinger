@@ -7,7 +7,7 @@ Rectangle {
 //    Layout.topMargin: 5
 //    Layout.bottomMargin: 5
 //    Layout.fillWidth: true
-    color: "#37474F"
+    color: Styles.regionBackground
     radius: 8
 //    border.color: "gray"
 //    border.width: 1

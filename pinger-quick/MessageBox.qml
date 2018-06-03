@@ -4,6 +4,7 @@ import QtQuick.Controls 2.3
 
 Window {
     id: dialog
+
     property string title
     property string source
     property string textHeader
@@ -19,43 +20,53 @@ Window {
     minimumHeight: height
     maximumHeight: height
 
-    Row
-    {
+    Rectangle {
         anchors.fill: parent
-        anchors.margins: 15
-        spacing: 15
+        color: Styles.regionBackground
+        border.color: Styles.mainBackground
+        border.width: 3
 
-        Image {
-            width: parent.width / 5
-            height: width
-            fillMode: Image.PreserveAspectFit
-            source: dialog.source
-        }
+        Item {
+            anchors.fill: parent
+            anchors.leftMargin: 20
+            anchors.topMargin: 20
+            anchors.rightMargin: 15
+            anchors.bottomMargin: 15
 
-        Column
-        {
-            spacing: 5
+            Row
+            {
+                anchors.fill: parent
+                spacing: 15
 
-            Text {
-                text: dialog.textHeader
-                font.bold: true
-                //font.pixelSize: 16
-                wrapMode: Text.WordWrap
+                Image {
+                    width: parent.width / 5
+                    height: width
+                    fillMode: Image.PreserveAspectFit
+                    source: dialog.source
+                }
+
+                Column
+                {
+                    spacing: 5
+
+                    DialogText {
+                        text: dialog.textHeader
+                        font.bold: true
+                    }
+                    DialogText {
+                        width: parent.width
+                        text: dialog.textMain
+                    }
+                }
             }
-            Text {
-                // anchors.top: dialogNoHostHeader.bottom
-                width: parent.width
-                text: dialog.textMain
-                //font.pixelSize: 14
-                wrapMode: Text.WordWrap
+
+            DialogButton {
+                id: btn
+                anchors.bottom: parent.bottom
+                anchors.right: parent.right
+                text: "Ok"
+                onClicked: { dialog.close(); }
             }
         }
-    }
-
-    Button {
-        anchors.bottom: parent.bottom
-        anchors.right: parent.right
-        text: "Ok"
-        onClicked: { dialog.close(); }
     }
 }
