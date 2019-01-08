@@ -64,8 +64,8 @@ void Backend::pinged()
         maxLatency = (int)(*std::max_element(times->begin(), times->end())),
         diff = calculateAxisAdjusment(maxLatency - minLatency);
 
-    maxLatency += diff * 0.7 - 1;
-    minLatency -= diff * 1.2 - 5; if (minLatency < 0) { minLatency = 0; }
+    maxLatency += diff * 0.8 - 1;
+    minLatency -= diff - 5; if (minLatency < 0) { minLatency = 0; }
 
     delete times;
 
@@ -90,15 +90,15 @@ void Backend::pinged()
 // TODO maybe it can somehow be a bit better than a bunch of if-returns
 int Backend::calculateAxisAdjusment(int diff)
 {
-    if (diff < 30) { return 5; }
-    if (diff < 50) { return 10; }
-    if (diff < 80) { return 15; }
-    if (diff < 100) { return 20; }
-    if (diff < 200) { return 25; }
-    if (diff < 300) { return 30; }
-    if (diff < 400) { return 35; }
-    if (diff < 500) { return 40; }
-    if (diff < 700) { return 45; }
+    if (diff < 15) { return 5; }
+    if (diff < 30) { return 10; }
+    if (diff < 50) { return 15; }
+    if (diff < 80) { return 20; }
+    if (diff < 100) { return 25; }
+    if (diff < 200) { return 30; }
+    if (diff < 300) { return 35; }
+    if (diff < 400) { return 40; }
+    if (diff < 500) { return 45; }
     if (diff < 800) { return 50; }
     return 60;
 }

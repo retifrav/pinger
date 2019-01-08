@@ -17,12 +17,13 @@
         <file>HalfRounded.qml</file>
         <file>FormText.qml</file>
         <file>qmldir</file>
-        <file>images/loading.png</file>
         <file>sounds/done.wav</file>
         <file>sounds/error.wav</file>
         <file>images/warning.png</file>
         <file>DialogButton.qml</file>
         <file>DialogText.qml</file>
         <file>DialogSwitch.qml</file>
+        <file>images/pie.png</file>
+        <file>images/table.png</file>
     </qresource>
 </RCC>

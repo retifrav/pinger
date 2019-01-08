@@ -101,9 +101,8 @@ void PingData::addPacket(QPair<int, QString> pckt)
         }
         else
         {
-            // TODO this should be customizable
-            pckt.second = "1000";
-            lastPacketTime = 1000;
+            lastPacketTime = 0;
+            pckt.second = QString::number(lastPacketTime);
             pcktLost++;
         }
     }

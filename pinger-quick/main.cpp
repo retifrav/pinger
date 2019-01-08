@@ -13,7 +13,12 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
     qmlRegisterType<Backend>("io.decovar.Backend", 1, 0, "Backend");
-    qmlRegisterSingletonType(QUrl("qrc:///styles.qml"), "AppStyle", 1, 0, "Styles");
+    qmlRegisterSingletonType(
+                QUrl(QStringLiteral("qrc:///styles.qml")),
+                "AppStyle",
+                1, 0,
+                "Styles"
+                );
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
     if (engine.rootObjects().isEmpty()) { return -1; }
 

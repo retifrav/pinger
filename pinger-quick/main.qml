@@ -27,6 +27,7 @@ ApplicationWindow {
         property alias width: mainWindow.width
         property alias height: mainWindow.height
 
+        property bool showReport: false
         property bool makeSoundReceived: false
         property bool makeSoundLost: false
     }
@@ -56,9 +57,9 @@ ApplicationWindow {
             }
 
             packetsModel.append({
-                "status":statusVal,
-                "time":time,
-                "packetColor":packetColor
+                "status": statusVal,
+                "time": time,
+                "packetColor": packetColor
             });
             //if (packetsModel.count > queueSize) { packetsModel.remove(0); }
             // TODO improve behaviour for resizing window
@@ -193,6 +194,8 @@ ApplicationWindow {
                                     clearPreviousData();
                                     btn_ping.visible = false;
                                     backend.on_btn_ping_clicked(host.text);
+                                    btn_report.visible = false;
+                                    btn_export.visible = false;
                                 }
                             }
                         }
@@ -215,6 +218,9 @@ ApplicationWindow {
                                 //loading.visible = false;
                                 //loadingAnimation.running = false;
                                 btn_ping.visible = true;
+                                btn_report.visible = true;
+                                btn_export.visible = true;
+                                if (settings.showReport === true) { dialogReport.show(); }
                             }
                         }
                     }
@@ -236,10 +242,10 @@ ApplicationWindow {
                                 text: "Time, ms / Packets"
                             }
 
-                            FormLabel {
-                                anchors.right: parent.right
-                                text: "⋮"
-                            }
+//                            FormLabel {
+//                                anchors.right: parent.right
+//                                text: "⋮"
+//                            }
                         }
 
                         ChartView {
@@ -337,16 +343,19 @@ ApplicationWindow {
                             anchors.fill: parent
 
                             FormLabel {
+                                id: lbl_headerPackets
                                 anchors.left: parent.left
                                 text: "Packets"
                             }
 
                             IconButton {
                                 id: btn_pieChart
-                                anchors.right: lbl_headerPackets.left
+                                anchors.right: parent.right//lbl_headerPackets.left
                                 Layout.preferredWidth: lbl_headerPackets.height
                                 Layout.preferredHeight: lbl_headerPackets.height
-                                source: "qrc:/images/loading.png"
+                                source: packets.visible
+                                        ? "qrc:/images/pie.png"
+                                          : "qrc:/images/table.png"
 
                                 onClicked: {
                                     packets.visible = !packets.visible;
@@ -369,11 +378,11 @@ ApplicationWindow {
 //                                    loops: Animation.Infinite
 //                                }
 //                            }
-                            FormLabel {
-                                id: lbl_headerPackets
-                                anchors.right: parent.right
-                                text: "⋮"
-                            }
+//                            FormLabel {
+//                                id: lbl_headerPackets
+//                                anchors.right: parent.right
+//                                text: "⋮"
+//                            }
                         }
 
                         Item {
@@ -580,18 +589,21 @@ ApplicationWindow {
                             source: "qrc:/images/settings.png"
                             onClicked: { dialogSettings.show(); }
                         }
+//                        IconButton {
+//                            id: btn_reload
+//                            source: "qrc:/images/reload.png"
+//                            //onClicked: { settings.makeSoundReceived = true; }
+//                        }
                         IconButton {
-                            id: btn_reload
-                            source: "qrc:/images/reload.png"
-                            //onClicked: { settings.makeSoundReceived = true; }
-                        }
-                        IconButton {
-                            id: btn_info
+                            id: btn_report
                             source: "qrc:/images/info.png"
+                            onClicked: { dialogReport.show(); }
+                            visible: false
                         }
                         IconButton {
                             id: btn_export
                             source: "qrc:/images/export.png"
+                            visible: false
                         }
                     }
                 }
@@ -636,10 +648,10 @@ ApplicationWindow {
         visible: false
         modality: Qt.WindowModal
 
-        width: 350
+        width: 500
         minimumWidth: width
         maximumWidth: width
-        height: 240
+        height: 300
         minimumHeight: height
         maximumHeight: height
 
@@ -647,7 +659,7 @@ ApplicationWindow {
             anchors.fill: parent
             color: Styles.regionBackground
             border.color: Styles.mainBackground
-            border.width: 3
+            border.width: 2
 
             ColumnLayout
             {
@@ -665,6 +677,19 @@ ApplicationWindow {
 
                 ColumnLayout {
                     DialogText {
+                        text: "General"
+                        font.bold: true
+                    }
+                    Item { height: 3 }
+                    DialogSwitch {
+                        id: switchShowReport
+                        text: qsTr("show report automatically")
+                        checked: settings.showReport
+                    }
+
+                }
+                ColumnLayout {
+                    DialogText {
                         text: "Sounds"
                         font.bold: true
                     }
@@ -672,10 +697,12 @@ ApplicationWindow {
                     DialogSwitch {
                         id: switchSoundReceived
                         text: qsTr("packet received")
+                        checked: settings.makeSoundReceived
                     }
                     DialogSwitch {
                         id: switchSoundLost
                         text: qsTr("packet lost")
+                        checked: settings.makeSoundLost
                     }
                 }
 
@@ -688,6 +715,7 @@ ApplicationWindow {
                     DialogButton {
                         text: "Save"
                         onClicked: {
+                            settings.showReport = switchShowReport.checked;
                             settings.makeSoundReceived = switchSoundReceived.checked;
                             settings.makeSoundLost = switchSoundLost.checked;
                             dialogSettings.close();
@@ -697,8 +725,58 @@ ApplicationWindow {
                         text: "Cancel"
                         onClicked: {
                             dialogSettings.close();
+                            switchShowReport.checked = settings.showReport;
                             switchSoundReceived.checked = settings.makeSoundReceived;
                             switchSoundLost.checked = settings.makeSoundLost;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    Window {
+        id: dialogReport
+        visible: false
+        modality: Qt.WindowModal
+
+        width: 600
+        minimumWidth: width
+        maximumWidth: width
+        height: 300
+        minimumHeight: height
+        maximumHeight: height
+
+        Rectangle {
+            anchors.fill: parent
+            color: Styles.regionBackground
+            border.color: Styles.mainBackground
+            border.width: 2
+
+            ColumnLayout
+            {
+                anchors.fill: parent
+                anchors.topMargin: -15
+                anchors.leftMargin: 20
+                anchors.rightMargin: 15
+                anchors.bottomMargin: 15
+
+                DialogText {
+                    text: "Report"
+                    font.pixelSize: 20
+                    font.bold: true
+                }
+
+                Row {
+                    Layout.fillWidth: true
+                    anchors.bottom: parent.bottom
+                    layoutDirection: Qt.RightToLeft
+                    spacing: 5
+
+                    DialogButton {
+                        text: "Close"
+                        onClicked: {
+                            dialogReport.close();
                         }
                     }
                 }
