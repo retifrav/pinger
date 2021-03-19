@@ -12,7 +12,7 @@ import AppStyle 1.0
 
 ApplicationWindow {
     id: mainWindow
-    visible: true
+    visibility: Window.Maximized
     width: 1100
     minimumWidth: 900
     height: 650
