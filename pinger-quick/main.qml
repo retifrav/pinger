@@ -784,6 +784,11 @@ ApplicationWindow {
         }
     }
 
+    Component.onCompleted: {
+        // start pinging right after launching
+        if (host.text.length !== 0) { btn_ping.clicked(); }
+    }
+
     function clearPreviousData()
     {
         packetsModel.clear();
