@@ -64,6 +64,8 @@ void Backend::pinged()
         maxLatency = (int)(*std::max_element(times->begin(), times->end())),
         diff = calculateAxisAdjusment(maxLatency - minLatency);
 
+    //qDebug() << minLatency << " | " << maxLatency;
+
     maxLatency += diff * 0.8 - 1;
     minLatency -= diff - 5; if (minLatency < 0) { minLatency = 0; }
 

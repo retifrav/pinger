@@ -43,7 +43,24 @@ QList<float>* PingData::get_packetsQueueTimes()
     QList<float> *times = new QList<float>();
     for(const QPair<int, QString>& item : packetsQueue)
     {
-        times->append(item.second.toFloat());
+        // time (delay/latency) is reported differently on differen OSes:
+        //
+        // - Windows: Reply from 87.250.250.242: bytes=32 time=27ms TTL=245
+        // - Linux: 64 bytes from 93.184.216.34: icmp_seq=0 ttl=56 time=11.632 ms
+        // - Mac OS: ?
+        //
+        // So we need to use RegEx to get numerical value. It wil be int,
+        // because fractions of milliseconds are of no interest
+
+        // if RegEx ("[^\\d]+"), then we split and take first
+        //const QStringList parts = item.second.split(timeMSRegEx, Qt::SkipEmptyParts);
+        //times->append(parts[0].toInt());
+
+        if (timeMSRegEx.indexIn(item.second) != -1)
+        {
+            qDebug() << timeMSRegEx.cap(0) << " | " << timeMSRegEx.cap(1);
+            times->append(timeMSRegEx.cap(0).toInt());
+        }
     }
     return times;
 }

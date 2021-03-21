@@ -29,6 +29,8 @@ public:
     // TODO function for generating a report to show to your ISP (txt, html, pdf)
     //QString generateReport(int reportFormat);
 
+    const QRegExp timeMSRegEx = QRegExp("^[\\d]+");
+
 private:
     int pcktLost;
     int pcktReceived;
