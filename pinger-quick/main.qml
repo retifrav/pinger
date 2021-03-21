@@ -12,6 +12,8 @@ import AppStyle 1.0
 
 ApplicationWindow {
     id: mainWindow
+    // QTBUG-35244: both `visible` and `visibility` need to be set
+    visible: true
     visibility: Window.Maximized
     width: 1100
     minimumWidth: 900
