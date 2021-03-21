@@ -66,7 +66,7 @@ ApplicationWindow {
             packets.positionViewAtEnd();
             //if (packets.contentHeight > packets.height) { packetsModel.remove(0); }
 
-            avgTime.text = averageTime + " ms";
+            avgTime.text = averageTime;
 
             percentageLost.text = lostPercentage;
             percentageReceived.text = receivedPercentage;
@@ -74,13 +74,17 @@ ApplicationWindow {
             packetsReceived.text = pieReceived.value = receivedPackets;
 
             if (lostPackets > receivedPackets)
-                { glowPacketsPieChart.color = Styles.colorLost; }
+            {
+                glowPacketsPieChart.color = Styles.colorLost;
+            }
             else
-                { glowPacketsPieChart.color = Styles.colorReceived; }
+            {
+                glowPacketsPieChart.color = Styles.colorReceived;
+            }
 
+            //console.log(minAxisY + " | " + maxAxisY);
             chartSeriesLatencyAxisY.min = minAxisY;
             chartSeriesLatencyAxisY.max = maxAxisY;
-//            console.log(minAxisY + " | " + maxAxisY);
 
             // TODO this value should not be hardcoded
             if (seriesLatency.count > 49)
@@ -521,7 +525,7 @@ ApplicationWindow {
 
                             FormText {
                                 id: avgTime;
-                                text: "0 ms";
+                                text: "0";
                             }
                             FormText { text: "|"; }
                             FormText {

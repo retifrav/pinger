@@ -2,7 +2,6 @@
 #define PINGDATA_H
 
 #include "QQueue"
-#include "QDebug"
 
 class PingData
 {
@@ -19,7 +18,7 @@ public:
     float get_lostPercentage();
     float get_receivedPercentage();
     int get_packetsQueueSize();
-    QList<float>* get_packetsQueueTimes();
+    QList<int> *get_packetsQueueTimes();
     float get_lastPacketTime();
     float get_avgTime();
     QQueue< QPair<int, QString> > get_packets();
@@ -29,8 +28,6 @@ public:
     // TODO function for generating a report to show to your ISP (txt, html, pdf)
     //QString generateReport(int reportFormat);
 
-    const QRegExp timeMSRegEx = QRegExp("^[\\d]+");
-
 private:
     int pcktLost;
     int pcktReceived;
@@ -38,7 +35,7 @@ private:
     int packetsQueueSize;
     float avgTime;
     float lastPacketTime;
-    float totalTime;
+    int totalTime;
     QQueue< QPair<int, QString> > packetsQueue;
 
     void resizePacketsQueue(int newQueueSize);

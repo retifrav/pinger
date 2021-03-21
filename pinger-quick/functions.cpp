@@ -19,7 +19,7 @@ QStringList getArgs4ping()
 
 QPair<int, QString> parsePingOutput(int pingExitCode, QString pingOutput)
 {
-//    qDebug() << "- - -\n" << pingExitCode << "|" << pingOutput << "\n- - -";
+    //qDebug() << "- - -\n" << pingExitCode << "|" << pingOutput << "\n- - -";
 
     QPair<int, QString> rez(2, "");
 
@@ -29,35 +29,12 @@ QPair<int, QString> parsePingOutput(int pingExitCode, QString pingOutput)
         //qDebug() << "[windows]";
         if (pingExitCode == 0)
         {
-            /* old version
-            QRegularExpression re("time(=|<)\\d+\\w+|Lost = \\d+");
-            QRegularExpressionMatchIterator i = re.globalMatch(pingOutput);
-            if (i.hasNext())
-            {
-                latency = i.next().captured().replace("time=", "").replace("time<", "");
-                //qDebug() << "latency:" << latency;
-//                lost = i.next().captured().replace("Lost = ", "");
-                //qDebug() << "lost:" << lost;
-//                if (lost == "0") // it's always 0 here
-//                {
-                    rez.first = 0;
-                    rez.second = latency;
-//                }
-//                else
-//                {
-//                    qDebug() << "TRULLY LOST";
-//                    rez.first = 1;
-//                }
-            }
-            */
-            QRegularExpression re("(?:time(?:=|<))(\\d+\\w+)");
-            QRegularExpressionMatch match = re.match(pingOutput);
+            QRegularExpressionMatch match = timeRegEx.match(pingOutput);
             if (match.hasMatch())
             {
-                latency = match.captured(1);
-                //qDebug() << "latency:" << latency;
-                rez.first = 0;
-                rez.second = latency;
+                rez.second = QString("%1 %2")
+                    .arg(match.captured(1))
+                    .arg(match.captured(2));
             }
             else
             {
@@ -67,8 +44,7 @@ QPair<int, QString> parsePingOutput(int pingExitCode, QString pingOutput)
         }
         else
         {
-            QRegularExpression re("(?:bytes of data:\r\n)(.*)\\.\r\n");
-            QRegularExpressionMatch match = re.match(pingOutput);
+            QRegularExpressionMatch match = errorRegEx.match(pingOutput);
             if (match.hasMatch())
             {
                 error = match.captured(1);
@@ -93,13 +69,16 @@ QPair<int, QString> parsePingOutput(int pingExitCode, QString pingOutput)
         case 0:
         {
             rez.first = 0;
-            QRegularExpression re("time=\\d+\\.\\d+ \\w+");
-            QRegularExpressionMatch match = re.match(pingOutput);
+            QRegularExpressionMatch match = timeRegEx.match(pingOutput);
             if (match.hasMatch())
             {
-                latency = match.captured().replace("time=", "");
-                //qDebug() << "latency:" << latency;
-                rez.second = latency;
+                rez.second = QString("%1 %2")
+                    .arg(match.captured(1))
+                    .arg(match.captured(2));
+            }
+            else
+            {
+                rez.second = "0 ms";
             }
             break;
         }
@@ -114,4 +93,15 @@ QPair<int, QString> parsePingOutput(int pingExitCode, QString pingOutput)
     #endif
 
     return rez;
+}
+
+int parseLatency(QString latencyStr)
+{
+    QRegularExpressionMatch match = timeMSRegEx.match(latencyStr);
+    if (match.hasMatch())
+    {
+        //qDebug() << timeMSRegEx.cap(0);
+        return match.captured(0).toInt();
+    }
+    else { return 0; }
 }

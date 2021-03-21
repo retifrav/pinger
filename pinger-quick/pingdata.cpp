@@ -1,3 +1,6 @@
+#include "QDebug"
+
+#include "functions.h"
 #include "pingdata.h"
 
 PingData::PingData()
@@ -13,7 +16,7 @@ void PingData::resetEverything()
     //TODO this should be customizable
     packetsQueueSize = 50;
     totalTime = 0;
-    avgTime = 0;
+    avgTime = 0.0;
 
     packetsQueue.clear();
 }
@@ -38,29 +41,12 @@ int PingData::get_pcktReceived() { return pcktReceived; }
 int PingData::get_pcktSent() { return pcktSent; }
 int PingData::get_packetsQueueSize() { return packetsQueueSize; }
 
-QList<float>* PingData::get_packetsQueueTimes()
+QList<int> *PingData::get_packetsQueueTimes()
 {
-    QList<float> *times = new QList<float>();
-    for(const QPair<int, QString>& item : packetsQueue)
+    QList<int> *times = new QList<int>();
+    for(const QPair<int, QString> &item : packetsQueue)
     {
-        // time (delay/latency) is reported differently on differen OSes:
-        //
-        // - Windows: Reply from 87.250.250.242: bytes=32 time=27ms TTL=245
-        // - Linux: 64 bytes from 93.184.216.34: icmp_seq=0 ttl=56 time=11.632 ms
-        // - Mac OS: ?
-        //
-        // So we need to use RegEx to get numerical value. It wil be int,
-        // because fractions of milliseconds are of no interest
-
-        // if RegEx ("[^\\d]+"), then we split and take first
-        //const QStringList parts = item.second.split(timeMSRegEx, Qt::SkipEmptyParts);
-        //times->append(parts[0].toInt());
-
-        if (timeMSRegEx.indexIn(item.second) != -1)
-        {
-            qDebug() << timeMSRegEx.cap(0) << " | " << timeMSRegEx.cap(1);
-            times->append(timeMSRegEx.cap(0).toInt());
-        }
+        times->append(parseLatency(item.second));
     }
     return times;
 }
@@ -107,14 +93,9 @@ void PingData::addPacket(QPair<int, QString> pckt)
         if (pckt.first == 0)
         {
             pcktReceived++;
-            bool conversionResult = true;
-            float tmp = pckt.second.replace(" ms", QString()).toFloat(&conversionResult);
-            lastPacketTime = tmp;
-            if (conversionResult)
-            {
-                totalTime += tmp;
-                avgTime = totalTime / pcktReceived;
-            }
+
+            totalTime += parseLatency(pckt.second);
+            avgTime = totalTime / static_cast<float>(pcktReceived);
         }
         else
         {

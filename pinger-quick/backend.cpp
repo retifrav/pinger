@@ -6,20 +6,20 @@ Backend::Backend()
     timer.setSingleShot(false);
 
     connect(&timer, &QTimer::timeout,this, &Backend::startPing);
-//    connect(&ping, static_cast<void (QProcess::*)(int)>(&QProcess::finished), this, &Backend::pinged);
+    //connect(&ping, static_cast<void (QProcess::*)(int)>(&QProcess::finished), this, &Backend::pinged);
     connect(&ping, QOverload<int>::of(&QProcess::finished), this, &Backend::pinged);
 }
 
 void Backend::pinged()
 {
     // if ping process was killed, do nothing
-//    qDebug() << "code:" << ping.exitCode() << "status:" << ping.exitStatus();
+    //qDebug() << "code:" << ping.exitCode() << "status:" << ping.exitStatus();
     if (ping.exitStatus() == 1) { return; }
 
     effect.setSource(QUrl("qrc:/sounds/error.wav"));
     bool makeSound = true;
 
-//    qDebug() << ping.exitCode();
+    //qDebug() << ping.exitCode();
 
     QPair<int, QString> pckt = parsePingOutput(
                 ping.exitCode(),
@@ -42,7 +42,7 @@ void Backend::pinged()
         makeSound = settings.value("makeSoundLost").toBool();
         break;
     default: // 2
-//        qDebug() << rez.second;
+        //qDebug() << rez.second;
         makeSound = settings.value("makeSoundLost").toBool();
         break;
     }
@@ -57,52 +57,30 @@ void Backend::pinged()
 
     if (makeSound) { effect.play(); }
 
-    // min latency value
-    QList<float> *times = pingData.get_packetsQueueTimes();
-
-    int minLatency = (int)(*std::min_element(times->begin(), times->end())),
-        maxLatency = (int)(*std::max_element(times->begin(), times->end())),
-        diff = calculateAxisAdjusment(maxLatency - minLatency);
-
+    // min/max latency value
+    QList<int> *times = pingData.get_packetsQueueTimes();
+    int minLatency = *std::min_element(times->begin(), times->end()),
+        maxLatency = *std::max_element(times->begin(), times->end());
     //qDebug() << minLatency << " | " << maxLatency;
-
-    maxLatency += diff * 0.8 - 1;
-    minLatency -= diff - 5; if (minLatency < 0) { minLatency = 0; }
-
+    maxLatency += 5;
+    minLatency -= 5; if (minLatency < 0) { minLatency = 0; }
     delete times;
 
-//    qDebug() << pckt.first << " | " << pckt.second;
+    //qDebug() << pckt.first << " | " << pckt.second;
     emit gotPingResults(
-                status,
-                pckt.second,
-                pingData.get_packetsQueueSize(),
-                //QString("%1 ms").arg(QString::number(pingData.get_avgTime(), 'g', 5)),
-                QString::number(pingData.get_avgTime(), 'g', 5),
-                lostPercentage,
-                receivedPercentage,
-                pingData.get_pcktLost(),
-                pingData.get_pcktReceived(),
-                pingData.get_pcktSent(),
-                pingData.get_lastPacketTime(),
-                minLatency,
-                maxLatency
-                );
-}
-
-// TODO maybe it can somehow be a bit better than a bunch of if-returns
-int Backend::calculateAxisAdjusment(int diff)
-{
-    if (diff < 15) { return 5; }
-    if (diff < 30) { return 10; }
-    if (diff < 50) { return 15; }
-    if (diff < 80) { return 20; }
-    if (diff < 100) { return 25; }
-    if (diff < 200) { return 30; }
-    if (diff < 300) { return 35; }
-    if (diff < 400) { return 40; }
-    if (diff < 500) { return 45; }
-    if (diff < 800) { return 50; }
-    return 60;
+        status,
+        pckt.second,
+        pingData.get_packetsQueueSize(),
+        QString::number(pingData.get_avgTime(), 'g', 5),
+        lostPercentage,
+        receivedPercentage,
+        pingData.get_pcktLost(),
+        pingData.get_pcktReceived(),
+        pingData.get_pcktSent(),
+        pingData.get_lastPacketTime(),
+        minLatency,
+        maxLatency
+    );
 }
 
 void Backend::startPing()
