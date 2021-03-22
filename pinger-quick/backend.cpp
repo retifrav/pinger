@@ -26,19 +26,20 @@ void Backend::pinged()
                 ping.readAllStandardOutput()
                 );
 
+    if (pckt.first != 0)
+    {
+        emit gotError(pckt.second);
+        pckt.second = "-";
+    }
     pingData.addPacket(pckt);
-
-    int status = 2;
 
     switch (pckt.first)
     {
     case 0:
-        status = 0;
         effect.setSource(QUrl("qrc:/sounds/done.wav"));
         makeSound = settings.value("makeSoundReceived").toBool();
         break;
     case 1:
-        status = 1;
         makeSound = settings.value("makeSoundLost").toBool();
         break;
     default: // 2
@@ -68,7 +69,7 @@ void Backend::pinged()
 
     //qDebug() << pckt.first << " | " << pckt.second;
     emit gotPingResults(
-        status,
+        pckt.first,
         pckt.second,
         pingData.get_packetsQueueSize(),
         QString::number(pingData.get_avgTime(), 'g', 5),

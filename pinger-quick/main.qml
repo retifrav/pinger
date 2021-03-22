@@ -44,7 +44,7 @@ ApplicationWindow {
         id: backend
 
         onGotPingResults: {
-            var statusVal = "error";
+            var statusVal = "Error";
             var packetColor = Styles.colorError;
             switch (status)
             {
@@ -100,6 +100,10 @@ ApplicationWindow {
 
             //console.log(totalPackets);
             //console.log(lastPacketTime);
+        }
+
+        onGotError: {
+            console.error(errorMessage.trim());
         }
     }
 
@@ -443,10 +447,10 @@ ApplicationWindow {
                                 }
                                 Glow {
                                     anchors.fill: packetStatus
-                                    radius: 20
+                                    radius: 10
                                     samples: 20
                                     color: packetStatus.color
-                                    spread: 0.1
+                                    spread: 0
                                     source: packetStatus
                                 }
                                 FormText {

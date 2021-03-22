@@ -30,6 +30,7 @@ signals:
             int minAxisY,
             int maxAxisY
             );
+    void gotError(QString errorMessage);
 
 public slots:
     void on_btn_ping_clicked(QString host);

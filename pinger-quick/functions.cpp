@@ -21,7 +21,7 @@ QPair<int, QString> parsePingOutput(int pingExitCode, QString pingOutput)
 {
     //qDebug() << "- - -\n" << pingExitCode << "|" << pingOutput << "\n- - -";
 
-    QPair<int, QString> rez(2, "");
+    QPair<int, QString> rez(2, "Unknown error");
 
     QString latency, /*lost,*/ error;
 
@@ -32,6 +32,7 @@ QPair<int, QString> parsePingOutput(int pingExitCode, QString pingOutput)
             QRegularExpressionMatch match = timeRegEx.match(pingOutput);
             if (match.hasMatch())
             {
+                rez.first = 0;
                 rez.second = QString("%1 %2")
                     .arg(match.captured(1))
                     .arg(match.captured(2));
