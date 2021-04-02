@@ -81,7 +81,7 @@ void Backend::pinged(int exitCode, QProcess::ExitStatus exitStatus)
         pckt.first,
         pckt.second,
         pingData.get_packetsQueueSize(),
-        QString::number(pingData.get_avgTime(), 'g', 5),
+        QString::number(pingData.get_avgTime(), 'g', 4),
         lostPercentage,
         receivedPercentage,
         pingData.get_pcktLost(),

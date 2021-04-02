@@ -94,7 +94,8 @@ void PingData::addPacket(QPair<int, QString> pckt)
         {
             pcktReceived++;
 
-            totalTime += parseLatency(pckt.second);
+            lastPacketTime = parseLatency(pckt.second);
+            totalTime += lastPacketTime;
             avgTime = totalTime / static_cast<float>(pcktReceived);
         }
         else

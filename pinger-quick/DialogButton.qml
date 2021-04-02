@@ -16,6 +16,6 @@ Button {
 
     background: Rectangle {
         color: down ? Styles.labelsColorDarker : Styles.labelsColor
-        radius: 8
+        radius: 3
     }
 }

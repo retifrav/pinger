@@ -6,13 +6,6 @@ import QtQuick.Layouts 1.3
 Button {
     id: control
 
-    anchors.right: parent.right
-    anchors.verticalCenter: parent.verticalCenter
-
-    Layout.preferredWidth: parent.width * 0.25
-    Layout.maximumWidth: 200
-    Layout.preferredHeight: parent.height// * 0.55
-
     leftPadding: padding + 10
     topPadding: padding + 10
     rightPadding: padding + 10

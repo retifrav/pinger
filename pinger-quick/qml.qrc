@@ -25,5 +25,6 @@
         <file>DialogSwitch.qml</file>
         <file>images/pie.png</file>
         <file>images/table.png</file>
+        <file>FormLabelHeader.qml</file>
     </qresource>
 </RCC>

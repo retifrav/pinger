@@ -68,7 +68,7 @@ ApplicationWindow {
             packets.positionViewAtEnd();
             //if (packets.contentHeight > packets.height) { packetsModel.remove(0); }
 
-            avgTime.text = averageTime;
+            avgTime.text = `~${averageTime} ms`;
 
             percentageLost.text = lostPercentage;
             percentageReceived.text = receivedPercentage;
@@ -131,7 +131,7 @@ ApplicationWindow {
                         //spacing: 15
                         anchors.leftMargin: 20
 
-                        FormLabel {
+                        FormLabelHeader {
                             //anchors.verticalCenter: parent.verticalCenter
                             //Layout.alignment: Qt.AlignVCenter
                             text: "Host"
@@ -184,6 +184,11 @@ ApplicationWindow {
 
                         HalfRoundedButton {
                             id: btn_ping
+
+                            Layout.preferredWidth: parent.width * 0.25
+                            Layout.maximumWidth: 200
+                            Layout.preferredHeight: parent.height
+
                             Text {
                                 text: "PING"
                                 font.pixelSize: Styles.secondaryFontSize
@@ -209,10 +214,17 @@ ApplicationWindow {
                                 }
                             }
                         }
+
                         HalfRoundedButton {
                             id: btn_stop
+
+                            Layout.preferredWidth: parent.width * 0.25
+                            Layout.maximumWidth: 200
+                            Layout.preferredHeight: parent.height
+
                             color: Styles.colorLost//buttonDown ? "#CC817E" : "#E57373"
                             //colorGlow: buttonDown ? "#CC817E" : "#E57373"
+
                             Text {
                                 text: "STOP"
                                 font.pixelSize: Styles.secondaryFontSize
@@ -245,17 +257,18 @@ ApplicationWindow {
                         anchors.margins: 20
 
                         LayoutHorizontal {
-                            anchors.fill: parent
 
-                            FormLabel {
-                                anchors.left: parent.left
-                                text: "Time, ms / Packets"
+                            FormLabelHeader {
+                                text: "Time / Packets"
                             }
 
-//                            FormLabel {
-//                                anchors.right: parent.right
-//                                text: "⋮"
-//                            }
+                            /*
+                            Item { Layout.fillWidth: true }
+
+                            FormLabel {
+                                text: "⋮"
+                            }
+                            */
                         }
 
                         ChartView {
@@ -350,22 +363,21 @@ ApplicationWindow {
                         anchors.margins: 20
 
                         LayoutHorizontal {
-                            anchors.fill: parent
 
-                            FormLabel {
+                            FormLabelHeader {
                                 id: lbl_headerPackets
-                                anchors.left: parent.left
                                 text: "Packets"
                             }
 
+                            Item { Layout.fillWidth: true }
+
                             IconButton {
                                 id: btn_pieChart
-                                anchors.right: parent.right//lbl_headerPackets.left
                                 Layout.preferredWidth: lbl_headerPackets.height
                                 Layout.preferredHeight: lbl_headerPackets.height
                                 source: packets.visible
                                         ? "qrc:/images/pie.png"
-                                          : "qrc:/images/table.png"
+                                        : "qrc:/images/table.png"
 
                                 onClicked: {
                                     packets.visible = !packets.visible;
@@ -411,6 +423,7 @@ ApplicationWindow {
                         }
                         Rectangle {
                             Layout.fillWidth: true
+                            Layout.topMargin: 3
                             height: 3
                             color: Styles.labelsColor
                         }
@@ -432,7 +445,7 @@ ApplicationWindow {
 
                             delegate: Item {
                                 height: 30
-                                width: parent.width
+                                width: parent !== null ? parent.width : 0
                                 FormText {
                                     anchors.left: parent.left
                                     text: status
@@ -517,15 +530,15 @@ ApplicationWindow {
 
                         Rectangle {
                             Layout.fillWidth: true
-                            anchors.bottom: statsNumbers.top
-                            anchors.bottomMargin: 10
+                            Layout.topMargin: 7
                             height: 3
                             color: Styles.labelsColor
                         }
+
                         Row {
                             id: statsNumbers
+                            Layout.topMargin: -10
                             Layout.fillWidth: true
-                            anchors.bottom: parent.bottom
                             layoutDirection: Qt.RightToLeft
                             spacing: 5
 
@@ -674,8 +687,8 @@ ApplicationWindow {
             ColumnLayout
             {
                 anchors.fill: parent
-                anchors.topMargin: 15
                 anchors.leftMargin: 20
+                anchors.topMargin: 15
                 anchors.rightMargin: 15
                 anchors.bottomMargin: 15
 
@@ -716,9 +729,10 @@ ApplicationWindow {
                     }
                 }
 
+                Item { Layout.fillHeight: true }
+
                 Row {
                     Layout.fillWidth: true
-                    anchors.bottom: parent.bottom
                     layoutDirection: Qt.RightToLeft
                     spacing: 5
 
@@ -766,8 +780,8 @@ ApplicationWindow {
             ColumnLayout
             {
                 anchors.fill: parent
-                anchors.topMargin: -15
                 anchors.leftMargin: 20
+                anchors.topMargin: 15
                 anchors.rightMargin: 15
                 anchors.bottomMargin: 15
 
@@ -777,9 +791,10 @@ ApplicationWindow {
                     font.bold: true
                 }
 
+                Item { Layout.fillHeight: true }
+
                 Row {
                     Layout.fillWidth: true
-                    anchors.bottom: parent.bottom
                     layoutDirection: Qt.RightToLeft
                     spacing: 5
 
