@@ -6,15 +6,24 @@ Backend::Backend()
     timer.setSingleShot(false);
 
     connect(&timer, &QTimer::timeout,this, &Backend::startPing);
-    //connect(&ping, static_cast<void (QProcess::*)(int)>(&QProcess::finished), this, &Backend::pinged);
-    connect(&ping, QOverload<int>::of(&QProcess::finished), this, &Backend::pinged);
+    connect(
+        &ping, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
+        //[=](int exitCode, QProcess::ExitStatus exitStatus){ pinged(exitCode, exitStatus); });
+        this, &Backend::pinged
+    );
 }
 
-void Backend::pinged()
+void Backend::pinged(int exitCode, QProcess::ExitStatus exitStatus)
 {
+    //qDebug() << "Exit code:" << exitCode << " | status:" << exitStatus;
+
     // if ping process was killed, do nothing
-    //qDebug() << "code:" << ping.exitCode() << "status:" << ping.exitStatus();
-    if (ping.exitStatus() == 1) { return; }
+    if (exitStatus != QProcess::NormalExit)
+    {
+        qWarning() << "Ping process did not exit normally. Code:" << exitCode
+                   << "| status" << exitStatus;
+        return;
+    }
 
     effect.setSource(QUrl("qrc:/sounds/error.wav"));
     bool makeSound = true;
@@ -150,5 +159,5 @@ void Backend::closeEvent()
 //        settings->setValue("window/height", this->height());
 //    }
 
-    qInfo() << "Application closed";// << close;
+    qInfo() << "Application closed";
 }

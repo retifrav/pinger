@@ -35,7 +35,7 @@ signals:
 public slots:
     void on_btn_ping_clicked(QString host);
     void on_btn_stop_clicked();
-    void pinged();
+    void pinged(int exitCode, QProcess::ExitStatus exitStatus);
     void startPing();
     // just in case overriding the close event to kill the pinging process
     void closeEvent();
