@@ -105,6 +105,20 @@ void Backend::startPing()
     }
 }
 
+QJsonObject Backend::getPingData()
+{
+    QJsonObject results
+    {
+        {"Sent", pingData.get_pcktSent()},
+        {"Received", pingData.get_pcktReceived()},
+        {"ReceivedPercent", pingData.get_receivedPercentage()},
+        {"Lost", pingData.get_pcktLost()},
+        {"LostPercent", pingData.get_lostPercentage()},
+        {"AvgLatency", pingData.get_avgTime()}
+    };
+    return results;
+}
+
 void Backend::on_btn_ping_clicked(QString host)
 {
 //    ui->btn_stop->setVisible(true);

@@ -44,8 +44,8 @@ ApplicationWindow {
         id: backend
 
         onGotPingResults: {
-            var statusVal = "Error";
-            var packetColor = Styles.colorError;
+            let statusVal = "Error";
+            let packetColor = Styles.colorError;
             switch (status)
             {
             case 0:
@@ -242,6 +242,11 @@ ApplicationWindow {
                                 btn_ping.visible = true;
                                 btn_report.visible = true;
                                 btn_export.visible = true;
+
+                                let results = backend.getPingData();
+                                totalPacketsSent.text = results.Sent;
+                                totalPacketsReceived.text = results.Received;
+                                totalPacketsLost.text = results.Lost;
                                 if (settings.showReport === true) { dialogReport.show(); }
                             }
                         }
@@ -410,7 +415,7 @@ ApplicationWindow {
                         Item {
                             id: statsHeader
                             Layout.fillWidth: true
-                            Layout.topMargin: 15
+                            Layout.topMargin: Styles.dialogBlockTopMargin
 
                             FormText {
                                 anchors.left: parent.left
@@ -682,23 +687,24 @@ ApplicationWindow {
             anchors.fill: parent
             color: Styles.regionBackground
             border.color: Styles.mainBackground
-            border.width: 2
+            border.width: Styles.dialogBorderWidth
 
             ColumnLayout
             {
                 anchors.fill: parent
-                anchors.leftMargin: 20
-                anchors.topMargin: 15
-                anchors.rightMargin: 15
-                anchors.bottomMargin: 15
+                anchors.leftMargin: Styles.dialogPaddingLeft
+                anchors.topMargin: Styles.dialogPaddingTop
+                anchors.rightMargin: Styles.dialogPaddingRight
+                anchors.bottomMargin: Styles.dialogPaddingBottom
 
                 DialogText {
                     text: "Settings"
-                    font.pixelSize: 20
+                    font.pixelSize: Styles.dialogHeaderFontSize
                     font.bold: true
                 }
 
                 ColumnLayout {
+                    Layout.topMargin: Styles.dialogBlockTopMargin
                     DialogText {
                         text: "General"
                         font.bold: true
@@ -711,7 +717,9 @@ ApplicationWindow {
                     }
 
                 }
+
                 ColumnLayout {
+                    Layout.topMargin: Styles.dialogBlockTopMargin
                     DialogText {
                         text: "Sounds"
                         font.bold: true
@@ -764,7 +772,7 @@ ApplicationWindow {
         visible: false
         modality: Qt.WindowModal
 
-        width: 600
+        width: 500
         minimumWidth: width
         maximumWidth: width
         height: 300
@@ -775,23 +783,67 @@ ApplicationWindow {
             anchors.fill: parent
             color: Styles.regionBackground
             border.color: Styles.mainBackground
-            border.width: 2
+            border.width: Styles.dialogBorderWidth
 
             ColumnLayout
             {
                 anchors.fill: parent
-                anchors.leftMargin: 20
-                anchors.topMargin: 15
-                anchors.rightMargin: 15
-                anchors.bottomMargin: 15
+                anchors.leftMargin: Styles.dialogPaddingLeft
+                anchors.topMargin: Styles.dialogPaddingTop
+                anchors.rightMargin: Styles.dialogPaddingRight
+                anchors.bottomMargin: Styles.dialogPaddingBottom
 
                 DialogText {
                     text: "Report"
-                    font.pixelSize: 20
+                    font.pixelSize: Styles.dialogHeaderFontSize
                     font.bold: true
                 }
 
-                Item { Layout.fillHeight: true }
+                ColumnLayout {
+                    Layout.fillHeight: true
+                    Layout.topMargin: 15
+                    spacing: 5
+
+                    Row {
+                        spacing: Styles.dialogRowSpacing
+                        DialogText {
+                            text: "Total packets sent:"
+                        }
+                        DialogText {
+                            id: totalPacketsSent
+                            text: "0"
+                            font.bold: true
+                        }
+                    }
+
+                    Row {
+                        spacing: Styles.dialogRowSpacing
+                        DialogText {
+                            text: "Total packets received:"
+                        }
+                        DialogText {
+                            id: totalPacketsReceived
+                            text: "0"
+                            font.bold: true
+                        }
+                    }
+
+                    Row {
+                        spacing: Styles.dialogRowSpacing
+                        DialogText {
+                            text: "Total packets lost:"
+                        }
+                        DialogText {
+                            id: totalPacketsLost
+                            text: "0"
+                            font.bold: true
+                        }
+                    }
+
+                    Item {
+                        Layout.fillHeight: true
+                    }
+                }
 
                 Row {
                     Layout.fillWidth: true

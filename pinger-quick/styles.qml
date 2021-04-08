@@ -3,8 +3,12 @@ import QtQuick 2.10
 //import QtQuick.Window 2.10
 
 Item {
+    // fonts
+
     property int primaryFontSize: 22 /// Screen.pixelDensity * Screen.devicePixelRatio
     property int secondaryFontSize: 20 /// Screen.pixelDensity * Screen.devicePixelRatio
+
+    // colors
 
     property string mainBackground: "#263238"
     property string regionBackground: "#37474F"
@@ -16,4 +20,18 @@ Item {
     property string colorReceived: "#81C784" // 0
     property string colorLost: "#E57373" // 1
     property string colorError: "#CFE573" // 2
+
+    // dialogs
+
+    property int dialogBorderWidth: 2
+    property int dialogPaddingLeft: 20
+    property int dialogPaddingTop: 20
+    property int dialogPaddingRight: 15
+    property int dialogPaddingBottom: 15
+
+    property int dialogHeaderFontSize: 25
+    property int dialogTextFontSize: 14
+
+    property int dialogBlockTopMargin: 15
+    property int dialogRowSpacing: 3
 }

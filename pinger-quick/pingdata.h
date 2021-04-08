@@ -36,7 +36,7 @@ private:
     float avgTime;
     float lastPacketTime;
     int totalTime;
-    QQueue< QPair<int, QString> > packetsQueue;
+    QQueue<QPair<int, QString>> packetsQueue;
 
     void resizePacketsQueue(int newQueueSize);
 };
