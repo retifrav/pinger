@@ -26,5 +26,6 @@
         <file>images/pie.png</file>
         <file>images/table.png</file>
         <file>FormLabelHeader.qml</file>
+        <file>images/log.png</file>
     </qresource>
 </RCC>

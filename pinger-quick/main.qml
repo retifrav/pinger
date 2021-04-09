@@ -1,10 +1,10 @@
-import QtQuick 2.10
-import QtQuick.Window 2.10
-import QtQuick.Controls 2.3
-import QtQuick.Layouts 1.3
-import QtGraphicalEffects 1.0
-import QtCharts 2.2
-import Qt.labs.settings 1.0
+import QtQuick 2.15
+import QtQuick.Window 2.15
+import QtQuick.Controls 2.15
+import QtQuick.Layouts 1.15
+import QtGraphicalEffects 1.15
+import QtCharts 2.15
+import Qt.labs.settings 1.1
 //import QtQuick.Controls 1.4 as QQC1
 //import QtQuick.Controls.Styles 1.4 as QQC1S
 import io.decovar.Backend 1.0
@@ -103,7 +103,36 @@ ApplicationWindow {
         }
 
         onGotError: {
-            console.error(errorMessage.trim());
+            //console.error(errorMessage.trim());
+            addToLog(errorMessage.trim());
+        }
+    }
+
+    Drawer {
+        id: drawer
+        edge: Qt.BottomEdge
+        width: root.width
+        height: root.height / 3
+
+        Rectangle {
+            anchors.fill: parent
+            color: Styles.regionBackground
+            border.color: Styles.mainBackground
+
+            ScrollView {
+                anchors.fill: parent
+                anchors.margins: 5
+
+                TextArea {
+                    id: applicationConsole
+                    readOnly: true
+                    font.family: "Courier New"
+                    font.pixelSize: 16
+                    color: Styles.buttonsTextColor
+                    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                    selectByMouse: true
+                }
+            }
         }
     }
 
@@ -211,6 +240,7 @@ ApplicationWindow {
                                     backend.on_btn_ping_clicked(host.text);
                                     btn_report.visible = false;
                                     btn_export.visible = false;
+                                    packets.visible = true;
                                 }
                             }
                         }
@@ -242,6 +272,8 @@ ApplicationWindow {
                                 btn_ping.visible = true;
                                 btn_report.visible = true;
                                 btn_export.visible = true;
+
+                                packets.visible = false;
 
                                 let results = backend.getPingData();
                                 totalPacketsSent.text = results.Sent;
@@ -633,6 +665,11 @@ ApplicationWindow {
                             source: "qrc:/images/export.png"
                             visible: false
                         }
+                        IconButton {
+                            id: btn_log
+                            source: "qrc:/images/log.png"
+                            onClicked: { drawer.open(); }
+                        }
                     }
                 }
             }
@@ -666,9 +703,9 @@ ApplicationWindow {
     MessageBox {
         id: dialogNoHost
         title: "No host provided"
-        textHeader: "You haven't provided any host to ping."
-        textMain: "In order to ping some host, you should provide either its domain name or its IP address."
-        source: "/images/warning.png"
+        textHeader: title
+        textMain: "In order to ping some host, you need to provide either its domain name or its IP address"
+        statusImage: "/images/warning.png"
     }
 
     Window {
@@ -721,6 +758,7 @@ ApplicationWindow {
 
                 ColumnLayout {
                     Layout.fillWidth: true
+                    Layout.topMargin: Styles.dialogSectionTopMargin
                     DialogText {
                         Layout.bottomMargin: Styles.dialogSubHeaderBottomMargin
                         text: "Sounds"
@@ -902,5 +940,12 @@ ApplicationWindow {
         { percentageReceived.visible = false; }
         else
         { percentageReceived.visible = true; }
+    }
+
+    function addToLog(msg)
+    {
+        applicationConsole.append(
+            `[${Qt.formatDateTime(new Date(), "yyyy-MM-dd hh:mm:ss.zzz")}] ${msg.trim()}`
+        );
     }
 }

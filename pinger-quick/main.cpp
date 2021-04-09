@@ -1,5 +1,6 @@
 #include <QApplication>
 #include <QQmlApplicationEngine>
+#include <QFont>
 #include "backend.h"
 
 int main(int argc, char *argv[])
@@ -10,6 +11,9 @@ int main(int argc, char *argv[])
     app.setOrganizationName("Declaration of VAR");
     app.setApplicationName("Pinger");
     app.setOrganizationDomain("decovar.io");
+
+    QFont defaultFont("Verdana", 14);
+    app.setFont(defaultFont);
 
     QQmlApplicationEngine engine;
     qmlRegisterType<Backend>("io.decovar.Backend", 1, 0, "Backend");

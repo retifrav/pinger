@@ -1,6 +1,6 @@
 pragma Singleton
-import QtQuick 2.10
-//import QtQuick.Window 2.10
+import QtQuick 2.15
+//import QtQuick.Window 2.15
 
 Item {
     // fonts
@@ -23,16 +23,17 @@ Item {
 
     // dialogs
 
-    property int dialogBorderWidth: 2
+    property int dialogBorderWidth: 1
     property int dialogPaddingLeft: 20
     property int dialogPaddingTop: 15
     property int dialogPaddingRight: 15
     property int dialogPaddingBottom: 15
 
     property int dialogHeaderFontSize: 25
-    property int dialogTextFontSize: 14
+    //property int dialogTextFontSize: 14
 
     property int dialogHeaderBottomMargin: 15
+    property int dialogSectionTopMargin: 10
     property int dialogSubHeaderBottomMargin: 5
     property int dialogRowSpacing: 3
 }

@@ -72,8 +72,8 @@ void Backend::pinged(int exitCode, QProcess::ExitStatus exitStatus)
     int minLatency = *std::min_element(times->begin(), times->end()),
         maxLatency = *std::max_element(times->begin(), times->end());
     //qDebug() << minLatency << " | " << maxLatency;
-    maxLatency += 5;
-    minLatency -= 5; if (minLatency < 0) { minLatency = 0; }
+    maxLatency += 10;
+    minLatency -= 10; if (minLatency < 0) { minLatency = 0; }
     delete times;
 
     //qDebug() << pckt.first << " | " << pckt.second;

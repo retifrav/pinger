@@ -1,12 +1,12 @@
-import QtQuick 2.10
-import QtQuick.Window 2.10
-import QtQuick.Controls 2.3
+import QtQuick 2.15
+import QtQuick.Window 2.15
+import QtQuick.Controls 2.15
 
 Window {
     id: dialog
 
     property string title
-    property string source
+    property string statusImage
     property string textHeader
     property string textMain
 
@@ -16,7 +16,7 @@ Window {
     width: 400
     minimumWidth: width
     maximumWidth: width
-    height: 160
+    height: 180
     minimumHeight: height
     maximumHeight: height
 
@@ -24,14 +24,14 @@ Window {
         anchors.fill: parent
         color: Styles.regionBackground
         border.color: Styles.mainBackground
-        border.width: 3
+        border.width: Styles.dialogBorderWidth
 
         Item {
             anchors.fill: parent
-            anchors.leftMargin: 20
-            anchors.topMargin: 20
-            anchors.rightMargin: 15
-            anchors.bottomMargin: 15
+            anchors.leftMargin: Styles.dialogPaddingLeft
+            anchors.topMargin: Styles.dialogPaddingTop
+            anchors.rightMargin: Styles.dialogPaddingRight
+            anchors.bottomMargin: Styles.dialogPaddingBottom
 
             Row
             {
@@ -39,17 +39,20 @@ Window {
                 spacing: 15
 
                 Image {
-                    width: parent.width / 5
+                    id: img
+                    width: parent.width / 8
                     height: width
                     fillMode: Image.PreserveAspectFit
-                    source: dialog.source
+                    source: dialog.statusImage
                 }
 
                 Column
                 {
-                    spacing: 5
+                    width: parent.width - img.width - parent.spacing * 1.5
+                    spacing: 10
 
                     DialogText {
+                        width: parent.width
                         text: dialog.textHeader
                         font.bold: true
                     }
@@ -64,7 +67,7 @@ Window {
                 id: btn
                 anchors.bottom: parent.bottom
                 anchors.right: parent.right
-                text: "Ok"
+                text: "OK"
                 onClicked: { dialog.close(); }
             }
         }
