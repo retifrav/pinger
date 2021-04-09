@@ -25,13 +25,14 @@ Item {
 
     property int dialogBorderWidth: 2
     property int dialogPaddingLeft: 20
-    property int dialogPaddingTop: 20
+    property int dialogPaddingTop: 15
     property int dialogPaddingRight: 15
     property int dialogPaddingBottom: 15
 
     property int dialogHeaderFontSize: 25
     property int dialogTextFontSize: 14
 
-    property int dialogBlockTopMargin: 15
+    property int dialogHeaderBottomMargin: 15
+    property int dialogSubHeaderBottomMargin: 5
     property int dialogRowSpacing: 3
 }

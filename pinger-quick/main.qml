@@ -415,7 +415,7 @@ ApplicationWindow {
                         Item {
                             id: statsHeader
                             Layout.fillWidth: true
-                            Layout.topMargin: Styles.dialogBlockTopMargin
+                            Layout.topMargin: 15
 
                             FormText {
                                 anchors.left: parent.left
@@ -698,20 +698,21 @@ ApplicationWindow {
                 anchors.bottomMargin: Styles.dialogPaddingBottom
 
                 DialogText {
+                    Layout.bottomMargin: Styles.dialogHeaderBottomMargin
                     text: "Settings"
                     font.pixelSize: Styles.dialogHeaderFontSize
                     font.bold: true
                 }
 
                 ColumnLayout {
-                    Layout.topMargin: Styles.dialogBlockTopMargin
                     DialogText {
+                        Layout.bottomMargin: Styles.dialogSubHeaderBottomMargin
                         text: "General"
                         font.bold: true
                     }
-                    Item { height: 3 }
                     DialogSwitch {
                         id: switchShowReport
+                        Layout.fillWidth: true
                         text: qsTr("show report automatically")
                         checked: settings.showReport
                     }
@@ -719,19 +720,21 @@ ApplicationWindow {
                 }
 
                 ColumnLayout {
-                    Layout.topMargin: Styles.dialogBlockTopMargin
+                    Layout.fillWidth: true
                     DialogText {
+                        Layout.bottomMargin: Styles.dialogSubHeaderBottomMargin
                         text: "Sounds"
                         font.bold: true
                     }
-                    Item { height: 3 }
                     DialogSwitch {
                         id: switchSoundReceived
+                        Layout.fillWidth: true
                         text: qsTr("packet received")
                         checked: settings.makeSoundReceived
                     }
                     DialogSwitch {
                         id: switchSoundLost
+                        Layout.fillWidth: true
                         text: qsTr("packet lost")
                         checked: settings.makeSoundLost
                     }
@@ -794,6 +797,7 @@ ApplicationWindow {
                 anchors.bottomMargin: Styles.dialogPaddingBottom
 
                 DialogText {
+                    Layout.bottomMargin: Styles.dialogHeaderBottomMargin
                     text: "Report"
                     font.pixelSize: Styles.dialogHeaderFontSize
                     font.bold: true
@@ -801,7 +805,6 @@ ApplicationWindow {
 
                 ColumnLayout {
                     Layout.fillHeight: true
-                    Layout.topMargin: 15
                     spacing: 5
 
                     Row {
