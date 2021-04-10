@@ -124,15 +124,15 @@ ApplicationWindow {
 
             ScrollView {
                 anchors.fill: parent
+                anchors.topMargin: 5
+                anchors.bottomMargin: 5
+                anchors.leftMargin: 0
+                anchors.rightMargin: 0
 
                 TextArea {
                     id: applicationLog
-                    anchors.topMargin: 5
-                    anchors.bottomMargin: 5
-                    anchors.leftMargin: 0
-                    anchors.rightMargin: 0
                     readOnly: true
-                    color: "#BBB"//Styles.buttonsTextColor
+                    color: "#AAA"//Styles.buttonsTextColor
                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                     selectByMouse: true
                 }
