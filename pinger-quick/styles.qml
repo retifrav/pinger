@@ -36,4 +36,9 @@ Item {
     property int dialogSectionTopMargin: 10
     property int dialogSubHeaderBottomMargin: 5
     property int dialogRowSpacing: 3
+
+    // tooltips
+
+    property int toolTipDelay: 750
+    property int toolTipTimeout: 3000
 }

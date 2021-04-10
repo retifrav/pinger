@@ -32,6 +32,9 @@ ApplicationWindow {
         property bool showReport: false
         property bool makeSoundReceived: false
         property bool makeSoundLost: false
+
+        property bool showReceivedAsPercentage: false
+        property bool showLostAsPercentage: true
     }
 
     ListModel { id: packetsModel }
@@ -121,14 +124,15 @@ ApplicationWindow {
 
             ScrollView {
                 anchors.fill: parent
-                anchors.margins: 5
 
                 TextArea {
-                    id: applicationConsole
+                    id: applicationLog
+                    anchors.topMargin: 5
+                    anchors.bottomMargin: 5
+                    anchors.leftMargin: 0
+                    anchors.rightMargin: 0
                     readOnly: true
-                    font.family: "Courier New"
-                    font.pixelSize: 16
-                    color: Styles.buttonsTextColor
+                    color: "#BBB"//Styles.buttonsTextColor
                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                     selectByMouse: true
                 }
@@ -239,8 +243,10 @@ ApplicationWindow {
                                     btn_ping.visible = false;
                                     backend.on_btn_ping_clicked(host.text);
                                     btn_report.visible = false;
-                                    btn_export.visible = false;
+                                    //btn_export.visible = false;
                                     packets.visible = true;
+
+                                    addToLog("Pinging started");
                                 }
                             }
                         }
@@ -271,7 +277,7 @@ ApplicationWindow {
                                 //loadingAnimation.running = false;
                                 btn_ping.visible = true;
                                 btn_report.visible = true;
-                                btn_export.visible = true;
+                                //btn_export.visible = true;
 
                                 packets.visible = false;
 
@@ -280,6 +286,8 @@ ApplicationWindow {
                                 totalPacketsReceived.text = results.Received;
                                 totalPacketsLost.text = results.Lost;
                                 if (settings.showReport === true) { dialogReport.show(); }
+
+                                addToLog("Pinging stopped");
                             }
                         }
                     }
@@ -419,6 +427,11 @@ ApplicationWindow {
                                 onClicked: {
                                     packets.visible = !packets.visible;
                                 }
+                                ToolTip.delay: Styles.toolTipDelay
+                                ToolTip.timeout: Styles.toolTipTimeout
+                                ToolTip.visible: hovered
+                                ToolTip.text: packets.visible
+                                    ? qsTr("Show pie chart") : qsTr("Show packets list")
                             }
 //                            Image {
 //                                id: loading
@@ -535,7 +548,7 @@ ApplicationWindow {
                                 PieSeries {
                                     id: packetsPieChartSeries
                                     size: 1.0
-                                    holeSize: 0.7
+                                    holeSize: 0.45
 
                                     PieSlice {
                                         id: pieLost
@@ -582,17 +595,31 @@ ApplicationWindow {
                             FormText {
                                 id: avgTime;
                                 text: "0";
+                                MouseArea {
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    ToolTip.delay: Styles.toolTipDelay
+                                    ToolTip.timeout: Styles.toolTipTimeout
+                                    ToolTip.visible: containsMouse
+                                    ToolTip.text: qsTr("Average latency")
+                                }
                             }
                             FormText { text: "|"; }
                             FormText {
                                 id: percentageLost
                                 text: "0%";
                                 color: Styles.colorLost
+                                visible: settings.showLostAsPercentage
                                 MouseArea {
                                     anchors.fill: parent
                                     onClicked: {
                                         switchToPacketsLost(true);
                                     }
+                                    hoverEnabled: true
+                                    ToolTip.delay: Styles.toolTipDelay
+                                    ToolTip.timeout: Styles.toolTipTimeout
+                                    ToolTip.visible: containsMouse
+                                    ToolTip.text: qsTr("Percentage of lost packets")
                                 }
                             }
                             FormText {
@@ -605,6 +632,11 @@ ApplicationWindow {
                                     onClicked: {
                                         switchToPacketsLost(false);
                                     }
+                                    hoverEnabled: true
+                                    ToolTip.delay: Styles.toolTipDelay
+                                    ToolTip.timeout: Styles.toolTipTimeout
+                                    ToolTip.visible: containsMouse
+                                    ToolTip.text: qsTr("Packets lost")
                                 }
                             }
                             FormText { text: "|"; }
@@ -612,11 +644,17 @@ ApplicationWindow {
                                 id: percentageReceived
                                 text: "0%";
                                 color: Styles.colorReceived
+                                visible: settings.showReceivedAsPercentage
                                 MouseArea {
                                     anchors.fill: parent
                                     onClicked: {
                                         switchToPacketsReceived(true);
                                     }
+                                    hoverEnabled: true
+                                    ToolTip.delay: Styles.toolTipDelay
+                                    ToolTip.timeout: Styles.toolTipTimeout
+                                    ToolTip.visible: containsMouse
+                                    ToolTip.text: qsTr("Percentage of received packets")
                                 }
                             }
                             FormText {
@@ -629,6 +667,11 @@ ApplicationWindow {
                                     onClicked: {
                                         switchToPacketsReceived(false);
                                     }
+                                    hoverEnabled: true
+                                    ToolTip.delay: Styles.toolTipDelay
+                                    ToolTip.timeout: Styles.toolTipTimeout
+                                    ToolTip.visible: containsMouse
+                                    ToolTip.text: qsTr("Packets received")
                                 }
                             }
                         }
@@ -648,6 +691,10 @@ ApplicationWindow {
                             id: btn_settings
                             source: "qrc:/images/settings.png"
                             onClicked: { dialogSettings.show(); }
+                            ToolTip.delay: Styles.toolTipDelay
+                            ToolTip.timeout: Styles.toolTipTimeout
+                            ToolTip.visible: hovered
+                            ToolTip.text: qsTr("Open settings")
                         }
 //                        IconButton {
 //                            id: btn_reload
@@ -658,17 +705,29 @@ ApplicationWindow {
                             id: btn_report
                             source: "qrc:/images/info.png"
                             onClicked: { dialogReport.show(); }
+                            ToolTip.delay: Styles.toolTipDelay
+                            ToolTip.timeout: Styles.toolTipTimeout
+                            ToolTip.visible: hovered
+                            ToolTip.text: qsTr("Show report")
                             visible: false
                         }
-                        IconButton {
+                        /*IconButton {
                             id: btn_export
                             source: "qrc:/images/export.png"
+                            ToolTip.delay: Styles.toolTipDelay
+                            ToolTip.timeout: Styles.toolTipTimeout
+                            ToolTip.visible: hovered
+                            ToolTip.text: qsTr("Save report")
                             visible: false
-                        }
+                        }*/
                         IconButton {
                             id: btn_log
                             source: "qrc:/images/log.png"
                             onClicked: { drawer.open(); }
+                            ToolTip.delay: Styles.toolTipDelay
+                            ToolTip.timeout: Styles.toolTipTimeout
+                            ToolTip.visible: hovered
+                            ToolTip.text: qsTr("Open application log")
                         }
                     }
                 }
@@ -886,11 +945,18 @@ ApplicationWindow {
                     }
                 }
 
-                Row {
+                RowLayout {
                     Layout.fillWidth: true
-                    layoutDirection: Qt.RightToLeft
+                    //layoutDirection: Qt.RightToLeft
                     spacing: 5
 
+                    DialogButton {
+                        text: "Save report"
+                        onClicked: {
+                            addToLog("Initiated saving the report");
+                        }
+                    }
+                    Item { Layout.fillWidth: true; }
                     DialogButton {
                         text: "Close"
                         onClicked: {
@@ -929,22 +995,24 @@ ApplicationWindow {
     function switchToPacketsLost(toPackets)
     {
         if (toPackets === true)
-        { percentageLost.visible = false; }
+            { percentageLost.visible = false; }
         else
-        { percentageLost.visible = true; }
+            { percentageLost.visible = true; }
+        settings.showLostAsPercentage = !toPackets;
     }
 
     function switchToPacketsReceived(toPackets)
     {
         if (toPackets === true)
-        { percentageReceived.visible = false; }
+            { percentageReceived.visible = false; }
         else
-        { percentageReceived.visible = true; }
+            { percentageReceived.visible = true; }
+        settings.showReceivedAsPercentage = !toPackets;
     }
 
     function addToLog(msg)
     {
-        applicationConsole.append(
+        applicationLog.append(
             `[${Qt.formatDateTime(new Date(), "yyyy-MM-dd hh:mm:ss.zzz")}] ${msg.trim()}`
         );
     }

@@ -18,19 +18,19 @@ public:
 
 signals:
     void gotPingResults(
-            int status,
-            QString time,
-            int queueSize,
-            QString averageTime,
-            QString lostPercentage,
-            QString receivedPercentage,
-            int lostPackets,
-            int receivedPackets,
-            int totalPackets,
-            float lastPacketTime,
-            int minAxisY,
-            int maxAxisY
-            );
+        int status,
+        QString time,
+        int queueSize,
+        QString averageTime,
+        QString lostPercentage,
+        QString receivedPercentage,
+        int lostPackets,
+        int receivedPackets,
+        int totalPackets,
+        float lastPacketTime,
+        int minAxisY,
+        int maxAxisY
+    );
     void gotError(QString errorMessage);
 
 public slots:
@@ -43,6 +43,8 @@ public slots:
     void closeEvent();
 
 private:
+    int adjustSpread(int val);
+
     QProcess ping;
     QTimer timer;
     QSoundEffect effect;

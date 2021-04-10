@@ -3,6 +3,8 @@
 
 Backend::Backend()
 {
+    ping.setProgram("ping");
+
     timer.setSingleShot(false);
 
     connect(&timer, &QTimer::timeout,this, &Backend::startPing);
@@ -37,7 +39,7 @@ void Backend::pinged(int exitCode, QProcess::ExitStatus exitStatus)
 
     if (pckt.first != 0)
     {
-        emit gotError(pckt.second);
+        //emit gotError(pckt.second);
         pckt.second = "-";
     }
     pingData.addPacket(pckt);
@@ -72,8 +74,8 @@ void Backend::pinged(int exitCode, QProcess::ExitStatus exitStatus)
     int minLatency = *std::min_element(times->begin(), times->end()),
         maxLatency = *std::max_element(times->begin(), times->end());
     //qDebug() << minLatency << " | " << maxLatency;
-    maxLatency += 10;
-    minLatency -= 10; if (minLatency < 0) { minLatency = 0; }
+    maxLatency += adjustSpread(maxLatency);
+    minLatency -= adjustSpread(minLatency); if (minLatency < 0) { minLatency = 0; }
     delete times;
 
     //qDebug() << pckt.first << " | " << pckt.second;
@@ -91,6 +93,15 @@ void Backend::pinged(int exitCode, QProcess::ExitStatus exitStatus)
         minLatency,
         maxLatency
     );
+}
+
+int Backend::adjustSpread(int val)
+{
+    if (val > 500) { return 100; }
+    if (val > 250) { return 75; }
+    if (val > 100) { return 50; }
+    if (val > 50) { return 25; }
+    return 10;
 }
 
 void Backend::startPing()
@@ -132,7 +143,6 @@ void Backend::on_btn_ping_clicked(QString host)
 //    ui->lbl_lost->setText("0");
 //    ui->lbl_lostPercentage->setText("0%");
 
-    ping.setProgram("ping");
     ping.setArguments(getArgs4ping() << host);
 
     // TODO make the timer value a variable in config
