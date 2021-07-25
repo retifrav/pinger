@@ -7,6 +7,21 @@ Backend::Backend()
 
     timer.setSingleShot(false);
 
+    auto appLocalDataLocation = QDir(
+                QStandardPaths::writableLocation(
+                    QStandardPaths::AppLocalDataLocation
+                    )
+                );
+    if (!appLocalDataLocation.exists())
+    {
+        if (!appLocalDataLocation.mkpath("."))
+        {
+            qWarning() << "Application data folder doesn't exist,"
+                       << "and its creation failed";
+        }
+    }
+    _telemetryFile = appLocalDataLocation.filePath("telemetry.log");
+
     connect(&timer, &QTimer::timeout,this, &Backend::startPing);
     connect(
         &ping, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
@@ -184,4 +199,23 @@ void Backend::closeEvent()
 //    }
 
     qInfo() << "Application closed";
+}
+
+void Backend::dumpTelemetry(QString telemetry)
+{
+    qDebug() << "Telemetry file is here:" << _telemetryFile;
+    QFile file(_telemetryFile);
+
+    if (!file.open(QIODevice::Append))
+    {
+        qWarning() << "Couldn't open telemetry file to write new data."
+                   << file.errorString();
+        return;
+    }
+
+    QTextStream stream(&file);
+    stream << telemetry << Qt::endl;
+    stream.flush();
+
+    file.close();
 }

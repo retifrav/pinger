@@ -7,6 +7,9 @@
 #include <QSoundEffect>
 #include <QSettings>
 #include <QJsonObject>
+#include <QDir>
+#include <QStandardPaths>
+
 #include "pingdata.h"
 #include "functions.h"
 
@@ -41,6 +44,7 @@ public slots:
     QJsonObject getPingData();
     // just in case overriding the close event to kill the pinging process
     void closeEvent();
+    void dumpTelemetry(QString telemetry);
 
 private:
     int adjustSpread(int val);
@@ -50,6 +54,7 @@ private:
     QSoundEffect effect;
     PingData pingData;
     QSettings settings;
+    QString _telemetryFile;
 };
 
 #endif // BACKEND_H

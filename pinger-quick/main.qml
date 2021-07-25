@@ -7,7 +7,7 @@ import QtCharts 2.15
 import Qt.labs.settings 1.1
 //import QtQuick.Controls 1.4 as QQC1
 //import QtQuick.Controls.Styles 1.4 as QQC1S
-import io.decovar.Backend 1.0
+import dev.decovar.Backend 1.0
 import AppStyle 1.0
 
 ApplicationWindow {
@@ -35,6 +35,11 @@ ApplicationWindow {
 
         property bool showReceivedAsPercentage: false
         property bool showLostAsPercentage: true
+    }
+
+    Shortcut {
+        sequence: "Ctrl+L"
+        onActivated: backend.dumpTelemetry("ololo")
     }
 
     ListModel { id: packetsModel }
@@ -91,6 +96,8 @@ ApplicationWindow {
             chartSeriesLatencyAxisY.min = minAxisY;
             chartSeriesLatencyAxisY.max = maxAxisY;
 
+            //console.log(seriesLatency.at(totalPackets - 1));
+            seriesLatency.append(totalPackets, lastPacketTime);
             // TODO this value should not be hardcoded
             if (seriesLatency.count > 49)
             {
@@ -98,8 +105,6 @@ ApplicationWindow {
                 chartSeriesLatencyAxisX.max++;
                 seriesLatency.remove(0);
             }
-            //console.log(seriesLatency.at(totalPackets - 1));
-            seriesLatency.append(totalPackets, lastPacketTime);
 
             //console.log(totalPackets);
             //console.log(lastPacketTime);
