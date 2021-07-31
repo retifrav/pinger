@@ -23,7 +23,7 @@ signals:
     void gotPingResults(
         int status,
         QString time,
-        int queueSize,
+        //int queueSize,
         QString averageTime,
         QString lostPercentage,
         QString receivedPercentage,
@@ -42,6 +42,7 @@ public slots:
     void pinged(int exitCode, QProcess::ExitStatus exitStatus);
     void startPing();
     QJsonObject getPingData();
+    int getQueueSize();
     // just in case overriding the close event to kill the pinging process
     void closeEvent();
     void dumpTelemetry(QString telemetry);

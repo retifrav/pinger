@@ -8,7 +8,7 @@ class PingData
 public:
     PingData();
 
-    void set_packetsQueueSize(int qs);
+    //void set_packetsQueueSize(int qs);
     // TODO some analytics that would watch for anomalies (lots of packets lost or increased latency)
     void addPacket(QPair<int, QString> pckt);
 

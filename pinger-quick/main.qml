@@ -21,6 +21,9 @@ ApplicationWindow {
     minimumHeight: 500
     title: qsTr("pinger")
 
+    property bool debugMode: true
+    property int latencyChartWidth: backend.getQueueSize() // chart view width in packets
+
     Settings {
         id: settings
 
@@ -37,16 +40,7 @@ ApplicationWindow {
         property bool showLostAsPercentage: true
     }
 
-    Shortcut {
-        sequence: "Ctrl+L"
-        onActivated: backend.dumpTelemetry("ololo")
-    }
-
     ListModel { id: packetsModel }
-
-    onClosing: {
-        backend.closeEvent();
-    }
 
     Backend {
         id: backend
@@ -71,7 +65,7 @@ ApplicationWindow {
                 "time": time,
                 "packetColor": packetColor
             });
-            //if (packetsModel.count > queueSize) { packetsModel.remove(0); }
+            //if (packetsModel.count > backend.getQueueSize()) { packetsModel.remove(0); }
             // TODO improve behaviour for resizing window
             packets.positionViewAtEnd();
             //if (packets.contentHeight > packets.height) { packetsModel.remove(0); }
@@ -96,14 +90,30 @@ ApplicationWindow {
             chartSeriesLatencyAxisY.min = minAxisY;
             chartSeriesLatencyAxisY.max = maxAxisY;
 
-            //console.log(seriesLatency.at(totalPackets - 1));
-            seriesLatency.append(totalPackets, lastPacketTime);
-            // TODO this value should not be hardcoded
-            if (seriesLatency.count > 49)
+            if (seriesLatency.count > latencyChartWidth)
             {
-                chartSeriesLatencyAxisX.min++;
-                chartSeriesLatencyAxisX.max++;
-                seriesLatency.remove(0);
+                //chartSeriesLatencyAxisX.min++;
+                //chartSeriesLatencyAxisX.max++;
+
+                for (let i = 0; i < seriesLatency.count - 1; i++)
+                {
+                    seriesLatency.replace(
+                        seriesLatency.at(i).x,
+                        seriesLatency.at(i).y,
+                        i,
+                        seriesLatency.at(i+1).y
+                    );
+                }
+                seriesLatency.replace(
+                    seriesLatency.at(seriesLatency.count - 1).x,
+                    seriesLatency.at(seriesLatency.count - 1).y,
+                    seriesLatency.count - 1,
+                    lastPacketTime
+                );
+            }
+            else
+            {
+                seriesLatency.append(totalPackets - 1, lastPacketTime);
             }
 
             //console.log(totalPackets);
@@ -114,6 +124,10 @@ ApplicationWindow {
             //console.error(errorMessage.trim());
             addToLog(errorMessage.trim());
         }
+    }
+
+    onClosing: {
+        backend.closeEvent();
     }
 
     Drawer {
@@ -141,6 +155,34 @@ ApplicationWindow {
                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                     selectByMouse: true
                 }
+            }
+        }
+    }
+
+    Shortcut {
+        sequence: "Ctrl+D"
+        onActivated: drawer.open()
+    }
+
+    Shortcut {
+        sequence: "Ctrl+L"
+        onActivated: {
+            let telemetry = JSON.stringify({
+                "chartSeriesLatencyAxisX": {
+                    "min": chartSeriesLatencyAxisX.min,
+                    "max": chartSeriesLatencyAxisX.max
+                },
+                "chartSeriesLatencyAxisY": {
+                    "min": chartSeriesLatencyAxisY.min,
+                    "max": chartSeriesLatencyAxisY.max
+                },
+                "seriesLatencyCount": seriesLatency.count,
+                "packetsModelCount": packetsModel.count
+            });
+            addToLog(telemetry);
+            if (debugMode === true)
+            {
+                backend.dumpTelemetry(`[${getCurrentDateTime()}] ${telemetry}`);
             }
         }
     }
@@ -341,7 +383,7 @@ ApplicationWindow {
                             ValueAxis {
                                 id: chartSeriesLatencyAxisX
                                 min: 0
-                                max: 50
+                                max: latencyChartWidth
                                 visible: false
                                 //minorGridVisible: true
                                 //gridVisible: false
@@ -1015,10 +1057,15 @@ ApplicationWindow {
         settings.showReceivedAsPercentage = !toPackets;
     }
 
+    function getCurrentDateTime()
+    {
+        return Qt.formatDateTime(new Date(), "yyyy-MM-dd hh:mm:ss.zzz");
+    }
+
     function addToLog(msg)
     {
         applicationLog.append(
-            `[${Qt.formatDateTime(new Date(), "yyyy-MM-dd hh:mm:ss.zzz")}] ${msg.trim()}`
+            `[${getCurrentDateTime()}] ${msg.trim()}`
         );
     }
 }

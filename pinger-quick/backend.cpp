@@ -97,7 +97,7 @@ void Backend::pinged(int exitCode, QProcess::ExitStatus exitStatus)
     emit gotPingResults(
         pckt.first,
         pckt.second,
-        pingData.get_packetsQueueSize(),
+        //pingData.get_packetsQueueSize(),
         QString::number(pingData.get_avgTime(), 'g', 4),
         lostPercentage,
         receivedPercentage,
@@ -143,6 +143,11 @@ QJsonObject Backend::getPingData()
         {"AvgLatency", pingData.get_avgTime()}
     };
     return results;
+}
+
+int Backend::getQueueSize()
+{
+    return pingData.get_packetsQueueSize();
 }
 
 void Backend::on_btn_ping_clicked(QString host)

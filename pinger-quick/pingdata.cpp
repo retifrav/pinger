@@ -13,7 +13,7 @@ void PingData::resetEverything()
     pcktLost = 0;
     pcktReceived = 0;
     pcktSent = 0;
-    //TODO this should be customizable
+    // TODO perhaps this should be customizable from user settings in QML
     packetsQueueSize = 50;
     totalTime = 0;
     avgTime = 0.0;
@@ -30,11 +30,11 @@ void PingData::resizePacketsQueue(int newQueueSize)
     }
 }
 
-void PingData::set_packetsQueueSize(int qs)
-{
-    packetsQueueSize = qs;
-    resizePacketsQueue(packetsQueueSize);
-}
+//void PingData::set_packetsQueueSize(int qs)
+//{
+//    packetsQueueSize = qs;
+//    resizePacketsQueue(packetsQueueSize);
+//}
 
 int PingData::get_pcktLost() { return pcktLost; }
 int PingData::get_pcktReceived() { return pcktReceived; }
@@ -44,7 +44,7 @@ int PingData::get_packetsQueueSize() { return packetsQueueSize; }
 QList<int> *PingData::get_packetsQueueTimes()
 {
     QList<int> *times = new QList<int>();
-    for(const QPair<int, QString> &item : packetsQueue)
+    for(const QPair<int, QString> &item : qAsConst(packetsQueue))
     {
         times->append(parseLatency(item.second));
     }
