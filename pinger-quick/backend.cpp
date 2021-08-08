@@ -48,9 +48,9 @@ void Backend::pinged(int exitCode, QProcess::ExitStatus exitStatus)
     //qDebug() << ping.exitCode();
 
     QPair<int, QString> pckt = parsePingOutput(
-                ping.exitCode(),
-                ping.readAllStandardOutput()
-                );
+        ping.exitCode(),
+        ping.readAllStandardOutput()
+    );
 
     if (pckt.first != 0)
     {
@@ -75,11 +75,11 @@ void Backend::pinged(int exitCode, QProcess::ExitStatus exitStatus)
     }
 
     QString lostPercentage = QString("%1%")
-            .arg(QString::number(pingData.get_lostPercentage(), 'f', 2));
+        .arg(QString::number(pingData.get_lostPercentage(), 'f', 2));
     lostPercentage = lostPercentage.replace(".00%", "%");
 
     QString receivedPercentage = QString("%1%")
-            .arg(QString::number(pingData.get_receivedPercentage(), 'f', 2));
+        .arg(QString::number(pingData.get_receivedPercentage(), 'f', 2));
     receivedPercentage = receivedPercentage.replace(".00%", "%");
 
     if (makeSound) { effect.play(); }
@@ -112,9 +112,9 @@ void Backend::pinged(int exitCode, QProcess::ExitStatus exitStatus)
 
 int Backend::adjustSpread(int val)
 {
-    if (val > 500) { return 100; }
-    if (val > 250) { return 75; }
-    if (val > 100) { return 50; }
+    if (val > 500) { return 55; }
+    if (val > 250) { return 45; }
+    if (val > 100) { return 35; }
     if (val > 50) { return 25; }
     return 10;
 }

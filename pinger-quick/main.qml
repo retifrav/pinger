@@ -22,7 +22,11 @@ ApplicationWindow {
     title: qsTr("pinger")
 
     property bool debugMode: true
+
     property int latencyChartWidth: backend.getQueueSize() // chart view width in packets
+
+    property int dialogWindowWidth: 550
+    property int dialogWindowHeight: 350
 
     Settings {
         id: settings
@@ -621,7 +625,7 @@ ApplicationWindow {
                                 samples: 37
                                 color: Styles.colorReceived
                                 source: packetsPieChart
-                                visible: pieLost.value === 0 || pieReceived === 0
+                                visible: pieLost.value === 0 || pieReceived.value === 0
                             }
                         }
 
@@ -648,7 +652,7 @@ ApplicationWindow {
                                     ToolTip.delay: Styles.toolTipDelay
                                     ToolTip.timeout: Styles.toolTipTimeout
                                     ToolTip.visible: containsMouse
-                                    ToolTip.text: qsTr("Average latency")
+                                    ToolTip.text: qsTr("Average packets time (latency)")
                                 }
                             }
                             FormText { text: "|"; }
@@ -819,10 +823,10 @@ ApplicationWindow {
         visible: false
         modality: Qt.WindowModal
 
-        width: 500
+        width: dialogWindowWidth
         minimumWidth: width
         maximumWidth: width
-        height: 300
+        height: dialogWindowHeight
         minimumHeight: height
         maximumHeight: height
 
@@ -919,10 +923,10 @@ ApplicationWindow {
         visible: false
         modality: Qt.WindowModal
 
-        width: 500
+        width: dialogWindowWidth
         minimumWidth: width
         maximumWidth: width
-        height: 300
+        height: dialogWindowHeight
         minimumHeight: height
         maximumHeight: height
 
@@ -1045,6 +1049,7 @@ ApplicationWindow {
             { percentageLost.visible = false; }
         else
             { percentageLost.visible = true; }
+
         settings.showLostAsPercentage = !toPackets;
     }
 
