@@ -89,8 +89,10 @@ void Backend::pinged(int exitCode, QProcess::ExitStatus exitStatus)
     int minLatency = *std::min_element(times->begin(), times->end()),
         maxLatency = *std::max_element(times->begin(), times->end());
     //qDebug() << minLatency << " | " << maxLatency;
-    maxLatency += adjustSpread(maxLatency);
-    minLatency -= adjustSpread(minLatency); if (minLatency < 0) { minLatency = 0; }
+    int spread = adjustSpread(maxLatency - minLatency);
+    //qDebug() << "spread:" << spread;
+    maxLatency += spread;//adjustSpread(maxLatency);
+    minLatency -= spread;/*adjustSpread(minLatency);*/ if (minLatency < 0) { minLatency = 0; }
     delete times;
 
     //qDebug() << pckt.first << " | " << pckt.second;
@@ -110,13 +112,13 @@ void Backend::pinged(int exitCode, QProcess::ExitStatus exitStatus)
     );
 }
 
-int Backend::adjustSpread(int val)
+int Backend::adjustSpread(int diff)
 {
-    if (val > 500) { return 55; }
-    if (val > 250) { return 45; }
-    if (val > 100) { return 35; }
-    if (val > 50) { return 25; }
-    return 10;
+    if (diff > 75) { return 3; }
+    if (diff > 50) { return 5; }
+    if (diff > 30) { return 10; }
+    if (diff > 15) { return 15; }
+    return 20;
 }
 
 void Backend::startPing()

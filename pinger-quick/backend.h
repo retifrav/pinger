@@ -48,7 +48,7 @@ public slots:
     void dumpTelemetry(QString telemetry);
 
 private:
-    int adjustSpread(int val);
+    int adjustSpread(int diff);
 
     QProcess ping;
     QTimer timer;
