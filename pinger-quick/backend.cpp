@@ -139,10 +139,10 @@ QJsonObject Backend::getPingData()
     {
         {"Sent", pingData.get_pcktSent()},
         {"Received", pingData.get_pcktReceived()},
-        {"ReceivedPercent", pingData.get_receivedPercentage()},
+        {"ReceivedPercent", QString::number(pingData.get_receivedPercentage(), 'f', 2).replace(".00", "")},
         {"Lost", pingData.get_pcktLost()},
-        {"LostPercent", pingData.get_lostPercentage()},
-        {"AvgLatency", pingData.get_avgTime()}
+        {"LostPercent", QString::number(pingData.get_lostPercentage(), 'f', 2).replace(".00", "")},
+        {"AvgLatency", QString::number(pingData.get_avgTime(), 'f', 2).replace(".00", "")}
     };
     return results;
 }

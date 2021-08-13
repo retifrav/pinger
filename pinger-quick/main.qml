@@ -21,6 +21,20 @@ ApplicationWindow {
     minimumHeight: 500
     title: qsTr("pinger")
 
+//    menuBar: MenuBar {
+//        Menu {
+//           title: qsTr("&File")
+//           Action { text: qsTr("&Save") }
+//           Action { text: qsTr("Save &as...") }
+//           MenuSeparator { }
+//           Action { text: qsTr("&Quit") }
+//       }
+//       Menu {
+//           title: qsTr("&Help")
+//           Action { text: qsTr("&About") }
+//       }
+//    }
+
     property bool debugMode: true
 
     property int latencyChartWidth: backend.getQueueSize() // chart view width in packets
@@ -323,6 +337,8 @@ ApplicationWindow {
                             }
                             visible: !btn_ping.visible
                             onClicked: {
+                                addToLog("Pinging stopped");
+
                                 backend.on_btn_stop_clicked();
                                 //loading.visible = false;
                                 //loadingAnimation.running = false;
@@ -333,12 +349,15 @@ ApplicationWindow {
                                 packets.visible = false;
 
                                 let results = backend.getPingData();
+
                                 totalPacketsSent.text = results.Sent;
-                                totalPacketsReceived.text = results.Received;
-                                totalPacketsLost.text = results.Lost;
+                                totalPacketsReceived.text = `${results.Received} (${results.ReceivedPercent}%)`;
+                                totalPacketsLost.text = `${results.Lost} (${results.LostPercent}%)`;
+                                totalAverageLatency.text = `${results.AvgLatency}ms`;
+                                conclusion.text = makeConclusion(results.LostPercent, results.AvgLatency);
+
                                 if (settings.showReport === true) { dialogReport.show(); }
 
-                                addToLog("Pinging stopped");
                             }
                         }
                     }
@@ -771,7 +790,7 @@ ApplicationWindow {
                             ToolTip.text: qsTr("Save report")
                             visible: false
                         }*/
-                        IconButton {
+                        /*IconButton {
                             id: btn_log
                             source: "qrc:/images/log.png"
                             onClicked: { drawer.open(); }
@@ -779,7 +798,7 @@ ApplicationWindow {
                             ToolTip.timeout: Styles.toolTipTimeout
                             ToolTip.visible: hovered
                             ToolTip.text: qsTr("Open application log")
-                        }
+                        }*/
                     }
                 }
             }
@@ -970,11 +989,11 @@ ApplicationWindow {
                     Row {
                         spacing: Styles.dialogRowSpacing
                         DialogText {
-                            text: "Total packets received:"
+                            text: "Packets received:"
                         }
                         DialogText {
                             id: totalPacketsReceived
-                            text: "0"
+                            text: "0 (0%)"
                             font.bold: true
                         }
                     }
@@ -982,13 +1001,38 @@ ApplicationWindow {
                     Row {
                         spacing: Styles.dialogRowSpacing
                         DialogText {
-                            text: "Total packets lost:"
+                            text: "Packets lost:"
                         }
                         DialogText {
                             id: totalPacketsLost
-                            text: "0"
+                            text: "0 (0%)"
                             font.bold: true
                         }
+                    }
+
+                    Row {
+                        spacing: Styles.dialogRowSpacing
+                        DialogText {
+                            text: "Average latency:"
+                        }
+                        DialogText {
+                            id: totalAverageLatency
+                            text: "0ms"
+                            font.bold: true
+                        }
+                    }
+
+                    DialogText {
+                        Layout.topMargin: Styles.dialogHeaderBottomMargin
+                        text: "Conclusion"
+                        font.pixelSize: Styles.dialogHeaderFontSize / 1.2
+                        font.bold: true
+                    }
+                    DialogText {
+                        id: conclusion
+                        Layout.fillWidth: true
+                        text: "¯\\_(ツ)_/¯"
+                        font.italic: true
                     }
 
                     Item {
@@ -1036,6 +1080,12 @@ ApplicationWindow {
         pieLost.value = 0;
         pieReceived.value = 0;
 
+        totalPacketsSent.text = "0";
+        totalPacketsReceived.text = "0 (0%)";
+        totalPacketsLost.text = "0 (0%)";
+        totalAverageLatency.text = "0ms";
+        conclusion.text = "¯\\_(ツ)_/¯";
+
         seriesLatency.removePoints(0, seriesLatency.count);
         //seriesLatency.append(0, 0);
 
@@ -1072,5 +1122,102 @@ ApplicationWindow {
         applicationLog.append(
             `[${getCurrentDateTime()}] ${msg.trim()}`
         );
+    }
+
+    function makeConclusion(lostPercent, averageLatency)
+    {
+        console.log(
+            `Making conclusion with ${lostPercent}% packets lost and ${averageLatency}ms average latency`
+        );
+
+        let lostPercentNumber = Number(lostPercent);
+        let averageLatencyNumber = Number(averageLatency);
+
+        let conclusionScore = 10;
+
+        let conclusionReliability = "unknown";
+        if (lostPercentNumber === 0)
+        {
+            conclusionReliability = `<font color='${Styles.colorReceived}'>excellent</font>`;
+        }
+        else if (lostPercentNumber < 0.5)
+        {
+            conclusionReliability = `<font color='${Styles.colorReceived}'>very good</font>`;
+        }
+        else if (lostPercentNumber < 1)
+        {
+            conclusionReliability = `<font color='${Styles.colorReceived}'>quite good</font>`;
+        }
+        else if (lostPercentNumber < 2)
+        {
+            conclusionReliability = `<font color='${Styles.colorReceived}'>good</font>`;
+        }
+        else if (lostPercentNumber < 5)
+        {
+            conclusionReliability = "okay";
+            conclusionScore -= 2;
+        }
+        else if (lostPercentNumber < 10)
+        {
+            conclusionReliability = `<font color='${Styles.colorLost}'>rather bad</font>`;
+            conclusionScore -= 4;
+        }
+        else if (lostPercentNumber < 20)
+        {
+            conclusionReliability = `<font color='${Styles.colorLost}'>quite bad<font>`;
+            conclusionScore -= 6;
+        }
+        else if (lostPercentNumber < 30)
+        {
+            conclusionReliability = `<font color='${Styles.colorLost}'>very bad</font>`;
+            conclusionScore -= 8;
+        }
+        else
+        {
+            conclusionReliability = `<font color='${Styles.colorLost}'>outrageously horrible</font>`;
+            conclusionScore -= 10;
+        }
+
+        let conclusionLatency = "unknown";
+        if (averageLatencyNumber < 15)
+        {
+            conclusionLatency = `<font color='${Styles.colorReceived}'>almost non-existent</font>`;
+        }
+        else if (averageLatencyNumber < 30)
+        {
+            conclusionLatency = `<font color='${Styles.colorReceived}'>very low</font>`;
+        }
+        else if (averageLatencyNumber < 40)
+        {
+            conclusionLatency = `<font color='${Styles.colorReceived}'>good</font>`;
+            conclusionScore -= 1;
+        }
+        else if (averageLatencyNumber < 60)
+        {
+            conclusionLatency = "okay";
+            conclusionScore -= 2;
+        }
+        else if (averageLatencyNumber < 80)
+        {
+            conclusionLatency = `<font color='${Styles.colorLost}'>not great</font>`;
+            conclusionScore -= 3;
+        }
+        else if (averageLatencyNumber < 100)
+        {
+            conclusionLatency = `<font color='${Styles.colorLost}'>bad</font>`;
+            conclusionScore -= 4;
+        }
+        else
+        {
+            conclusionLatency = `<font color='${Styles.colorLost}'>very bad</font>`;
+            conclusionScore -= 5;
+        }
+
+        let rez = [
+            `Your internet connection reliability is <b>${conclusionReliability}</b>. `,
+            `The latency is <b>${conclusionLatency}</b>. `,
+            `Total score: <b>${conclusionScore < 0 ? 0 : conclusionScore}/10</b>.`
+        ];
+        return rez.join("");
     }
 }

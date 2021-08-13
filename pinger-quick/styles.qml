@@ -3,8 +3,6 @@ import QtQuick 2.15
 //import QtQuick.Window 2.15
 
 Item {
-    // fonts
-
     property int primaryFontSize: 22 /// Screen.pixelDensity * Screen.devicePixelRatio
     property int secondaryFontSize: 20 /// Screen.pixelDensity * Screen.devicePixelRatio
 
