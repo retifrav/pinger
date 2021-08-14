@@ -274,7 +274,7 @@ ApplicationWindow {
 //                                leftPadding: 10
 //                                rightPadding: 10
 //                                width: parent.width
-//                                font.pixelSize: 18
+//                                font.pointSize: 18
 //                                color: "#B3BFC5"
 //                                clip: true
 //                            }
@@ -287,15 +287,8 @@ ApplicationWindow {
                             Layout.maximumWidth: 200
                             Layout.preferredHeight: parent.height
 
-                            Text {
-                                text: "PING"
-                                font.pixelSize: Styles.secondaryFontSize
-                                //font.bold: true
-                                color: Styles.buttonsTextColor
-                                verticalAlignment: Text.AlignVCenter
-                                horizontalAlignment: Text.AlignHCenter
-                                anchors.fill: parent
-                            }
+                            text: "PING"
+
                             onClicked: {
                                 if (host.text.length === 0)
                                 {
@@ -326,16 +319,9 @@ ApplicationWindow {
                             color: Styles.colorLost//buttonDown ? "#CC817E" : "#E57373"
                             //colorGlow: buttonDown ? "#CC817E" : "#E57373"
 
-                            Text {
-                                text: "STOP"
-                                font.pixelSize: Styles.secondaryFontSize
-                                //font.bold: true
-                                color: Styles.buttonsTextColor
-                                verticalAlignment: Text.AlignVCenter
-                                horizontalAlignment: Text.AlignHCenter
-                                anchors.fill: parent
-                            }
+                            text: "STOP"
                             visible: !btn_ping.visible
+
                             onClicked: {
                                 addToLog("Pinging stopped");
 
@@ -866,7 +852,7 @@ ApplicationWindow {
                 DialogText {
                     Layout.bottomMargin: Styles.dialogHeaderBottomMargin
                     text: "Settings"
-                    font.pixelSize: Styles.dialogHeaderFontSize
+                    font.pointSize: Styles.secondaryFontSize
                     font.bold: true
                 }
 
@@ -874,6 +860,7 @@ ApplicationWindow {
                     DialogText {
                         Layout.bottomMargin: Styles.dialogSubHeaderBottomMargin
                         text: "General"
+                        font.pointSize: Styles.normalFontSize
                         font.bold: true
                     }
                     DialogSwitch {
@@ -888,9 +875,11 @@ ApplicationWindow {
                 ColumnLayout {
                     Layout.fillWidth: true
                     Layout.topMargin: Styles.dialogSectionTopMargin
+
                     DialogText {
                         Layout.bottomMargin: Styles.dialogSubHeaderBottomMargin
                         text: "Sounds"
+                        font.pointSize: Styles.normalFontSize
                         font.bold: true
                     }
                     DialogSwitch {
@@ -966,7 +955,7 @@ ApplicationWindow {
                 DialogText {
                     Layout.bottomMargin: Styles.dialogHeaderBottomMargin
                     text: "Report"
-                    font.pixelSize: Styles.dialogHeaderFontSize
+                    font.pointSize: Styles.secondaryFontSize
                     font.bold: true
                 }
 
@@ -1022,17 +1011,18 @@ ApplicationWindow {
                         }
                     }
 
-                    DialogText {
-                        Layout.topMargin: Styles.dialogHeaderBottomMargin
-                        text: "Conclusion"
-                        font.pixelSize: Styles.dialogHeaderFontSize / 1.2
-                        font.bold: true
-                    }
+//                    DialogText {
+//                        Layout.topMargin: Styles.dialogHeaderBottomMargin
+//                        text: "Conclusion"
+//                        font.pointSize: Styles.normalFontSize
+//                        font.bold: true
+//                    }
                     DialogText {
                         id: conclusion
                         Layout.fillWidth: true
-                        text: "¯\\_(ツ)_/¯"
+                        Layout.topMargin: Styles.dialogHeaderBottomMargin
                         font.italic: true
+                        text: "¯\\_(ツ)_/¯"
                     }
 
                     Item {

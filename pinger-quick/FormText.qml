@@ -4,5 +4,5 @@ import QtQuick.Controls 2.15
 Text {
     anchors.verticalCenter: parent.verticalCenter
     color: Styles.labelsColor
-    font.pixelSize: Styles.secondaryFontSize
+    font.pointSize: Styles.normalFontSize
 }

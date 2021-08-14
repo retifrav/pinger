@@ -3,8 +3,10 @@ import QtQuick 2.15
 //import QtQuick.Window 2.15
 
 Item {
-    property int primaryFontSize: 22 /// Screen.pixelDensity * Screen.devicePixelRatio
-    property int secondaryFontSize: 20 /// Screen.pixelDensity * Screen.devicePixelRatio
+    property int primaryFontSize: 24 // Screen.pixelDensity * Screen.devicePixelRatio
+    property int secondaryFontSize: 20
+    property int normalFontSize: 18
+    property int dialogFontSize: 16
 
     // colors
 
@@ -26,9 +28,6 @@ Item {
     property int dialogPaddingTop: 15
     property int dialogPaddingRight: 15
     property int dialogPaddingBottom: 15
-
-    property int dialogHeaderFontSize: 25
-    //property int dialogTextFontSize: 14
 
     property int dialogHeaderBottomMargin: 15
     property int dialogSectionTopMargin: 10

@@ -17,7 +17,12 @@ Button {
 
     contentItem: Text {
         text: control.text
-        font.pixelSize: 14
+        font.pointSize: Styles.secondaryFontSize
+        //font.bold: true
+        color: Styles.buttonsTextColor
+        verticalAlignment: Text.AlignVCenter
+        horizontalAlignment: Text.AlignHCenter
+        anchors.fill: parent
     }
 
     background: Rectangle {
