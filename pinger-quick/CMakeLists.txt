@@ -26,16 +26,16 @@ else()
     set(git_hash ${gitOut})
 endif()
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/include/build_info.h"
-    "#ifndef BUILD_INFO_H\n\
-#define BUILD_INFO_H\n\n\
-namespace decovar\n{\n\
-\tnamespace pinger\n\t{\n\
-\t\tconst int versionMajor = ${version_major};\n\
-\t\tconst int versionMinor = ${version_minor};\n\
-\t\tconst int versionRevision = ${version_revision};\n\
-\t\tconst std::string gitHash = \"${git_hash}\";\n\
-\t}\n}\n\n\
-#endif // BUILD_INFO_H"
+    "#ifndef BUILD_INFO_H\n"
+    "#define BUILD_INFO_H\n\n"
+    "namespace decovar\n{\n"
+    "\tnamespace pinger\n\t{\n"
+    "\t\tconst int versionMajor = ${version_major};\n"
+    "\t\tconst int versionMinor = ${version_minor};\n"
+    "\t\tconst int versionRevision = ${version_revision};\n"
+    "\t\tconst std::string gitHash = \"${git_hash}\";\n"
+    "\t}\n}\n\n"
+    "#endif // BUILD_INFO_H"
 )
 
 project("Pinger"
