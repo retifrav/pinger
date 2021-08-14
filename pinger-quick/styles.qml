@@ -7,6 +7,7 @@ Item {
     property int secondaryFontSize: 20
     property int normalFontSize: 18
     property int dialogFontSize: 16
+    property int consoleFontSize: 14
 
     // colors
 

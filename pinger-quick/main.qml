@@ -170,6 +170,7 @@ ApplicationWindow {
                     id: applicationLog
                     readOnly: true
                     color: "#AAA"//Styles.buttonsTextColor
+                    font.pointSize: Styles.consoleFontSize
                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                     selectByMouse: true
                 }
@@ -1054,6 +1055,7 @@ ApplicationWindow {
     }
 
     Component.onCompleted: {
+        addToLog(backend.getVersionInfo());
         // start pinging right after launching
         if (host.text.length !== 0) { btn_ping.clicked(); }
     }

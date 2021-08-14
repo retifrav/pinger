@@ -10,6 +10,7 @@
 #include <QDir>
 #include <QStandardPaths>
 
+#include "build_info.h"
 #include "pingdata.h"
 #include "functions.h"
 
@@ -46,6 +47,7 @@ public slots:
     // just in case overriding the close event to kill the pinging process
     void closeEvent();
     void dumpTelemetry(QString telemetry);
+    QString getVersionInfo();
 
 private:
     int adjustSpread(int diff);

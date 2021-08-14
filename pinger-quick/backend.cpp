@@ -30,6 +30,16 @@ Backend::Backend()
     );
 }
 
+QString Backend::getVersionInfo()
+{
+    return QString("Version: %1.%2.%3, build: %4").arg(
+        QString::number(decovar::pinger::versionMajor),
+        QString::number(decovar::pinger::versionMinor),
+        QString::number(decovar::pinger::versionRevision),
+        QString::fromStdString(decovar::pinger::gitHash)
+    );
+}
+
 void Backend::pinged(int exitCode, QProcess::ExitStatus exitStatus)
 {
     //qDebug() << "Exit code:" << exitCode << " | status:" << exitStatus;

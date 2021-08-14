@@ -1,8 +1,46 @@
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.15)
+
+set(version_major 1)
+set(version_minor 0)
+set(version_revision 1)
+set(git_hash "00000000000")
+
+execute_process(
+    COMMAND git rev-parse --short=11 HEAD
+    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../"
+    RESULT_VARIABLE gitResult
+    ERROR_VARIABLE gitError
+    OUTPUT_VARIABLE gitOut
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+if(NOT gitResult EQUAL 0)
+    message(WARNING "Git command status: ${gitResult}")
+    if(NOT gitError STREQUAL "")
+        message(WARNING "${gitError}")
+    endif()
+    message(WARNING "Couldn't get commit hash from Git. Will fallback to default value")
+else()
+    #message(${gitOut})
+    #string(REPLACE "build-" "" gitBuildNumber ${gitOut})
+    #set(git_hash ${gitBuildNumber})
+    set(git_hash ${gitOut})
+endif()
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/include/build_info.h"
+    "#ifndef BUILD_INFO_H\n\
+#define BUILD_INFO_H\n\n\
+namespace decovar\n{\n\
+\tnamespace pinger\n\t{\n\
+\t\tconst int versionMajor = ${version_major};\n\
+\t\tconst int versionMinor = ${version_minor};\n\
+\t\tconst int versionRevision = ${version_revision};\n\
+\t\tconst std::string gitHash = \"${git_hash}\";\n\
+\t}\n}\n\n\
+#endif // BUILD_INFO_H"
+)
 
 project("Pinger"
-    DESCRIPTION "Application for testing packet losses in your internet connection"
-    VERSION 0.9.2
+    DESCRIPTION "Network connection quality analyzer"
+    VERSION ${version_major}.${version_minor}.${version_revision}
     LANGUAGES CXX
 )
 
@@ -50,17 +88,25 @@ set(sources
     backend.cpp
 )
 
+set(files_for_ide
+    backend.h
+    functions.h
+    pingdata.h
+)
+
 qt_add_resources(sources qml.qrc)
 
 target_sources(${CMAKE_PROJECT_NAME}
     PRIVATE
         ${sources}
+        ${files_for_ide}
 )
 
-#target_include_directories(${CMAKE_PROJECT_NAME}
-#    PRIVATE
-#        ${CMAKE_CURRENT_SOURCE_DIR}
-#)
+target_include_directories(${CMAKE_PROJECT_NAME}
+    PRIVATE
+        #${CMAKE_CURRENT_SOURCE_DIR}
+        "${PROJECT_BINARY_DIR}/include/"
+)
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
     Qt5::Quick
