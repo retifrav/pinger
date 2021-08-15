@@ -39,9 +39,6 @@ ApplicationWindow {
 
     property int latencyChartWidth: backend.getQueueSize() // chart view width in packets
 
-    property int dialogWindowWidth: 550
-    property int dialogWindowHeight: 350
-
     Settings {
         id: settings
 
@@ -216,8 +213,10 @@ ApplicationWindow {
             anchors.margins: 24
             spacing: 16
 
-            LayoutVertical {
+            ColumnLayout {
                 Layout.preferredWidth: parent.width * 0.65
+                Layout.fillHeight: true
+                spacing: Styles.layoutSpacing
 
                 LayoutRegion {
                     Layout.fillWidth: true
@@ -354,11 +353,15 @@ ApplicationWindow {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
 
-                    LayoutVertical {
+                    ColumnLayout {
                         anchors.fill: parent
+                        Layout.fillHeight: true
                         anchors.margins: 20
+                        spacing: Styles.layoutSpacing
 
-                        LayoutHorizontal {
+                        RowLayout {
+                            Layout.fillWidth: true
+                            spacing: Styles.layoutSpacing
 
                             FormLabelHeader {
                                 text: "Time / Packets"
@@ -452,19 +455,25 @@ ApplicationWindow {
 //                    }
                 }
 
-            LayoutVertical {
+            ColumnLayout {
                 Layout.preferredWidth: parent.width * 0.4
                 Layout.maximumWidth: 450
+                Layout.fillHeight: true
+                spacing: Styles.layoutSpacing
 
                 LayoutRegion {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
 
-                    LayoutVertical {
+                    ColumnLayout {
                         anchors.fill: parent
                         anchors.margins: 20
+                        Layout.fillHeight: true
+                        spacing: Styles.layoutSpacing
 
-                        LayoutHorizontal {
+                        RowLayout {
+                            Layout.fillWidth: true
+                            spacing: Styles.layoutSpacing
 
                             FormLabelHeader {
                                 id: lbl_headerPackets
@@ -484,11 +493,9 @@ ApplicationWindow {
                                 onClicked: {
                                     packets.visible = !packets.visible;
                                 }
-                                ToolTip.delay: Styles.toolTipDelay
-                                ToolTip.timeout: Styles.toolTipTimeout
-                                ToolTip.visible: hovered
-                                ToolTip.text: packets.visible
-                                    ? qsTr("Show pie chart") : qsTr("Show packets list")
+                                tooltipText: packets.visible
+                                    ? qsTr("Show pie chart")
+                                    : qsTr("Show packets list")
                             }
 //                            Image {
 //                                id: loading
@@ -649,86 +656,55 @@ ApplicationWindow {
                             layoutDirection: Qt.RightToLeft
                             spacing: 5
 
-                            FormText {
+                            FormTextWithHover {
                                 id: avgTime;
                                 text: "0";
-                                MouseArea {
-                                    anchors.fill: parent
-                                    hoverEnabled: true
-                                    ToolTip.delay: Styles.toolTipDelay
-                                    ToolTip.timeout: Styles.toolTipTimeout
-                                    ToolTip.visible: containsMouse
-                                    ToolTip.text: qsTr("Average packets time (latency)")
-                                }
+                                tooltipText: qsTr("Average packets time (latency)")
                             }
+
                             FormText { text: "|"; }
-                            FormText {
+
+                            FormTextWithHover {
                                 id: percentageLost
                                 text: "0%";
                                 color: Styles.colorLost
                                 visible: settings.showLostAsPercentage
-                                MouseArea {
-                                    anchors.fill: parent
-                                    onClicked: {
-                                        switchToPacketsLost(true);
-                                    }
-                                    hoverEnabled: true
-                                    ToolTip.delay: Styles.toolTipDelay
-                                    ToolTip.timeout: Styles.toolTipTimeout
-                                    ToolTip.visible: containsMouse
-                                    ToolTip.text: qsTr("Percentage of lost packets")
+                                tooltipText: qsTr("Percentage of lost packets")
+                                TapHandler {
+                                    onTapped: switchToPacketsLost(true);
                                 }
                             }
-                            FormText {
+                            FormTextWithHover {
                                 id: packetsLost
                                 text: "0";
                                 color: Styles.colorLost
                                 visible: !percentageLost.visible
-                                MouseArea {
-                                    anchors.fill: parent
-                                    onClicked: {
-                                        switchToPacketsLost(false);
-                                    }
-                                    hoverEnabled: true
-                                    ToolTip.delay: Styles.toolTipDelay
-                                    ToolTip.timeout: Styles.toolTipTimeout
-                                    ToolTip.visible: containsMouse
-                                    ToolTip.text: qsTr("Packets lost")
+                                tooltipText: qsTr("Packets lost")
+                                TapHandler {
+                                    onTapped: switchToPacketsLost(false);
                                 }
                             }
+
                             FormText { text: "|"; }
-                            FormText {
+
+                            FormTextWithHover {
                                 id: percentageReceived
                                 text: "0%";
                                 color: Styles.colorReceived
                                 visible: settings.showReceivedAsPercentage
-                                MouseArea {
-                                    anchors.fill: parent
-                                    onClicked: {
-                                        switchToPacketsReceived(true);
-                                    }
-                                    hoverEnabled: true
-                                    ToolTip.delay: Styles.toolTipDelay
-                                    ToolTip.timeout: Styles.toolTipTimeout
-                                    ToolTip.visible: containsMouse
-                                    ToolTip.text: qsTr("Percentage of received packets")
+                                tooltipText: qsTr("Percentage of received packets")
+                                TapHandler {
+                                    onTapped: switchToPacketsReceived(true);
                                 }
                             }
-                            FormText {
+                            FormTextWithHover {
                                 id: packetsReceived
                                 text: "0";
                                 color: Styles.colorReceived
                                 visible: !percentageReceived.visible
-                                MouseArea {
-                                    anchors.fill: parent
-                                    onClicked: {
-                                        switchToPacketsReceived(false);
-                                    }
-                                    hoverEnabled: true
-                                    ToolTip.delay: Styles.toolTipDelay
-                                    ToolTip.timeout: Styles.toolTipTimeout
-                                    ToolTip.visible: containsMouse
-                                    ToolTip.text: qsTr("Packets received")
+                                tooltipText: qsTr("Packets received");
+                                TapHandler {
+                                    onTapped: switchToPacketsReceived(false);
                                 }
                             }
                         }
@@ -740,7 +716,8 @@ ApplicationWindow {
                     Layout.preferredHeight: parent.height * 0.15
                     Layout.maximumHeight: 80
 
-                    LayoutHorizontal {
+                    RowLayout {
+                        Layout.fillWidth: true
                         anchors.centerIn: parent
                         spacing: parent.width * 0.05 + parent.width / btn_settings.width
 
@@ -816,201 +793,172 @@ ApplicationWindow {
         }
     }
 
-    MessageBox {
+    WindowMessage {
         id: dialogNoHost
         title: "No host provided"
         textHeader: title
-        textMain: "In order to ping some host, you need to provide either its domain name or its IP address"
+        textMain: "In order to ping some host, you need to provide either its domain name or its IP address."
         statusImage: "/images/warning.png"
     }
 
-    Window {
+    WindowDialog {
         id: dialogSettings
         visible: false
-        modality: Qt.WindowModal
 
-        width: dialogWindowWidth
-        minimumWidth: width
-        maximumWidth: width
-        height: dialogWindowHeight
-        minimumHeight: height
-        maximumHeight: height
-
-        Rectangle {
+        contents: ColumnLayout
+        {
             anchors.fill: parent
-            color: Styles.regionBackground
-            border.color: Styles.mainBackground
-            border.width: Styles.dialogBorderWidth
+            anchors.leftMargin: Styles.dialogPaddingLeft
+            anchors.topMargin: Styles.dialogPaddingTop
+            anchors.rightMargin: Styles.dialogPaddingRight
+            anchors.bottomMargin: Styles.dialogPaddingBottom
 
-            ColumnLayout
-            {
-                anchors.fill: parent
-                anchors.leftMargin: Styles.dialogPaddingLeft
-                anchors.topMargin: Styles.dialogPaddingTop
-                anchors.rightMargin: Styles.dialogPaddingRight
-                anchors.bottomMargin: Styles.dialogPaddingBottom
+            DialogText {
+                Layout.bottomMargin: Styles.dialogHeaderBottomMargin
+                text: "Settings"
+                font.pointSize: Styles.secondaryFontSize
+                font.bold: true
+            }
 
+            ColumnLayout {
                 DialogText {
-                    Layout.bottomMargin: Styles.dialogHeaderBottomMargin
-                    text: "Settings"
-                    font.pointSize: Styles.secondaryFontSize
+                    Layout.bottomMargin: Styles.dialogSubHeaderBottomMargin
+                    text: "General"
+                    font.pointSize: Styles.normalFontSize
                     font.bold: true
                 }
-
-                ColumnLayout {
-                    DialogText {
-                        Layout.bottomMargin: Styles.dialogSubHeaderBottomMargin
-                        text: "General"
-                        font.pointSize: Styles.normalFontSize
-                        font.bold: true
-                    }
-                    DialogSwitch {
-                        id: switchShowReport
-                        Layout.fillWidth: true
-                        text: qsTr("show report automatically")
-                        checked: settings.showReport
-                    }
-
+                DialogSwitch {
+                    id: switchShowReport
+                    Layout.fillWidth: true
+                    text: qsTr("show report automatically")
+                    checked: settings.showReport
                 }
 
-                ColumnLayout {
-                    Layout.fillWidth: true
-                    Layout.topMargin: Styles.dialogSectionTopMargin
+            }
 
-                    DialogText {
-                        Layout.bottomMargin: Styles.dialogSubHeaderBottomMargin
-                        text: "Sounds"
-                        font.pointSize: Styles.normalFontSize
-                        font.bold: true
-                    }
-                    DialogSwitch {
-                        id: switchSoundReceived
-                        Layout.fillWidth: true
-                        text: qsTr("packet received")
-                        checked: settings.makeSoundReceived
-                    }
-                    DialogSwitch {
-                        id: switchSoundLost
-                        Layout.fillWidth: true
-                        text: qsTr("packet lost")
-                        checked: settings.makeSoundLost
+            ColumnLayout {
+                Layout.fillWidth: true
+                Layout.topMargin: Styles.dialogSectionTopMargin
+
+                DialogText {
+                    Layout.bottomMargin: Styles.dialogSubHeaderBottomMargin
+                    text: "Sounds"
+                    font.pointSize: Styles.normalFontSize
+                    font.bold: true
+                }
+                DialogSwitch {
+                    id: switchSoundReceived
+                    Layout.fillWidth: true
+                    text: qsTr("packet received")
+                    checked: settings.makeSoundReceived
+                }
+                DialogSwitch {
+                    id: switchSoundLost
+                    Layout.fillWidth: true
+                    text: qsTr("packet lost")
+                    checked: settings.makeSoundLost
+                }
+            }
+
+            Item { Layout.fillHeight: true }
+
+            Row {
+                Layout.fillWidth: true
+                layoutDirection: Qt.RightToLeft
+                spacing: 5
+
+                DialogButton {
+                    text: "Save"
+                    onClicked: {
+                        settings.showReport = switchShowReport.checked;
+                        settings.makeSoundReceived = switchSoundReceived.checked;
+                        settings.makeSoundLost = switchSoundLost.checked;
+                        dialogSettings.close();
                     }
                 }
-
-                Item { Layout.fillHeight: true }
-
-                Row {
-                    Layout.fillWidth: true
-                    layoutDirection: Qt.RightToLeft
-                    spacing: 5
-
-                    DialogButton {
-                        text: "Save"
-                        onClicked: {
-                            settings.showReport = switchShowReport.checked;
-                            settings.makeSoundReceived = switchSoundReceived.checked;
-                            settings.makeSoundLost = switchSoundLost.checked;
-                            dialogSettings.close();
-                        }
-                    }
-                    DialogButton {
-                        text: "Cancel"
-                        onClicked: {
-                            dialogSettings.close();
-                            switchShowReport.checked = settings.showReport;
-                            switchSoundReceived.checked = settings.makeSoundReceived;
-                            switchSoundLost.checked = settings.makeSoundLost;
-                        }
+                DialogButton {
+                    text: "Cancel"
+                    onClicked: {
+                        dialogSettings.close();
+                        switchShowReport.checked = settings.showReport;
+                        switchSoundReceived.checked = settings.makeSoundReceived;
+                        switchSoundLost.checked = settings.makeSoundLost;
                     }
                 }
             }
         }
     }
 
-    Window {
+    WindowDialog {
         id: dialogReport
         visible: false
-        modality: Qt.WindowModal
 
-        width: dialogWindowWidth
-        minimumWidth: width
-        maximumWidth: width
-        height: dialogWindowHeight
-        minimumHeight: height
-        maximumHeight: height
-
-        Rectangle {
+        contents: ColumnLayout
+        {
             anchors.fill: parent
-            color: Styles.regionBackground
-            border.color: Styles.mainBackground
-            border.width: Styles.dialogBorderWidth
+            anchors.leftMargin: Styles.dialogPaddingLeft
+            anchors.topMargin: Styles.dialogPaddingTop
+            anchors.rightMargin: Styles.dialogPaddingRight
+            anchors.bottomMargin: Styles.dialogPaddingBottom
 
-            ColumnLayout
-            {
-                anchors.fill: parent
-                anchors.leftMargin: Styles.dialogPaddingLeft
-                anchors.topMargin: Styles.dialogPaddingTop
-                anchors.rightMargin: Styles.dialogPaddingRight
-                anchors.bottomMargin: Styles.dialogPaddingBottom
+            DialogText {
+                Layout.bottomMargin: Styles.dialogHeaderBottomMargin
+                text: "Report"
+                font.pointSize: Styles.secondaryFontSize
+                font.bold: true
+            }
 
-                DialogText {
-                    Layout.bottomMargin: Styles.dialogHeaderBottomMargin
-                    text: "Report"
-                    font.pointSize: Styles.secondaryFontSize
-                    font.bold: true
+            ColumnLayout {
+                Layout.fillHeight: true
+                spacing: 5
+
+                Row {
+                    spacing: Styles.dialogRowSpacing
+                    DialogText {
+                        text: "Total packets sent:"
+                    }
+                    DialogText {
+                        id: totalPacketsSent
+                        text: "0"
+                        font.bold: true
+                    }
                 }
 
-                ColumnLayout {
-                    Layout.fillHeight: true
-                    spacing: 5
-
-                    Row {
-                        spacing: Styles.dialogRowSpacing
-                        DialogText {
-                            text: "Total packets sent:"
-                        }
-                        DialogText {
-                            id: totalPacketsSent
-                            text: "0"
-                            font.bold: true
-                        }
+                Row {
+                    spacing: Styles.dialogRowSpacing
+                    DialogText {
+                        text: "Packets received:"
                     }
-
-                    Row {
-                        spacing: Styles.dialogRowSpacing
-                        DialogText {
-                            text: "Packets received:"
-                        }
-                        DialogText {
-                            id: totalPacketsReceived
-                            text: "0 (0%)"
-                            font.bold: true
-                        }
+                    DialogText {
+                        id: totalPacketsReceived
+                        text: "0 (0%)"
+                        font.bold: true
                     }
+                }
 
-                    Row {
-                        spacing: Styles.dialogRowSpacing
-                        DialogText {
-                            text: "Packets lost:"
-                        }
-                        DialogText {
-                            id: totalPacketsLost
-                            text: "0 (0%)"
-                            font.bold: true
-                        }
+                Row {
+                    spacing: Styles.dialogRowSpacing
+                    DialogText {
+                        text: "Packets lost:"
                     }
+                    DialogText {
+                        id: totalPacketsLost
+                        text: "0 (0%)"
+                        font.bold: true
+                    }
+                }
 
-                    Row {
-                        spacing: Styles.dialogRowSpacing
-                        DialogText {
-                            text: "Average latency:"
-                        }
-                        DialogText {
-                            id: totalAverageLatency
-                            text: "0ms"
-                            font.bold: true
-                        }
+                Row {
+                    spacing: Styles.dialogRowSpacing
+                    DialogText {
+                        text: "Average latency:"
                     }
+                    DialogText {
+                        id: totalAverageLatency
+                        text: "0ms"
+                        font.bold: true
+                    }
+                }
 
 //                    DialogText {
 //                        Layout.topMargin: Styles.dialogHeaderBottomMargin
@@ -1018,36 +966,35 @@ ApplicationWindow {
 //                        font.pointSize: Styles.normalFontSize
 //                        font.bold: true
 //                    }
-                    DialogText {
-                        id: conclusion
-                        Layout.fillWidth: true
-                        Layout.topMargin: Styles.dialogHeaderBottomMargin
-                        font.italic: true
-                        text: "¯\\_(ツ)_/¯"
-                    }
-
-                    Item {
-                        Layout.fillHeight: true
-                    }
+                DialogText {
+                    id: conclusion
+                    Layout.fillWidth: true
+                    Layout.topMargin: Styles.dialogHeaderBottomMargin
+                    font.italic: true
+                    text: "¯\\_(ツ)_/¯"
                 }
 
-                RowLayout {
-                    Layout.fillWidth: true
-                    //layoutDirection: Qt.RightToLeft
-                    spacing: 5
+                Item {
+                    Layout.fillHeight: true
+                }
+            }
 
-                    DialogButton {
-                        text: "Save report"
-                        onClicked: {
-                            addToLog("Initiated saving the report");
-                        }
+            RowLayout {
+                Layout.fillWidth: true
+                //layoutDirection: Qt.RightToLeft
+                spacing: 5
+
+                DialogButton {
+                    text: "Save report"
+                    onClicked: {
+                        addToLog("Initiated saving the report");
                     }
-                    Item { Layout.fillWidth: true; }
-                    DialogButton {
-                        text: "Close"
-                        onClicked: {
-                            dialogReport.close();
-                        }
+                }
+                Item { Layout.fillWidth: true; }
+                DialogButton {
+                    text: "Close"
+                    onClicked: {
+                        dialogReport.close();
                     }
                 }
             }

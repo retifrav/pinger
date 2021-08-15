@@ -1,13 +1,18 @@
 pragma Singleton
 import QtQuick 2.15
-//import QtQuick.Window 2.15
+import QtQuick.Window 2.15
 
 Item {
-    property int primaryFontSize: 24 // Screen.pixelDensity * Screen.devicePixelRatio
-    property int secondaryFontSize: 20
-    property int normalFontSize: 18
-    property int dialogFontSize: 16
-    property int consoleFontSize: 14
+    property real basePixelDensity: 5
+    function calculatedFontSize(fontSize) { return fontSize * Screen.pixelDensity / basePixelDensity; }
+
+    property int primaryFontSize: calculatedFontSize(24)
+    property int secondaryFontSize: calculatedFontSize(20)
+    property int normalFontSize: calculatedFontSize(18)
+    property int dialogFontSize: calculatedFontSize(16)
+    property int consoleFontSize: calculatedFontSize(14)
+
+    property int layoutSpacing: 20
 
     // colors
 
@@ -23,6 +28,9 @@ Item {
     property string colorError: "#CFE573" // 2
 
     // dialogs
+
+    property int dialogWindowWidth: 500
+    property int dialogWindowHeight: 350
 
     property int dialogBorderWidth: 1
     property int dialogPaddingLeft: 20

@@ -2,9 +2,7 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>LayoutRegion.qml</file>
-        <file>LayoutVertical.qml</file>
-        <file>LayoutHorizontal.qml</file>
-        <file>MessageBox.qml</file>
+        <file>WindowMessage.qml</file>
         <file>FormLabel.qml</file>
         <file>HalfRoundedButton.qml</file>
         <file>images/menu.png</file>
@@ -27,5 +25,7 @@
         <file>images/table.png</file>
         <file>FormLabelHeader.qml</file>
         <file>images/log.png</file>
+        <file>FormTextWithHover.qml</file>
+        <file>WindowDialog.qml</file>
     </qresource>
 </RCC>

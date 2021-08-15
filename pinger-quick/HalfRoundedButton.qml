@@ -4,7 +4,7 @@ import QtGraphicalEffects 1.15
 import QtQuick.Layouts 1.15
 
 Button {
-    id: control
+    id: root
 
     leftPadding: padding + 10
     topPadding: padding + 10
@@ -13,12 +13,12 @@ Button {
 
     property alias color: back.color
     property alias colorGlow: glow.color
-    property alias buttonDown: control.down
+    property alias buttonDown: root.down
 
     contentItem: Text {
-        text: control.text
+        text: root.text
         font.pointSize: Styles.secondaryFontSize
-        //font.bold: true
+        font.bold: true
         color: Styles.buttonsTextColor
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
@@ -29,14 +29,14 @@ Button {
         color: "transparent"
         HalfRounded {
             id: back
-            color: Styles.labelsColor//control.down ? "#677A86" : Styles.labelsColor
+            color: Styles.labelsColor//root.down ? "#677A86" : Styles.labelsColor
         }
         Glow {
             id: glow
             anchors.fill: back
             radius: 15
             samples: 15
-            color: back.color//control.down ? "#677A86" : Styles.labelsColor
+            color: back.color//root.down ? "#677A86" : Styles.labelsColor
             spread: 0.1
             source: back
             visible: false
@@ -44,7 +44,7 @@ Button {
     }
 
     onHoveredChanged: {
-//        hovered ? back.color = "#677A86" : back.color = Styles.labelsColor;
-        hovered ? glow.visible = true : glow.visible = false;
+//        root.hovered ? back.color = "#677A86" : back.color = Styles.labelsColor;
+        root.hovered ? glow.visible = true : glow.visible = false;
     }
 }

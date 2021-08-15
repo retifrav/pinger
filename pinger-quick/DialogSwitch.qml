@@ -2,33 +2,33 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 
 Switch {
-    id: control
+    id: root
 
     indicator: Rectangle {
         id: indicatorBase
         implicitWidth: 55
         implicitHeight: 16
-        x: control.leftPadding
+        x: root.leftPadding
         y: parent.height / 2 - height / 2
         radius: height / 2
-        color: control.checked ? Styles.colorReceived : Styles.colorLost
-        border.color: control.checked ? Styles.colorReceived : Styles.colorLost
+        color: root.checked ? Styles.colorReceived : Styles.colorLost
+        border.color: root.checked ? Styles.colorReceived : Styles.colorLost
 
         Rectangle {
-            x: control.checked ? parent.width - width : 0
+            x: root.checked ? parent.width - width : 0
             anchors.verticalCenter: indicatorBase.verticalCenter
             width: indicatorBase.height * 1.8
             height: width
             radius: width / 2
-            color: control.down ? "#cccccc" : "#ffffff"
-            border.color: "#cccccc"//control.checked ? Styles.colorReceived : Styles.colorLost
+            color: root.down ? "#cccccc" : "#ffffff"
+            border.color: "#cccccc"//root.checked ? Styles.colorReceived : Styles.colorLost
         }
     }
 
     contentItem: DialogText {
-        text: control.text
-        font: control.font
+        text: root.text
+        font.pointSize: Styles.dialogFontSize
         verticalAlignment: Text.AlignVCenter
-        leftPadding: control.indicator.width + control.spacing
+        leftPadding: root.indicator.width + root.spacing
     }
 }

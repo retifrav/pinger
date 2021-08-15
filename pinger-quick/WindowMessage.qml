@@ -3,14 +3,14 @@ import QtQuick.Window 2.15
 import QtQuick.Controls 2.15
 
 Window {
-    id: dialog
+    id: root
 
     property string title
     property string statusImage
     property string textHeader
     property string textMain
 
-    title: dialog.title
+    title: root.title
     modality: Qt.WindowModal
 
     width: 400
@@ -43,7 +43,7 @@ Window {
                     width: parent.width / 8
                     height: width
                     fillMode: Image.PreserveAspectFit
-                    source: dialog.statusImage
+                    source: root.statusImage
                 }
 
                 Column
@@ -53,12 +53,13 @@ Window {
 
                     DialogText {
                         width: parent.width
-                        text: dialog.textHeader
+                        text: root.textHeader
+                        font.pointSize: Styles.secondaryFontSize
                         font.bold: true
                     }
                     DialogText {
                         width: parent.width
-                        text: dialog.textMain
+                        text: root.textMain
                     }
                 }
             }
@@ -68,7 +69,7 @@ Window {
                 anchors.bottom: parent.bottom
                 anchors.right: parent.right
                 text: "OK"
-                onClicked: { dialog.close(); }
+                onClicked: { root.close(); }
             }
         }
     }
