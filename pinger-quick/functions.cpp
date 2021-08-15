@@ -1,11 +1,5 @@
 #include "functions.h"
 
-const char* string2char(QString str)
-{
-    QByteArray ba = str.toLatin1();
-    return ba.data();
-}
-
 QStringList getArgs4ping()
 {
     #if defined(Q_OS_WIN)
@@ -23,7 +17,7 @@ QPair<int, QString> parsePingOutput(int pingExitCode, QString pingOutput)
 
     QPair<int, QString> rez(2, "Unknown error");
 
-    QString latency, /*lost,*/ error;
+    //QString latency, lost, error;
 
     #if defined(Q_OS_WIN) // exit code is useless on Windows, we need to parse the output
         //qDebug() << "[windows]";
@@ -73,9 +67,10 @@ QPair<int, QString> parsePingOutput(int pingExitCode, QString pingOutput)
             QRegularExpressionMatch match = timeRegEx.match(pingOutput);
             if (match.hasMatch())
             {
-                rez.second = QString("%1 %2")
-                    .arg(match.captured(1))
-                    .arg(match.captured(2));
+                rez.second = QString("%1 %2").arg(
+                    match.captured(1),
+                    match.captured(2)
+                );
             }
             else
             {

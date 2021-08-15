@@ -3,7 +3,8 @@ cmake_minimum_required(VERSION 3.15)
 set(version_major 1)
 set(version_minor 0)
 set(version_revision 1)
-set(git_hash "00000000000")
+set(version_commit "00000000000")
+string(TIMESTAMP version_date UTC)
 
 execute_process(
     COMMAND git rev-parse --short=11 HEAD
@@ -22,8 +23,8 @@ if(NOT gitResult EQUAL 0)
 else()
     #message(${gitOut})
     #string(REPLACE "build-" "" gitBuildNumber ${gitOut})
-    #set(git_hash ${gitBuildNumber})
-    set(git_hash ${gitOut})
+    #set(version_commit ${gitBuildNumber})
+    set(version_commit ${gitOut})
 endif()
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/include/build_info.h"
     "#ifndef BUILD_INFO_H\n"
@@ -33,7 +34,8 @@ file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/include/build_info.h"
     "\t\tconst int versionMajor = ${version_major};\n"
     "\t\tconst int versionMinor = ${version_minor};\n"
     "\t\tconst int versionRevision = ${version_revision};\n"
-    "\t\tconst std::string gitHash = \"${git_hash}\";\n"
+    "\t\tconst std::string versionCommit = \"${version_commit}\";\n"
+    "\t\tconst std::string versionDate = \"${version_date}\";\n"
     "\t}\n}\n\n"
     "#endif // BUILD_INFO_H"
 )

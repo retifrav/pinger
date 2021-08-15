@@ -7,8 +7,6 @@
 
 QStringList getArgs4ping();
 
-const char* string2char(QString str);
-
 // Time (delay/latency) is reported differently on differen OSes:
 //
 // - Windows: Reply from 87.250.250.242: bytes=32 time=27ms TTL=245

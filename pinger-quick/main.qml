@@ -1019,6 +1019,9 @@ ApplicationWindow {
         pieLost.value = 0;
         pieReceived.value = 0;
 
+        chartSeriesLatencyAxisY.min = 0;
+        chartSeriesLatencyAxisY.max = 100;
+
         totalPacketsSent.text = "0";
         totalPacketsReceived.text = "0 (0%)";
         totalPacketsLost.text = "0 (0%)";

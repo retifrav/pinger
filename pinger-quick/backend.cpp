@@ -32,11 +32,12 @@ Backend::Backend()
 
 QString Backend::getVersionInfo()
 {
-    return QString("Version: %1.%2.%3, build: %4").arg(
+    return QString("Version: %1.%2.%3, commit: %4, built on: %5").arg(
         QString::number(decovar::pinger::versionMajor),
         QString::number(decovar::pinger::versionMinor),
         QString::number(decovar::pinger::versionRevision),
-        QString::fromStdString(decovar::pinger::gitHash)
+        QString::fromStdString(decovar::pinger::versionCommit),
+        QString::fromStdString(decovar::pinger::versionDate)
     );
 }
 
