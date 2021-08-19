@@ -17,7 +17,7 @@ Button {
 
     contentItem: Text {
         text: root.text
-        font.pointSize: Styles.secondaryFontSize
+        font.pointSize: Styles.headerFontSize
         font.bold: true
         color: Styles.buttonsTextColor
         verticalAlignment: Text.AlignVCenter

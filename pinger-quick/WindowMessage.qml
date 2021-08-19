@@ -54,7 +54,7 @@ Window {
                     DialogText {
                         width: parent.width
                         text: root.textHeader
-                        font.pointSize: Styles.secondaryFontSize
+                        font.pointSize: Styles.headerFontSize
                         font.bold: true
                     }
                     DialogText {

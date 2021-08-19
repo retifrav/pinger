@@ -6,9 +6,9 @@ Item {
     property real basePixelDensity: 5
     function calculatedFontSize(fontSize) { return fontSize * Screen.pixelDensity / basePixelDensity; }
 
-    property int primaryFontSize: calculatedFontSize(24)
-    property int secondaryFontSize: calculatedFontSize(20)
-    property int normalFontSize: calculatedFontSize(18)
+    property int sectionHeaderFontSize: calculatedFontSize(22)
+    property int headerFontSize: calculatedFontSize(20)
+    property int normalFontSize: calculatedFontSize(19)
     property int dialogFontSize: calculatedFontSize(16)
     property int consoleFontSize: calculatedFontSize(14)
 

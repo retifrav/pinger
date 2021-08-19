@@ -87,23 +87,20 @@ float PingData::get_receivedPercentage()
 
 void PingData::addPacket(QPair<int, QString> pckt)
 {
-    if (pckt.first != 2)
+    pcktSent++;
+    if (pckt.first == 0)
     {
-        pcktSent++;
-        if (pckt.first == 0)
-        {
-            pcktReceived++;
+        pcktReceived++;
 
-            lastPacketTime = parseLatency(pckt.second);
-            totalTime += lastPacketTime;
-            avgTime = totalTime / static_cast<float>(pcktReceived);
-        }
-        else
-        {
-            lastPacketTime = 0;
-            pckt.second = QString::number(lastPacketTime);
-            pcktLost++;
-        }
+        lastPacketTime = parseLatency(pckt.second);
+        totalTime += lastPacketTime;
+        avgTime = totalTime / static_cast<float>(pcktReceived);
+    }
+    else
+    {
+        lastPacketTime = 0;
+        pckt.second = QString::number(lastPacketTime);
+        pcktLost++;
     }
 
     packetsQueue.enqueue(pckt);

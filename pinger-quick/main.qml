@@ -136,8 +136,15 @@ ApplicationWindow {
         }
 
         onGotError: {
-            //console.error(errorMessage.trim());
             addToLog(errorMessage.trim());
+
+            packetsModel.append({
+                "status": "Error",
+                "time": "-",
+                "packetColor": Styles.colorError
+            });
+            // TODO improve behaviour for resizing window
+            packets.positionViewAtEnd();
         }
     }
 
@@ -337,10 +344,19 @@ ApplicationWindow {
                                 let results = backend.getPingData();
 
                                 totalPacketsSent.text = results.Sent;
-                                totalPacketsReceived.text = `${results.Received} (${results.ReceivedPercent}%)`;
-                                totalPacketsLost.text = `${results.Lost} (${results.LostPercent}%)`;
-                                totalAverageLatency.text = `${results.AvgLatency}ms`;
-                                conclusion.text = makeConclusion(results.LostPercent, results.AvgLatency);
+                                let percentColor = results.ReceivedPercent < 95
+                                    ? Styles.colorLost
+                                    : Styles.colorReceived;
+                                totalPacketsReceived.text = `${results.Received} (<font color="${percentColor}">${results.ReceivedPercent}%</font>)`;
+                                totalPacketsLost.text = `${results.Lost} (<font color="${percentColor}">${results.LostPercent}%</font>)`;
+                                let latencyColor = results.AvgLatency >= 60
+                                    ? Styles.colorLost
+                                    : Styles.colorReceived;
+                                totalAverageLatency.text = `<font color="${latencyColor}">${results.AvgLatency}ms</font>`;
+                                conclusion.text = makeConclusion(
+                                    results.LostPercent,
+                                    results.AvgLatency
+                                );
 
                                 if (settings.showReport === true) { dialogReport.show(); }
 
@@ -816,7 +832,7 @@ ApplicationWindow {
             DialogText {
                 Layout.bottomMargin: Styles.dialogHeaderBottomMargin
                 text: "Settings"
-                font.pointSize: Styles.secondaryFontSize
+                font.pointSize: Styles.headerFontSize
                 font.bold: true
             }
 
@@ -904,7 +920,7 @@ ApplicationWindow {
             DialogText {
                 Layout.bottomMargin: Styles.dialogHeaderBottomMargin
                 text: "Report"
-                font.pointSize: Styles.secondaryFontSize
+                font.pointSize: Styles.headerFontSize
                 font.bold: true
             }
 
@@ -1068,9 +1084,9 @@ ApplicationWindow {
 
     function makeConclusion(lostPercent, averageLatency)
     {
-        console.log(
-            `Making conclusion with ${lostPercent}% packets lost and ${averageLatency}ms average latency`
-        );
+//        console.log(
+//            `Making conclusion with ${lostPercent}% packets lost and ${averageLatency}ms average latency`
+//        );
 
         let lostPercentNumber = Number(lostPercent);
         let averageLatencyNumber = Number(averageLatency);
@@ -1131,27 +1147,27 @@ ApplicationWindow {
         }
         else if (averageLatencyNumber < 40)
         {
-            conclusionLatency = `<font color='${Styles.colorReceived}'>good</font>`;
+            conclusionLatency = `<font color='${Styles.colorReceived}'>low</font>`;
             conclusionScore -= 1;
         }
         else if (averageLatencyNumber < 60)
         {
-            conclusionLatency = "okay";
+            conclusionLatency = "rather low";
             conclusionScore -= 2;
         }
         else if (averageLatencyNumber < 80)
         {
-            conclusionLatency = `<font color='${Styles.colorLost}'>not great</font>`;
+            conclusionLatency = `<font color='${Styles.colorLost}'>quite high</font>`;
             conclusionScore -= 3;
         }
         else if (averageLatencyNumber < 100)
         {
-            conclusionLatency = `<font color='${Styles.colorLost}'>bad</font>`;
+            conclusionLatency = `<font color='${Styles.colorLost}'>high</font>`;
             conclusionScore -= 4;
         }
         else
         {
-            conclusionLatency = `<font color='${Styles.colorLost}'>very bad</font>`;
+            conclusionLatency = `<font color='${Styles.colorLost}'>very high</font>`;
             conclusionScore -= 5;
         }
 

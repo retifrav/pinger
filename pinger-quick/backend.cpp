@@ -63,13 +63,6 @@ void Backend::pinged(int exitCode, QProcess::ExitStatus exitStatus)
         ping.readAllStandardOutput()
     );
 
-    if (pckt.first != 0)
-    {
-        //emit gotError(pckt.second);
-        pckt.second = "-";
-    }
-    pingData.addPacket(pckt);
-
     switch (pckt.first)
     {
     case 0:
@@ -83,6 +76,18 @@ void Backend::pinged(int exitCode, QProcess::ExitStatus exitStatus)
         //qDebug() << rez.second;
         makeSound = settings.value("makeSoundLost").toBool();
         break;
+    }
+
+    if (pckt.first != 2) { pingData.addPacket(pckt); }
+    else
+    {
+        emit gotError(pckt.second);
+        return;
+    }
+
+    if (pckt.first != 0)
+    {
+        pckt.second = "-";
     }
 
     QString lostPercentage = QString("%1%")

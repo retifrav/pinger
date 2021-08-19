@@ -21,7 +21,7 @@ public:
     QList<int> *get_packetsQueueTimes();
     float get_lastPacketTime();
     float get_avgTime();
-    QQueue< QPair<int, QString> > get_packets();
+    QQueue<QPair<int, QString>> get_packets();
 
     void resetEverything();
 
@@ -29,13 +29,13 @@ public:
     //QString generateReport(int reportFormat);
 
 private:
-    int pcktLost;
-    int pcktReceived;
-    int pcktSent;
+    unsigned long pcktLost;
+    unsigned long pcktReceived;
+    unsigned long pcktSent;
     int packetsQueueSize;
     float avgTime;
     float lastPacketTime;
-    int totalTime;
+    unsigned long totalTime;
     QQueue<QPair<int, QString>> packetsQueue;
 
     void resizePacketsQueue(int newQueueSize);
