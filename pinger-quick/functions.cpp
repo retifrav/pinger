@@ -84,7 +84,9 @@ QPair<int, QString> parsePingOutput(int pingExitCode, QString pingOutput)
             break;
         default:
             rez.first = 2;
-            rez.second = pingOutput;
+            rez.second = pingOutput.trimmed().isEmpty()
+                ? "Unknown network error"
+                : pingOutput.trimmed();
             break;
         }
     #endif
