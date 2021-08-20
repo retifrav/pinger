@@ -17,7 +17,7 @@ QPair<int, QString> parsePingOutput(int pingExitCode, QString pingOutput)
 
     QPair<int, QString> rez(2, "Unknown error");
 
-    //QString latency, lost, error;
+    QString error;//latency, lost;
 
     #if defined(Q_OS_WIN) // exit code is useless on Windows, we need to parse the output
         //qDebug() << "[windows]";
@@ -27,9 +27,10 @@ QPair<int, QString> parsePingOutput(int pingExitCode, QString pingOutput)
             if (match.hasMatch())
             {
                 rez.first = 0;
-                rez.second = QString("%1 %2")
-                    .arg(match.captured(1))
-                    .arg(match.captured(2));
+                rez.second = QString("%1 %2").arg(
+                    match.captured(1),
+                    match.captured(2)
+                );
             }
             else
             {
