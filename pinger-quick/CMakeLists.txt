@@ -39,6 +39,7 @@ file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/include/build_info.h"
     "\t}\n}\n\n"
     "#endif // BUILD_INFO_H"
 )
+message(STATUS "Version: ${version_major}.${version_minor}.${version_revision}, ${version_commit}")
 
 project("Pinger"
     DESCRIPTION "Network connection quality analyzer"

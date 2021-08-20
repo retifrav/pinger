@@ -38,6 +38,7 @@ ApplicationWindow {
     property bool debugMode: true
 
     property int latencyChartWidth: backend.getQueueSize() // chart view width in packets
+    property int minimumRequiredPackets: 50
 
     Settings {
         id: settings
@@ -82,7 +83,7 @@ ApplicationWindow {
             });
             //if (packetsModel.count > backend.getQueueSize()) { packetsModel.remove(0); }
             // TODO improve behaviour for resizing window
-            packets.positionViewAtEnd();
+            if (packets.atYEnd) { packets.positionViewAtEnd(); }
             //if (packets.contentHeight > packets.height) { packetsModel.remove(0); }
 
             avgTime.text = `~${averageTime} ms`;
@@ -144,7 +145,7 @@ ApplicationWindow {
                 "packetColor": Styles.colorError
             });
             // TODO improve behaviour for resizing window
-            packets.positionViewAtEnd();
+            if (packets.atYEnd) { packets.positionViewAtEnd(); }
         }
     }
 
@@ -353,10 +354,12 @@ ApplicationWindow {
                                     ? Styles.colorLost
                                     : Styles.colorReceived;
                                 totalAverageLatency.text = `<font color="${latencyColor}">${results.AvgLatency}ms</font>`;
-                                conclusion.text = makeConclusion(
-                                    results.LostPercent,
-                                    results.AvgLatency
-                                );
+                                conclusion.text = results.Sent < minimumRequiredPackets
+                                    ? qsTr(`Not enough data to make a proper conclusion. Let the program to send at least ${minimumRequiredPackets} packets.`)
+                                    : makeConclusion(
+                                        results.LostPercent,
+                                        results.AvgLatency
+                                    );
 
                                 if (settings.showReport === true) { dialogReport.show(); }
 
@@ -599,6 +602,26 @@ ApplicationWindow {
                                 FormText {
                                     anchors.right: parent.right
                                     text: time
+                                }
+                            }
+                            Rectangle {
+                                anchors.bottom: parent.bottom
+                                width: parent.width
+                                height: scrollToTheEnd.contentHeight + 15
+                                radius: 5
+                                color: Styles.mainBackground
+                                opacity: 0.9
+                                visible: !packets.atYEnd
+
+                                FormLabel {
+                                    id: scrollToTheEnd
+                                    anchors.centerIn: parent
+                                    text: "▼"
+                                    font.pointSize: Styles.dialogFontSize
+                                }
+
+                                TapHandler {
+                                    onTapped: packets.positionViewAtEnd();
                                 }
                             }
                         }
@@ -1152,7 +1175,7 @@ ApplicationWindow {
         }
         else if (averageLatencyNumber < 60)
         {
-            conclusionLatency = "rather low";
+            conclusionLatency = `<font color='${Styles.colorReceived}'>rather low</font>`;
             conclusionScore -= 2;
         }
         else if (averageLatencyNumber < 80)
