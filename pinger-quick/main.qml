@@ -345,14 +345,14 @@ ApplicationWindow {
                                 let results = backend.getPingData();
 
                                 totalPacketsSent.text = results.Sent;
-                                let percentColor = results.ReceivedPercent < 95
-                                    ? Styles.colorLost
+                                let percentColor = results.ReceivedPercent < 98
+                                    ? results.ReceivedPercent < 95 ? Styles.colorLost : Styles.colorError
                                     : Styles.colorReceived;
                                 totalPacketsReceived.text = `${results.Received} (<font color="${percentColor}">${results.ReceivedPercent}%</font>)`;
                                 totalPacketsLost.text = `${results.Lost} (<font color="${percentColor}">${results.LostPercent}%</font>)`;
-                                let latencyColor = results.AvgLatency >= 60
+                                let latencyColor = results.AvgLatency >= 80
                                     ? Styles.colorLost
-                                    : Styles.colorReceived;
+                                    : results.AvgLatency >= 60 ? Styles.colorError : Styles.colorReceived;
                                 totalAverageLatency.text = `<font color="${latencyColor}">${results.AvgLatency}ms</font>`;
                                 conclusion.text = results.Sent < minimumRequiredPackets
                                     ? qsTr(`Not enough data to make a proper conclusion. Let the program to send at least ${minimumRequiredPackets} packets.`)
@@ -1135,7 +1135,7 @@ ApplicationWindow {
         }
         else if (lostPercentNumber < 5)
         {
-            conclusionReliability = "okay";
+            conclusionReliability = "<font color='${Styles.colorError}'>okay</font>";
             conclusionScore -= 2;
         }
         else if (lostPercentNumber < 10)
@@ -1175,7 +1175,7 @@ ApplicationWindow {
         }
         else if (averageLatencyNumber < 60)
         {
-            conclusionLatency = `<font color='${Styles.colorReceived}'>rather low</font>`;
+            conclusionLatency = `<font color='${Styles.colorError}'>okay</font>`;
             conclusionScore -= 2;
         }
         else if (averageLatencyNumber < 80)
