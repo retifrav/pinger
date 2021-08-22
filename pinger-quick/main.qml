@@ -24,9 +24,10 @@ ApplicationWindow {
 
     readonly property string applicationName: backend.getApplicationName()
     readonly property var applicationVersion: backend.getVersionInfo()
-    readonly property string applicationVersionString: `<b>Version:</b> ${applicationVersion.major}.${applicationVersion.minor}.${applicationVersion.revision}<br>
-        <b>Commit:</b> ${applicationVersion.commit}<br>
-        <b>Built on:</b> ${applicationVersion.date}`
+    readonly property string applicationVersionString: `<b>Version:</b> ${applicationVersion.major}.${applicationVersion.minor}.${applicationVersion.revision}`
+        .concat(`<br><b>Commit:</b> ${applicationVersion.commit}`)
+        .concat(`<br><b>Built on:</b> ${applicationVersion.date}`)
+    readonly property bool enableMenuBar: true//Qt.platform.os === "osx"
 
     property bool debugMode: true
 
@@ -71,22 +72,35 @@ ApplicationWindow {
         Menu {
             id: fileMenu
             title: qsTr("File")
+            visible: mainWindow.enableMenuBar
 
-//            MenuItem {
-//                text: qsTr("Ololo")
-//                onTriggered: console.debug("ololo menu item clicked")
-//            }
-
-            // this one won't show up in File menu because of its `role`,
-            // and it will actually appear in the main menu - under the application name,
-            // where you'd usually expect About menu to be
             MenuItem {
-                //text: qsTr("About")    // no need to set the text,
-                role: MenuItem.AboutRole // because it gets generated
+                text: qsTr("Preferences...")
+                role: MenuItem.PreferencesRole
+                shortcut: "Ctrl+,"
+                onTriggered: dialogSettings.show()
+            }
+
+            MenuSeparator {}
+
+            MenuItem {
+                text: qsTr("Quit")
+                role: MenuItem.QuitRole
+                onTriggered: Qt.quit()
+            }
+        }
+
+        Menu {
+            id: editMenu
+            title: qsTr("?")
+            visible: mainWindow.enableMenuBar
+
+            MenuItem {
+                text: qsTr("About")
+                role: MenuItem.AboutRole
                 onTriggered: { dialogAbout.show(); }
             }
 
-            // almost about the same here
             MenuItem {
                 text: qsTr("About Qt")
                 role: MenuItem.AboutQtRole
@@ -96,15 +110,12 @@ ApplicationWindow {
                 }
                 visible: mainWindow.debugMode
             }
-        }
 
-        Menu {
-            id: editMenu
-            title: qsTr("Edit")
+            MenuSeparator {}
 
             MenuItem {
-                text: qsTr("Stuff")
-                onTriggered: console.debug("stuff menu item clicked")
+                text: qsTr("License")
+                onTriggered: console.debug("license menu item clicked")
             }
         }
     }

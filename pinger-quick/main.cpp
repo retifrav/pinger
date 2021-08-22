@@ -5,6 +5,38 @@
 
 int main(int argc, char *argv[])
 {
+    if (argc == 2)
+    {
+        if (strcmp(argv[1], "--version") == 0)
+        {
+            QTextStream(stdout) << QString("Version: %1.%2.%3, commit: %4, built on: %5").arg(
+                QString::number(decovar::pinger::versionMajor),
+                QString::number(decovar::pinger::versionMinor),
+                QString::number(decovar::pinger::versionRevision),
+                QString::fromStdString(decovar::pinger::versionCommit),
+                QString::fromStdString(decovar::pinger::versionDate)
+            ) << Qt::endl;
+            return EXIT_SUCCESS;
+        }
+
+        if (strcmp(argv[1], "--help") == 0)
+        {
+            QTextStream(stdout) << QString("There is no help information yet. %1").arg(
+                "Although, you can check the application version with --version"
+            ) << Qt::endl;
+            return EXIT_SUCCESS;
+        }
+
+        QTextStream(stdout) << "Unsupported argument" << Qt::endl;
+        return EXIT_FAILURE;
+    }
+
+    if (argc > 2)
+    {
+        QTextStream(stderr) << "Unsupported amount of arguments" << Qt::endl;
+        return EXIT_FAILURE;
+    }
+
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     // should be QGuiApplication, but Charts depend on Graphics View

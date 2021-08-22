@@ -10,7 +10,7 @@ Item {
     property int sectionHeaderFontSize: calculatedFontSize(22)
     property int headerFontSize: calculatedFontSize(20)
     property int normalFontSize: calculatedFontSize(19)
-    property int dialogFontSize: calculatedFontSize(16)
+    property int dialogFontSize: calculatedFontSize(15)
     property int consoleFontSize: calculatedFontSize(14)
 
     property int layoutSpacing: 20
