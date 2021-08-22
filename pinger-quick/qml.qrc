@@ -27,5 +27,6 @@
         <file>images/log.png</file>
         <file>FormTextWithHover.qml</file>
         <file>WindowDialog.qml</file>
+        <file>images/logo.png</file>
     </qresource>
 </RCC>

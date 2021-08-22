@@ -1,2 +1,2 @@
-module AppStyle
+module ApplicationStyles
 singleton Styles 1.0 styles.qml

@@ -47,11 +47,14 @@ public slots:
     // just in case overriding the close event to kill the pinging process
     void closeEvent();
     void dumpTelemetry(QString telemetry);
-    QString getVersionInfo();
+    QString getApplicationName();
+    QJsonObject getVersionInfo();
+    void showAboutQt();
 
 private:
     int adjustSpread(int diff);
 
+    const QString _applicationName = "Pinger";
     QProcess ping;
     QTimer timer;
     QSoundEffect effect;

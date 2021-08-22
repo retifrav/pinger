@@ -5,10 +5,11 @@ import QtQuick.Layouts 1.15
 import QtGraphicalEffects 1.15
 import QtCharts 2.15
 import Qt.labs.settings 1.1
+import Qt.labs.platform 1.1
 //import QtQuick.Controls 1.4 as QQC1
 //import QtQuick.Controls.Styles 1.4 as QQC1S
 import dev.decovar.Backend 1.0
-import AppStyle 1.0
+import ApplicationStyles 1.0
 
 ApplicationWindow {
     id: mainWindow
@@ -19,21 +20,13 @@ ApplicationWindow {
     minimumWidth: 900
     height: 650
     minimumHeight: 500
-    title: qsTr("pinger")
+    title: applicationName
 
-//    menuBar: MenuBar {
-//        Menu {
-//           title: qsTr("&File")
-//           Action { text: qsTr("&Save") }
-//           Action { text: qsTr("Save &as...") }
-//           MenuSeparator { }
-//           Action { text: qsTr("&Quit") }
-//       }
-//       Menu {
-//           title: qsTr("&Help")
-//           Action { text: qsTr("&About") }
-//       }
-//    }
+    readonly property string applicationName: backend.getApplicationName()
+    readonly property var applicationVersion: backend.getVersionInfo()
+    readonly property string applicationVersionString: `<b>Version:</b> ${applicationVersion.major}.${applicationVersion.minor}.${applicationVersion.revision}<br>
+        <b>Commit:</b> ${applicationVersion.commit}<br>
+        <b>Built on:</b> ${applicationVersion.date}`
 
     property bool debugMode: true
 
@@ -54,6 +47,66 @@ ApplicationWindow {
 
         property bool showReceivedAsPercentage: false
         property bool showLostAsPercentage: true
+    }
+
+    // application menu, not native
+    /*menuBar: MenuBar {
+        Menu {
+           title: qsTr("&File")
+           Action { text: qsTr("&Save") }
+           Action { text: qsTr("Save &as...") }
+           MenuSeparator { }
+           Action { text: qsTr("&Quit") }
+       }
+       Menu {
+           title: qsTr("&Help")
+           Action { text: qsTr("&About") }
+       }
+    }*/
+
+    // native application menu, mostly for Mac OS
+    MenuBar {
+        id: menuBar
+
+        Menu {
+            id: fileMenu
+            title: qsTr("File")
+
+//            MenuItem {
+//                text: qsTr("Ololo")
+//                onTriggered: console.debug("ololo menu item clicked")
+//            }
+
+            // this one won't show up in File menu because of its `role`,
+            // and it will actually appear in the main menu - under the application name,
+            // where you'd usually expect About menu to be
+            MenuItem {
+                //text: qsTr("About")    // no need to set the text,
+                role: MenuItem.AboutRole // because it gets generated
+                onTriggered: { dialogAbout.show(); }
+            }
+
+            // almost about the same here
+            MenuItem {
+                text: qsTr("About Qt")
+                role: MenuItem.AboutQtRole
+                onTriggered: {
+                    //console.debug(Qt.platform.os, Qt.platform.pluginName)
+                    backend.showAboutQt();
+                }
+                visible: mainWindow.debugMode
+            }
+        }
+
+        Menu {
+            id: editMenu
+            title: qsTr("Edit")
+
+            MenuItem {
+                text: qsTr("Stuff")
+                onTriggered: console.debug("stuff menu item clicked")
+            }
+        }
     }
 
     ListModel { id: packetsModel }
@@ -608,7 +661,6 @@ ApplicationWindow {
                                 anchors.bottom: parent.bottom
                                 width: parent.width
                                 height: scrollToTheEnd.contentHeight + 15
-                                radius: 5
                                 color: Styles.mainBackground
                                 opacity: 0.9
                                 visible: !packets.atYEnd
@@ -833,6 +885,14 @@ ApplicationWindow {
     }
 
     WindowMessage {
+        id: dialogAbout
+        title: `About ${applicationName}`
+        textHeader: applicationName
+        textMain: applicationVersionString
+        statusImage: "/images/logo.png"
+    }
+
+    WindowMessage {
         id: dialogNoHost
         title: "No host provided"
         textHeader: title
@@ -1041,7 +1101,8 @@ ApplicationWindow {
     }
 
     Component.onCompleted: {
-        addToLog(backend.getVersionInfo());
+        //addToLog(JSON.stringify(applicationVersion));
+
         // start pinging right after launching
         if (host.text.length !== 0) { btn_ping.clicked(); }
     }

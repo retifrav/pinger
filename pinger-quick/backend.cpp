@@ -30,15 +30,24 @@ Backend::Backend()
     );
 }
 
-QString Backend::getVersionInfo()
+QJsonObject Backend::getVersionInfo()
 {
-    return QString("Version: %1.%2.%3, commit: %4, built on: %5").arg(
-        QString::number(decovar::pinger::versionMajor),
-        QString::number(decovar::pinger::versionMinor),
-        QString::number(decovar::pinger::versionRevision),
-        QString::fromStdString(decovar::pinger::versionCommit),
-        QString::fromStdString(decovar::pinger::versionDate)
-    );
+//    return QString("Version: %1.%2.%3, commit: %4, built on: %5").arg(
+//        QString::number(decovar::pinger::versionMajor),
+//        QString::number(decovar::pinger::versionMinor),
+//        QString::number(decovar::pinger::versionRevision),
+//        QString::fromStdString(decovar::pinger::versionCommit),
+//        QString::fromStdString(decovar::pinger::versionDate)
+//    );
+    QJsonObject version
+    {
+        {"major",    QString::number(decovar::pinger::versionMajor)},
+        {"minor",    QString::number(decovar::pinger::versionMinor)},
+        {"revision", QString::number(decovar::pinger::versionRevision)},
+        {"commit",   QString::fromStdString(decovar::pinger::versionCommit)},
+        {"date",     QString::fromStdString(decovar::pinger::versionDate)}
+    };
+    return version;
 }
 
 void Backend::pinged(int exitCode, QProcess::ExitStatus exitStatus)
@@ -241,4 +250,14 @@ void Backend::dumpTelemetry(QString telemetry)
     stream.flush();
 
     file.close();
+}
+
+QString Backend::getApplicationName()
+{
+    return _applicationName;
+}
+
+void Backend::showAboutQt()
+{
+    QApplication::aboutQt();
 }

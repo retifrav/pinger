@@ -13,10 +13,10 @@ Window {
     title: root.title
     modality: Qt.WindowModal
 
-    width: 400
+    width: 450
     minimumWidth: width
     maximumWidth: width
-    height: 180
+    height: 200
     minimumHeight: height
     maximumHeight: height
 
@@ -40,7 +40,7 @@ Window {
 
                 Image {
                     id: img
-                    width: parent.width / 8
+                    width: parent.width / 7
                     height: width
                     fillMode: Image.PreserveAspectFit
                     source: root.statusImage
@@ -49,7 +49,7 @@ Window {
                 Column
                 {
                     width: parent.width - img.width - parent.spacing * 1.5
-                    spacing: 10
+                    spacing: 15
 
                     DialogText {
                         width: parent.width

@@ -1,4 +1,5 @@
 pragma Singleton
+
 import QtQuick 2.15
 import QtQuick.Window 2.15
 
@@ -34,7 +35,7 @@ Item {
 
     property int dialogBorderWidth: 1
     property int dialogPaddingLeft: 20
-    property int dialogPaddingTop: 15
+    property int dialogPaddingTop: 20
     property int dialogPaddingRight: 15
     property int dialogPaddingBottom: 15
 
