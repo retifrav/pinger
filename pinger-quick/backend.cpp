@@ -28,6 +28,8 @@ Backend::Backend()
         //[=](int exitCode, QProcess::ExitStatus exitStatus){ pinged(exitCode, exitStatus); });
         this, &Backend::pinged
     );
+
+    _licensedTo = "";
 }
 
 QJsonObject Backend::getVersionInfo()
@@ -260,4 +262,9 @@ QString Backend::getApplicationName()
 void Backend::showAboutQt()
 {
     QApplication::aboutQt();
+}
+
+QString Backend::getLicensedTo()
+{
+    return _licensedTo;
 }

@@ -50,6 +50,7 @@ public slots:
     QString getApplicationName();
     QJsonObject getVersionInfo();
     void showAboutQt();
+    QString getLicensedTo();
 
 private:
     int adjustSpread(int diff);
@@ -61,6 +62,8 @@ private:
     PingData pingData;
     QSettings settings;
     QString _telemetryFile;
+
+    QString _licensedTo;
 };
 
 #endif // BACKEND_H

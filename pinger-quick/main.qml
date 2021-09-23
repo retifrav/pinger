@@ -20,7 +20,9 @@ ApplicationWindow {
     minimumWidth: 900
     height: 650
     minimumHeight: 500
-    title: applicationName
+    title: mainWindow.licensedTo.length === 0
+        ? `${applicationName} [unregistered]`
+        : applicationName
 
     readonly property string applicationName: backend.getApplicationName()
     readonly property var applicationVersion: backend.getVersionInfo()
@@ -28,6 +30,7 @@ ApplicationWindow {
         .concat(`<br><b>Commit:</b> ${applicationVersion.commit}`)
         .concat(`<br><b>Built on:</b> ${applicationVersion.date}`)
     readonly property bool enableMenuBar: true//Qt.platform.os === "osx"
+    readonly property string licensedTo: backend.getLicensedTo()
 
     property bool debugMode: true
 
@@ -115,7 +118,7 @@ ApplicationWindow {
 
             MenuItem {
                 text: qsTr("License")
-                onTriggered: console.debug("license menu item clicked")
+                onTriggered: { dialogLicense.show(); }
             }
         }
     }
@@ -900,6 +903,16 @@ ApplicationWindow {
         title: `About ${applicationName}`
         textHeader: applicationName
         textMain: applicationVersionString
+        statusImage: "/images/logo.png"
+    }
+
+    WindowMessage {
+        id: dialogLicense
+        title: `License`
+        textHeader: title
+        textMain: mainWindow.licensedTo.length === 0
+            ? "Unregistered."
+            : `<b>Registered to</b>: ${mainWindow.licensedTo}`
         statusImage: "/images/logo.png"
     }
 

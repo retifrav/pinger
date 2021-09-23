@@ -55,13 +55,6 @@ set(CMAKE_AUTORCC ON)
 # for Sublime Text LSP
 #set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-if(WIN32)
-    SET(PROGRAMS-PREFIX "d:/programs")
-else()
-    SET(PROGRAMS-PREFIX "~/programs")
-endif()
-
-set(CMAKE_PREFIX_PATH "${PROGRAMS-PREFIX}/qt")
 find_package(Qt5 REQUIRED Quick Qml Charts Multimedia)
 
 if(UNIX)
