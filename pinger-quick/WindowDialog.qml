@@ -5,8 +5,10 @@ import QtQuick.Controls 2.15
 Window {
     id: root
 
+    property string title
     default property alias contents: placeholder.data
 
+    title: root.title
     modality: Qt.WindowModal
 
     width: Styles.dialogWindowWidth

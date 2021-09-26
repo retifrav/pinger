@@ -926,6 +926,7 @@ ApplicationWindow {
 
     WindowDialog {
         id: dialogSettings
+        title: "Settings"
         visible: false
 
         contents: ColumnLayout
@@ -1014,6 +1015,7 @@ ApplicationWindow {
 
     WindowDialog {
         id: dialogReport
+        title: "Report"
         visible: false
 
         contents: ColumnLayout
@@ -1204,78 +1206,78 @@ ApplicationWindow {
         let conclusionReliability = "unknown";
         if (lostPercentNumber === 0)
         {
-            conclusionReliability = `<font color='${Styles.colorReceived}'>excellent</font>`;
+            conclusionReliability = `<font color="${Styles.colorReceived}">excellent</font>`;
         }
         else if (lostPercentNumber < 0.5)
         {
-            conclusionReliability = `<font color='${Styles.colorReceived}'>very good</font>`;
+            conclusionReliability = `<font color="${Styles.colorReceived}">very good</font>`;
         }
         else if (lostPercentNumber < 1)
         {
-            conclusionReliability = `<font color='${Styles.colorReceived}'>quite good</font>`;
+            conclusionReliability = `<font color="${Styles.colorReceived}">quite good</font>`;
         }
         else if (lostPercentNumber < 2)
         {
-            conclusionReliability = `<font color='${Styles.colorReceived}'>good</font>`;
+            conclusionReliability = `<font color="${Styles.colorReceived}">good</font>`;
         }
         else if (lostPercentNumber < 5)
         {
-            conclusionReliability = "<font color='${Styles.colorError}'>okay</font>";
+            conclusionReliability = `<font color="${Styles.colorError}">okay</font>`;
             conclusionScore -= 2;
         }
         else if (lostPercentNumber < 10)
         {
-            conclusionReliability = `<font color='${Styles.colorLost}'>rather bad</font>`;
+            conclusionReliability = `<font color="${Styles.colorLost}">rather bad</font>`;
             conclusionScore -= 4;
         }
         else if (lostPercentNumber < 20)
         {
-            conclusionReliability = `<font color='${Styles.colorLost}'>quite bad<font>`;
+            conclusionReliability = `<font color="${Styles.colorLost}">quite bad</font>`;
             conclusionScore -= 6;
         }
         else if (lostPercentNumber < 30)
         {
-            conclusionReliability = `<font color='${Styles.colorLost}'>very bad</font>`;
+            conclusionReliability = `<font color="${Styles.colorLost}">very bad</font>`;
             conclusionScore -= 8;
         }
         else
         {
-            conclusionReliability = `<font color='${Styles.colorLost}'>outrageously horrible</font>`;
+            conclusionReliability = `<font color="${Styles.colorLost}">outrageously horrible</font>`;
             conclusionScore -= 10;
         }
 
         let conclusionLatency = "unknown";
         if (averageLatencyNumber < 15)
         {
-            conclusionLatency = `<font color='${Styles.colorReceived}'>almost non-existent</font>`;
+            conclusionLatency = `<font color="${Styles.colorReceived}">almost non-existent</font>`;
         }
         else if (averageLatencyNumber < 30)
         {
-            conclusionLatency = `<font color='${Styles.colorReceived}'>very low</font>`;
+            conclusionLatency = `<font color="${Styles.colorReceived}">very low</font>`;
         }
         else if (averageLatencyNumber < 40)
         {
-            conclusionLatency = `<font color='${Styles.colorReceived}'>low</font>`;
+            conclusionLatency = `<font color="${Styles.colorReceived}">low</font>`;
             conclusionScore -= 1;
         }
         else if (averageLatencyNumber < 60)
         {
-            conclusionLatency = `<font color='${Styles.colorError}'>okay</font>`;
+            conclusionLatency = `<font color="${Styles.colorError}">okay</font>`;
             conclusionScore -= 2;
         }
         else if (averageLatencyNumber < 80)
         {
-            conclusionLatency = `<font color='${Styles.colorLost}'>quite high</font>`;
+            conclusionLatency = `<font color="${Styles.colorLost}">quite high</font>`;
             conclusionScore -= 3;
         }
         else if (averageLatencyNumber < 100)
         {
-            conclusionLatency = `<font color='${Styles.colorLost}'>high</font>`;
+            conclusionLatency = `<font color="${Styles.colorLost}">high</font>`;
             conclusionScore -= 4;
         }
         else
         {
-            conclusionLatency = `<font color='${Styles.colorLost}'>very high</font>`;
+            conclusionLatency = `<font color="${Styles.colorLost}">very high</font>`;
             conclusionScore -= 5;
         }
 
