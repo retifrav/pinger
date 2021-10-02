@@ -1,5 +1,4 @@
 #include "backend.h"
-#include <QApplication>
 
 Backend::Backend()
 {
@@ -25,8 +24,8 @@ Backend::Backend()
     connect(&timer, &QTimer::timeout,this, &Backend::startPing);
     connect(
         &ping, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
-        //[=](int exitCode, QProcess::ExitStatus exitStatus){ pinged(exitCode, exitStatus); });
-        this, &Backend::pinged
+        //this, &Backend::pinged
+        [=](int exitCode, QProcess::ExitStatus exitStatus) { pinged(exitCode, exitStatus); }
     );
 
     _licensedTo = "";

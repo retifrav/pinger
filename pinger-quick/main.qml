@@ -908,7 +908,7 @@ ApplicationWindow {
 
     WindowMessage {
         id: dialogLicense
-        title: `License`
+        title: "License"
         textHeader: title
         textMain: mainWindow.licensedTo.length === 0
             ? "Unregistered."

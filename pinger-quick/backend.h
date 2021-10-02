@@ -9,6 +9,7 @@
 #include <QJsonObject>
 #include <QDir>
 #include <QStandardPaths>
+#include <QApplication>
 
 #include "build_info.h"
 #include "pingdata.h"
