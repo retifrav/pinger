@@ -1,7 +1,8 @@
-import QtQuick 2.15
-import QtQuick.Controls 2.15
-import QtGraphicalEffects 1.15
-import QtQuick.Layouts 1.15
+import QtQuick//2.15
+import QtQuick.Controls//2.15
+//import QtGraphicalEffects 1.15
+import Qt5Compat.GraphicalEffects
+import QtQuick.Layouts//1.15
 
 Button {
     id: root
@@ -34,12 +35,13 @@ Button {
         Glow {
             id: glow
             anchors.fill: back
-            radius: 15
-            samples: 15
+            radius: 30
+            //samples: 15
             color: back.color//root.down ? "#677A86" : Styles.labelsColor
             spread: 0.1
             source: back
             visible: false
+            transparentBorder: true
         }
     }
 

@@ -2,6 +2,8 @@
 
 Backend::Backend(QObject* parent) : QObject(parent)
 {
+    //qDebug() << "Settings file:" << _settings.fileName();
+
     _ping.setProgram("ping");
 
     _timer.setSingleShot(false);
@@ -11,6 +13,7 @@ Backend::Backend(QObject* parent) : QObject(parent)
                     QStandardPaths::AppLocalDataLocation
                     )
                 );
+    //qDebug() << "Application data:" << appLocalDataLocation.path();
     if (!appLocalDataLocation.exists())
     {
         if (!appLocalDataLocation.mkpath("."))
@@ -159,8 +162,8 @@ void Backend::startPing()
     {
         _ping.start();
 
-        QNetworkRequest request = QNetworkRequest(QUrl("http://ya.ru"));
-        _managerPing->head(request);
+//        QNetworkRequest request = QNetworkRequest(QUrl("http://ya.ru"));
+//        _managerPing->head(request);
     }
     else
     {

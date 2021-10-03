@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.15)
 
 set(version_major 1)
-set(version_minor 0)
-set(version_revision 1)
+set(version_minor 1)
+set(version_revision 0)
 set(version_commit "00000000000")
 string(TIMESTAMP version_date UTC)
 
@@ -26,7 +26,7 @@ else()
     #set(version_commit ${gitBuildNumber})
     set(version_commit ${gitOut})
 endif()
-file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/include/build_info.h"
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/include/build-info.h"
     "#ifndef BUILD_INFO_H\n"
     "#define BUILD_INFO_H\n\n"
     "namespace decovar\n{\n"
@@ -55,7 +55,8 @@ set(CMAKE_AUTORCC ON)
 # for Sublime Text LSP
 #set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-find_package(Qt5 REQUIRED Quick Qml Charts Multimedia)
+find_package(QT NAMES Qt6 COMPONENTS Quick Qml REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Quick Qml Charts Multimedia REQUIRED)
 
 if(UNIX)
     if(NOT APPLE)
@@ -66,15 +67,45 @@ endif()
 
 if(APPLE)
     set(MACOSX_BUNDLE_ICON_FILE pinger.icns)
-    set_source_files_properties(${MACOSX_BUNDLE_ICON_FILE}
+    set(application_icon "${CMAKE_CURRENT_SOURCE_DIR}/${MACOSX_BUNDLE_ICON_FILE}")
+    set_source_files_properties(${application_icon}
         PROPERTIES
             MACOSX_PACKAGE_LOCATION "Resources"
     )
-    add_executable(${CMAKE_PROJECT_NAME} MACOSX_BUNDLE ${MACOSX_BUNDLE_ICON_FILE})
-elseif(WIN32)
-    add_executable(${CMAKE_PROJECT_NAME} WIN32 resources.rc)
+endif()
+
+if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
+    if(APPLE)
+        qt_add_executable(${CMAKE_PROJECT_NAME}
+            MACOSX_BUNDLE
+            ${application_icon}
+            MANUAL_FINALIZATION
+        )
+    elseif(WIN32)
+        qt_add_executable(${CMAKE_PROJECT_NAME}
+            WIN32
+            resources.rc
+            MANUAL_FINALIZATION
+        )
+    else()
+        qt_add_executable(${CMAKE_PROJECT_NAME}
+            MANUAL_FINALIZATION
+        )
+    endif()
 else()
-    add_executable(${CMAKE_PROJECT_NAME})
+    if(APPLE)
+        add_executable(${CMAKE_PROJECT_NAME}
+            MACOSX_BUNDLE
+            ${application_icon}
+        )
+    elseif(WIN32)
+        add_executable(${CMAKE_PROJECT_NAME}
+            WIN32
+            resources.rc
+        )
+    else()
+        add_executable(${CMAKE_PROJECT_NAME})
+    endif()
 endif()
 
 set(sources
@@ -104,11 +135,15 @@ target_include_directories(${CMAKE_PROJECT_NAME}
         "${PROJECT_BINARY_DIR}/include/"
 )
 
+#target_compile_definitions(${CMAKE_PROJECT_NAME}
+#  PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
+
 target_link_libraries(${CMAKE_PROJECT_NAME}
-    Qt5::Quick
-    Qt5::Qml
-    Qt5::Charts
-    Qt5::Multimedia
+    PRIVATE
+        Qt${QT_VERSION_MAJOR}::Quick
+        Qt${QT_VERSION_MAJOR}::Qml
+        Qt${QT_VERSION_MAJOR}::Charts
+        Qt${QT_VERSION_MAJOR}::Multimedia
 )
 
 if (UNIX)
@@ -125,6 +160,20 @@ if (UNIX)
             ${CMAKE_DL_LIBS}
             )
     endif()
+endif()
+
+if (APPLE)
+    set_target_properties(${CMAKE_PROJECT_NAME}
+        PROPERTIES
+            MACOSX_BUNDLE_GUI_IDENTIFIER "dev.decovar"
+            MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION} # CFBundleLongVersionString, deprecated
+            MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION} # CFBundleShortVersionString
+    )
+endif()
+
+if(QT_VERSION_MAJOR EQUAL 6)
+    qt_import_qml_plugins(${CMAKE_PROJECT_NAME})
+    qt_finalize_executable(${CMAKE_PROJECT_NAME})
 endif()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_BINARY_DIR})

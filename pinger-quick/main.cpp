@@ -37,15 +37,29 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+#endif
 
     // should be QGuiApplication, but Charts depend on Graphics View
     // there is a note about this on https://doc.qt.io/qt-5/qtcharts-index.html
     QApplication app(argc, argv);
 
+    // don't set domain and organization name on Mac OS,
+    // this should be handled by CMake, otherwise you'll get
+    // a bundle identifier which you did not expect
+#if !defined(Q_OS_MACOS)
     app.setOrganizationDomain("decovar.dev");
-    app.setOrganizationName("dev.decovar"); // "Declaration of VAR"
-    app.setApplicationName("pinger");
+    app.setOrganizationName("Declaration of VAR"); // "dev.decovar"
+#endif
+    app.setApplicationName("Pinger");
+    app.setApplicationVersion(
+        QString("%1.%2.%3").arg(
+            QString::number(decovar::pinger::versionMajor),
+            QString::number(decovar::pinger::versionMinor),
+            QString::number(decovar::pinger::versionRevision)
+        )
+    );
 
     QFont defaultFont("Verdana", 14);
     app.setFont(defaultFont);

@@ -1,10 +1,11 @@
-import QtQuick 2.15
-import QtQuick.Window 2.15
-import QtQuick.Controls 2.15
-import QtQuick.Layouts 1.15
-import QtGraphicalEffects 1.15
-import QtCharts 2.15
-import Qt.labs.settings 1.1
+import QtQuick//2.15
+import QtQuick.Window//2.15
+import QtQuick.Controls//2.15
+import QtQuick.Layouts//1.15
+//import QtGraphicalEffects 1.15
+import Qt5Compat.GraphicalEffects
+import QtCharts//2.15
+import Qt.labs.settings
 import Qt.labs.platform 1.1
 //import QtQuick.Controls 1.4 as QQC1
 //import QtQuick.Controls.Styles 1.4 as QQC1S
@@ -128,7 +129,19 @@ ApplicationWindow {
     Backend {
         id: backend
 
-        onGotPingResults: {
+        onGotPingResults: (
+            status,
+            time,
+            averageTime,
+            lostPercentage,
+            receivedPercentage,
+            lostPackets,
+            receivedPackets,
+            totalPackets,
+            lastPacketTime,
+            minAxisY,
+            maxAxisY
+        ) => {
             let statusVal = "Error";
             let packetColor = Styles.colorError;
             switch (status)
@@ -427,7 +440,6 @@ ApplicationWindow {
                                         results.LostPercent,
                                         results.AvgLatency
                                     );
-
                                 if (settings.showReport === true) { dialogReport.show(); }
 
                             }
@@ -661,7 +673,8 @@ ApplicationWindow {
                                 Glow {
                                     anchors.fill: packetStatus
                                     radius: 10
-                                    samples: 20
+                                    //samples: 20
+                                    transparentBorder: true
                                     color: packetStatus.color
                                     spread: 0
                                     source: packetStatus
@@ -739,8 +752,9 @@ ApplicationWindow {
                             Glow {
                                 id: glowPacketsPieChart
                                 anchors.fill: packetsPieChart
-                                radius: 18
-                                samples: 37
+                                radius: 30
+                                //samples: 37
+                                transparentBorder: true
                                 color: Styles.colorReceived
                                 source: packetsPieChart
                                 visible: pieLost.value === 0 || pieReceived.value === 0

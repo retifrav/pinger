@@ -13,7 +13,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 
-#include "build_info.h"
+#include "build-info.h"
 #include "pingdata.h"
 #include "functions.h"
 
