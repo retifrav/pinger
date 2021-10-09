@@ -381,7 +381,6 @@ ApplicationWindow {
                                 if (host.text.length === 0)
                                 {
                                     dialogNoHost.show();
-                                    return;
                                 }
                                 else
                                 {
@@ -605,9 +604,9 @@ ApplicationWindow {
 //                                visible: false
 //                                RotationAnimator {
 //                                    id: loadingAnimation
-//                                    target: loading;
-//                                    from: 0;
-//                                    to: 360;
+//                                    target: loading
+//                                    from: 0
+//                                    to: 360
 //                                    duration: 2000
 //                                    loops: Animation.Infinite
 //                                }
@@ -626,11 +625,11 @@ ApplicationWindow {
 
                             FormText {
                                 anchors.left: parent.left
-                                text: "Status";
+                                text: "Status"
                             }
                             FormText {
                                 anchors.right: parent.right
-                                text: "Time";
+                                text: "Time"
                             }
                         }
                         Rectangle {
@@ -719,8 +718,10 @@ ApplicationWindow {
                                 backgroundColor: "transparent"
 
                                 // crutch for ChartView margins
-                                x: -10; width: parent.width + 20;
-                                y: -10; height: parent.height + 20;
+                                x: -10
+                                width: parent.width + 20
+                                y: -10
+                                height: parent.height + 20
 
                                 margins.top: 0
                                 margins.bottom: 0
@@ -776,16 +777,20 @@ ApplicationWindow {
                             spacing: 5
 
                             FormTextWithHover {
-                                id: avgTime;
-                                text: "0";
+                                id: avgTime
+                                text: "0"
+                                //visible: true
                                 tooltipText: qsTr("Average packets time (latency)")
+                                /*TapHandler {
+                                    onTapped: console.debug("ololo");
+                                }*/
                             }
 
-                            FormText { text: "|"; }
+                            FormText { text: "|" }
 
                             FormTextWithHover {
                                 id: percentageLost
-                                text: "0%";
+                                text: "0%"
                                 color: Styles.colorLost
                                 visible: settings.showLostAsPercentage
                                 tooltipText: qsTr("Percentage of lost packets")
@@ -795,7 +800,7 @@ ApplicationWindow {
                             }
                             FormTextWithHover {
                                 id: packetsLost
-                                text: "0";
+                                text: "0"
                                 color: Styles.colorLost
                                 visible: !percentageLost.visible
                                 tooltipText: qsTr("Packets lost")
@@ -804,11 +809,11 @@ ApplicationWindow {
                                 }
                             }
 
-                            FormText { text: "|"; }
+                            FormText { text: "|" }
 
                             FormTextWithHover {
                                 id: percentageReceived
-                                text: "0%";
+                                text: "0%"
                                 color: Styles.colorReceived
                                 visible: settings.showReceivedAsPercentage
                                 tooltipText: qsTr("Percentage of received packets")
@@ -818,10 +823,10 @@ ApplicationWindow {
                             }
                             FormTextWithHover {
                                 id: packetsReceived
-                                text: "0";
+                                text: "0"
                                 color: Styles.colorReceived
                                 visible: !percentageReceived.visible
-                                tooltipText: qsTr("Packets received");
+                                tooltipText: qsTr("Packets received")
                                 TapHandler {
                                     onTapped: switchToPacketsReceived(false);
                                 }
@@ -1129,7 +1134,7 @@ ApplicationWindow {
                         addToLog("Initiated saving the report");
                     }
                 }
-                Item { Layout.fillWidth: true; }
+                Item { Layout.fillWidth: true }
                 DialogButton {
                     text: "Close"
                     onClicked: {
@@ -1191,6 +1196,7 @@ ApplicationWindow {
             { percentageReceived.visible = false; }
         else
             { percentageReceived.visible = true; }
+
         settings.showReceivedAsPercentage = !toPackets;
     }
 

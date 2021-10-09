@@ -47,5 +47,5 @@ Item {
     // tooltips
 
     property int toolTipDelay: 750
-    property int toolTipTimeout: 3000
+    property int toolTipTimeout: 2000
 }

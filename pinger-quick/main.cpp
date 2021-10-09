@@ -45,6 +45,9 @@ int main(int argc, char *argv[])
     // there is a note about this on https://doc.qt.io/qt-5/qtcharts-index.html
     QApplication app(argc, argv);
 
+    QString appName = "Pinger";
+    app.setApplicationName(appName);
+    app.setApplicationDisplayName(appName);
     // don't set domain and organization name on Mac OS,
     // this should be handled by CMake, otherwise you'll get
     // a bundle identifier which you did not expect
@@ -52,7 +55,6 @@ int main(int argc, char *argv[])
     app.setOrganizationDomain("decovar.dev");
     app.setOrganizationName("Declaration of VAR"); // "dev.decovar"
 #endif
-    app.setApplicationName("Pinger");
     app.setApplicationVersion(
         QString("%1.%2.%3").arg(
             QString::number(decovar::pinger::versionMajor),
