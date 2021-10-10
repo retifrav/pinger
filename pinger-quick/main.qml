@@ -378,7 +378,7 @@ ApplicationWindow {
                             text: "PING"
 
                             onClicked: {
-                                if (host.text.length === 0)
+                                if (host.text.trim().length === 0)
                                 {
                                     dialogNoHost.show();
                                     host.focus = true;
@@ -1313,7 +1313,7 @@ ApplicationWindow {
         //addToLog(JSON.stringify(applicationVersion));
 
         // start pinging right after launching
-        if (host.text.length !== 0) { btn_ping.clicked(); }
+        if (host.text.trim().length !== 0) { btn_ping.clicked(); }
         else { host.focus = true; }
     }
 }
