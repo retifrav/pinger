@@ -52,6 +52,8 @@ ApplicationWindow {
 
         property bool showReceivedAsPercentage: false
         property bool showLostAsPercentage: true
+
+        property int visibility: Window.Maximized
     }
 
     // application menu, not native
@@ -229,10 +231,6 @@ ApplicationWindow {
         }
     }
 
-    onClosing: {
-        backend.closeEvent();
-    }
-
     Drawer {
         id: drawer
         edge: Qt.BottomEdge
@@ -277,7 +275,15 @@ ApplicationWindow {
     }
 
     Shortcut {
+        id: shortcutFocusHost
         sequence: "Ctrl+L"
+        onActivated: {
+            host.focus = true
+        }
+    }
+
+    Shortcut {
+        sequence: "Ctrl+T"
         onActivated: {
             let telemetry = JSON.stringify({
                 "chartSeriesLatencyAxisX": {
@@ -300,6 +306,19 @@ ApplicationWindow {
         context: Qt.ApplicationShortcut
     }
 
+    onClosing: {
+        console.debug("Does it ever fire?");
+        backend.closeEvent();
+    }
+
+    // trying to preserve whether window is maximized or not
+    /*onWindowStateChanged: {
+        //console.debug(settings.visibility);
+        //settings.visibility = mainWindow.visibility;
+        //console.debug(settings.visibility);
+        //console.debug(mainWindow.visibility);
+    }*/
+
     Rectangle {
         id: root
         anchors.fill: parent
@@ -311,7 +330,6 @@ ApplicationWindow {
             spacing: 16
 
             ColumnLayout {
-                id: layoutMainArea
                 Layout.preferredWidth: parent.width * 0.6
                 Layout.fillHeight: true
                 spacing: Styles.layoutSpacing
@@ -325,65 +343,37 @@ ApplicationWindow {
                     RowLayout {
                         anchors.fill: parent
                         //spacing: 15
-                        anchors.leftMargin: 20
+                        anchors.leftMargin: Styles.layoutSpacing
 
                         FormLabelHeader {
                             //anchors.verticalCenter: parent.verticalCenter
-                            //Layout.alignment: Qt.AlignVCenter
+                            //Layout.alignment: Qt.AlignBaseline
                             text: "Host"
                         }
 
-                        Rectangle {
+                        TextInput {
+                            id: host
                             Layout.fillWidth: true
-                            //height: btn_ping.height
-                            color: "transparent"
-                            //border.width: 1
+                            Layout.leftMargin: 10
+                            Layout.rightMargin: 10
+                            Layout.alignment: Qt.AlignVCenter
+                            enabled: btn_ping.visible
+                            font.pointSize: parent.height > 0 ? parent.height / 3.5 : 16
+                            color: Styles.buttonsTextColor
+                            clip: true
 
-                            TextInput {
-                                id: host
-                                enabled: btn_ping.visible
-                                text: "ya.ru"
-                                anchors.verticalCenter: parent.verticalCenter
-                                leftPadding: 10
-                                rightPadding: 10
-                                width: parent.width
-                                font.pointSize: 16
-                                color: Styles.buttonsTextColor
-                                clip: true
+                            text: "ya.ru"
+
+                            Keys.onReturnPressed: {
+                                btn_ping.clicked();
                             }
                         }
 
-//                        Rectangle {
-//                            Layout.fillWidth: true
-//                            height: btn_ping.height
-//                            color: "transparent"
-//                            //border.width: 1
-
-//                            Rectangle {
-//                                width: parent.width
-//                                height: 2
-//                                anchors.bottom: parent.bottom
-//                                color: "#667D89"
-//                            }
-
-//                            TextInput {
-//                                id: host
-//                                anchors.verticalCenter: parent.verticalCenter
-//                                leftPadding: 10
-//                                rightPadding: 10
-//                                width: parent.width
-//                                font.pointSize: 18
-//                                color: "#B3BFC5"
-//                                clip: true
-//                            }
-//                        }
-
                         HalfRoundedButton {
                             id: btn_ping
-
                             Layout.preferredWidth: parent.width * 0.25
                             Layout.maximumWidth: 200
-                            Layout.preferredHeight: parent.height
+                            Layout.fillHeight: true
 
                             text: "PING"
 
@@ -391,6 +381,7 @@ ApplicationWindow {
                                 if (host.text.length === 0)
                                 {
                                     dialogNoHost.show();
+                                    host.focus = true;
                                 }
                                 else
                                 {
@@ -400,6 +391,7 @@ ApplicationWindow {
                                     btn_report.visible = false;
                                     //btn_export.visible = false;
                                     packets.visible = true;
+                                    btn_stop.focus = true;
 
                                     addToLog("Pinging started");
                                 }
@@ -450,7 +442,12 @@ ApplicationWindow {
                                         results.AvgLatency
                                     );
                                 if (settings.showReport === true) { dialogReport.show(); }
+                            }
+                        }
 
+                        TapHandler {
+                            onTapped: {
+                                host.focus = true;
                             }
                         }
                     }
@@ -463,7 +460,7 @@ ApplicationWindow {
                     ColumnLayout {
                         anchors.fill: parent
                         Layout.fillHeight: true
-                        anchors.margins: 20
+                        anchors.margins: Styles.layoutSpacing
                         spacing: Styles.layoutSpacing
 
                         RowLayout {
@@ -547,8 +544,8 @@ ApplicationWindow {
 //                        Layout.fillHeight: true
 
 //                        FormLabel {
-//                            topPadding: 20
-//                            leftPadding: 20
+//                            topPadding: Styles.layoutSpacing
+//                            leftPadding: Styles.layoutSpacing
 //                            text: "Percentage"
 //                        }
 
@@ -574,7 +571,7 @@ ApplicationWindow {
 
                     ColumnLayout {
                         anchors.fill: parent
-                        anchors.margins: 20
+                        anchors.margins: Styles.layoutSpacing
                         Layout.fillHeight: true
                         spacing: Styles.layoutSpacing
 
@@ -1155,13 +1152,6 @@ ApplicationWindow {
         }
     }
 
-    Component.onCompleted: {
-        //addToLog(JSON.stringify(applicationVersion));
-
-        // start pinging right after launching
-        if (host.text.length !== 0) { btn_ping.clicked(); }
-    }
-
     function clearPreviousData()
     {
         packetsModel.clear();
@@ -1317,5 +1307,13 @@ ApplicationWindow {
             `Total score: <b>${conclusionScore < 0 ? 0 : conclusionScore}/10</b>.`
         ];
         return rez.join("");
+    }
+
+    Component.onCompleted: {
+        //addToLog(JSON.stringify(applicationVersion));
+
+        // start pinging right after launching
+        if (host.text.length !== 0) { btn_ping.clicked(); }
+        else { host.focus = true; }
     }
 }

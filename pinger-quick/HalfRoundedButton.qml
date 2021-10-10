@@ -49,4 +49,6 @@ Button {
         //root.hovered ? back.color = "#677A86" : back.color = Styles.labelsColor;
         root.hovered ? glow.visible = true : glow.visible = false;
     }
+
+    Keys.onReturnPressed: { this.clicked(); }
 }
