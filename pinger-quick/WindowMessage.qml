@@ -73,4 +73,9 @@ Window {
             }
         }
     }
+
+    Shortcut {
+        sequences: [ "Esc", "Return" ]
+        onActivated: root.close()
+    }
 }

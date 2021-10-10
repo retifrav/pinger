@@ -8,7 +8,7 @@ FormText {
 
     HoverHandler {
         id: hvHnd
-        enabled: parent.visible
+        //enabled: parent.visible
         /*onHoveredChanged: {
             console.debug(`${parent.text} hover changed to: ${this.hovered}`);
         }*/

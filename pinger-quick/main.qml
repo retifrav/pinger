@@ -242,12 +242,12 @@ ApplicationWindow {
         Rectangle {
             anchors.fill: parent
             color: Styles.regionBackground
-            border.color: Styles.mainBackground
+            border.color: "transparent"//Styles.regionBackground
 
             ScrollView {
                 anchors.fill: parent
-                anchors.topMargin: 5
-                anchors.bottomMargin: 5
+                anchors.topMargin: 4
+                anchors.bottomMargin: 4
                 anchors.leftMargin: 0
                 anchors.rightMargin: 0
 
@@ -258,14 +258,22 @@ ApplicationWindow {
                     font.pointSize: Styles.consoleFontSize
                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                     selectByMouse: true
+
+                    background: Rectangle {
+                        color: Styles.regionBackground
+                    }
                 }
             }
         }
     }
 
     Shortcut {
+        id: shortcutOpenDrawer
         sequence: "Ctrl+D"
-        onActivated: drawer.open()
+        onActivated: {
+            drawer.opened ? drawer.close() : drawer.open();
+        }
+        context: Qt.ApplicationShortcut
     }
 
     Shortcut {
@@ -289,6 +297,7 @@ ApplicationWindow {
                 backend.dumpTelemetry(`[${getCurrentDateTime()}] ${telemetry}`);
             }
         }
+        context: Qt.ApplicationShortcut
     }
 
     Rectangle {
@@ -302,7 +311,8 @@ ApplicationWindow {
             spacing: 16
 
             ColumnLayout {
-                Layout.preferredWidth: parent.width * 0.65
+                id: layoutMainArea
+                Layout.preferredWidth: parent.width * 0.6
                 Layout.fillHeight: true
                 spacing: Styles.layoutSpacing
 
@@ -550,7 +560,7 @@ ApplicationWindow {
 //                            font.bold: true
 //                        }
 //                    }
-                }
+            }
 
             ColumnLayout {
                 Layout.preferredWidth: parent.width * 0.4

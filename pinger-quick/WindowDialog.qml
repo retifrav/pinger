@@ -29,4 +29,9 @@ Window {
             anchors.fill: parent
         }
     }
+
+    Shortcut {
+        sequence: "Esc"
+        onActivated: root.close()
+    }
 }

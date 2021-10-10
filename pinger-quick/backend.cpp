@@ -248,7 +248,7 @@ void Backend::closeEvent()
 
 void Backend::dumpTelemetry(QString telemetry)
 {
-    qDebug() << "Telemetry file is here:" << _telemetryFile;
+    //qDebug() << "Telemetry file is here:" << _telemetryFile;
     QFile file(_telemetryFile);
 
     if (!file.open(QIODevice::Append))
