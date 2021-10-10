@@ -46,7 +46,7 @@ Button {
     }
 
     onHoveredChanged: {
-//        root.hovered ? back.color = "#677A86" : back.color = Styles.labelsColor;
+        //root.hovered ? back.color = "#677A86" : back.color = Styles.labelsColor;
         root.hovered ? glow.visible = true : glow.visible = false;
     }
 }

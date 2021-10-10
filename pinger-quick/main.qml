@@ -347,7 +347,7 @@ ApplicationWindow {
                                 leftPadding: 10
                                 rightPadding: 10
                                 width: parent.width
-                                font.pointSize: 18
+                                font.pointSize: 16
                                 color: Styles.buttonsTextColor
                                 clip: true
                             }
