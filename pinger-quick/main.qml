@@ -676,15 +676,15 @@ ApplicationWindow {
                                     radius: width * 0.5
                                     color: packetColor
                                 }
-                                Glow {
-                                    anchors.fill: packetStatus
-                                    radius: 10
-                                    //samples: 20
-                                    transparentBorder: true
-                                    color: packetStatus.color
-                                    spread: 0
-                                    source: packetStatus
-                                }
+//                                Glow {
+//                                    anchors.fill: packetStatus
+//                                    radius: 10
+//                                    //samples: 20
+//                                    transparentBorder: true
+//                                    color: packetStatus.color
+//                                    spread: 0
+//                                    source: packetStatus
+//                                }
                                 FormText {
                                     anchors.right: parent.right
                                     text: time

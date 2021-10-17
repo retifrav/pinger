@@ -164,7 +164,8 @@ endif()
 
 if (APPLE)
     set_target_properties(${CMAKE_PROJECT_NAME}
-        PROPERTIES
+        PROPERTIES # https://cmake.org/cmake/help/latest/prop_tgt/MACOSX_BUNDLE_INFO_PLIST.html
+            MACOSX_BUNDLE_BUNDLE_NAME "Pinger" # CFBundleIdentifier
             MACOSX_BUNDLE_GUI_IDENTIFIER "dev.decovar"
             MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION} # CFBundleLongVersionString, deprecated
             MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION} # CFBundleShortVersionString

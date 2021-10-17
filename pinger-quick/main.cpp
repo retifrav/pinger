@@ -27,15 +27,17 @@ int main(int argc, char *argv[])
             return EXIT_SUCCESS;
         }
 
-        QTextStream(stdout) << "Unsupported argument" << Qt::endl;
-        return EXIT_FAILURE;
+        // don't do that for Qt applications, they can take a lot of special Qt parameters
+        //QTextStream(stdout) << "Unsupported argument" << Qt::endl;
+        //return EXIT_FAILURE;
     }
 
-    if (argc > 2)
+    // don't do that for Qt applications, they can take a lot of special Qt parameters
+    /*if (argc > 2)
     {
         QTextStream(stderr) << "Unsupported amount of arguments" << Qt::endl;
         return EXIT_FAILURE;
-    }
+    }*/
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
