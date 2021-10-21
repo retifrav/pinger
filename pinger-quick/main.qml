@@ -218,7 +218,8 @@ ApplicationWindow {
             //console.log(lastPacketTime);
         }
 
-        onGotError: {
+        onGotError: (errorMessage) =>
+        {
             addToLog(errorMessage.trim());
 
             packetsModel.append({

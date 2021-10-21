@@ -45,6 +45,7 @@ public slots:
     void on_btn_stop_clicked();
     void pinged(int exitCode, QProcess::ExitStatus exitStatus);
     void startPing();
+    void processPingResults(QPair<int, QString> packet);
     QJsonObject getPingData();
     int getQueueSize();
     // just in case overriding the close event to kill the pinging process
@@ -62,7 +63,11 @@ private:
     int adjustSpread(int diff);
 
     const QString _applicationName = "Pinger";
+    bool _usingPing;
+    QString _currentHost;
     QProcess _ping;
+    QElapsedTimer _httpRequestTimer;
+    int _lostTresholdMS;
     QTimer _timer;
     QNetworkAccessManager *_managerPing;
     QSoundEffect _effect;
@@ -70,6 +75,8 @@ private:
     QSettings _settings;
     QString _telemetryFile;
     QString _licensedTo;
+
+    const QRegularExpression _startsWithHTTP = QRegularExpression("^(http|https):\\/\\/");
 };
 
 #endif // BACKEND_H

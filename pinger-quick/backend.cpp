@@ -4,7 +4,13 @@ Backend::Backend(QObject* parent) : QObject(parent)
 {
     //qDebug() << "Settings file:" << _settings.fileName();
 
+    _usingPing = false;
+
+    _currentHost = QString();
+
     _ping.setProgram("ping");
+
+    _lostTresholdMS = 1001;
 
     _timer.setSingleShot(false);
 
@@ -32,10 +38,13 @@ Backend::Backend(QObject* parent) : QObject(parent)
     );
 
     _managerPing = new QNetworkAccessManager(this);
+    _managerPing->setAutoDeleteReplies(true);
+    _managerPing->setTransferTimeout(_lostTresholdMS);
     connect(
         _managerPing, &QNetworkAccessManager::finished,
         this, &Backend::requestPingFinished
     );
+    //qDebug() << "Auto delete replies:" << _managerPing->autoDeleteReplies();
 
     _licensedTo = "";
 }
@@ -72,17 +81,21 @@ void Backend::pinged(int exitCode, QProcess::ExitStatus exitStatus)
         return;
     }
 
-    _effect.setSource(QUrl("qrc:/sounds/error.wav"));
-    bool makeSound = true;
-
     //qDebug() << ping.exitCode();
 
-    QPair<int, QString> pckt = parsePingOutput(
+    QPair<int, QString> packet = parsePingOutput(
         _ping.exitCode(),
         _ping.readAllStandardOutput()
     );
+    processPingResults(packet);
+}
 
-    switch (pckt.first)
+void Backend::processPingResults(QPair<int, QString> packet)
+{
+    _effect.setSource(QUrl("qrc:/sounds/error.wav"));
+    bool makeSound = true;
+
+    switch (packet.first)
     {
     case 0:
         _effect.setSource(QUrl("qrc:/sounds/done.wav"));
@@ -97,16 +110,16 @@ void Backend::pinged(int exitCode, QProcess::ExitStatus exitStatus)
         break;
     }
 
-    if (pckt.first != 2) { _pingData.addPacket(pckt); }
+    if (packet.first != 2) { _pingData.addPacket(packet); }
     else
     {
-        emit gotError(pckt.second);
+        emit gotError(packet.second);
         return;
     }
 
-    if (pckt.first != 0)
+    if (packet.first != 0)
     {
-        pckt.second = "-";
+        packet.second = "-";
     }
 
     QString lostPercentage = QString("%1%")
@@ -132,8 +145,8 @@ void Backend::pinged(int exitCode, QProcess::ExitStatus exitStatus)
 
     //qDebug() << pckt.first << " | " << pckt.second;
     emit gotPingResults(
-        pckt.first,
-        pckt.second,
+        packet.first,
+        packet.second,
         //pingData.get_packetsQueueSize(),
         QString::number(_pingData.get_avgTime(), 'g', 4),
         lostPercentage,
@@ -158,16 +171,29 @@ int Backend::adjustSpread(int diff)
 
 void Backend::startPing()
 {
-    if (_ping.state() == 0)
+    if (_usingPing) // calling ping CLI tool to send ICMP requests
     {
-        _ping.start();
-
-//        QNetworkRequest request = QNetworkRequest(QUrl("http://ya.ru"));
-//        _managerPing->head(request);
+        if (_ping.state() == 0)
+        {
+            _ping.start();
+        }
+        else
+        {
+            qDebug() << "waiting till previously started process ends...";
+        }
     }
-    else
+    else // sending HTTP HEAD requests
     {
-        qDebug() << "waiting till previously started process ends...";
+        if(_httpRequestTimer.isValid())
+        {
+            qDebug() << "waiting till previously started process ends...";
+        }
+        else
+        {
+            auto httpRequest = QNetworkRequest(QUrl(_currentHost));
+            _httpRequestTimer.start();
+            _managerPing->head(httpRequest);
+        }
     }
 }
 
@@ -203,7 +229,32 @@ void Backend::on_btn_ping_clicked(QString host)
 //    ui->lbl_lost->setText("0");
 //    ui->lbl_lostPercentage->setText("0%");
 
-    _ping.setArguments(getArgs4ping() << host);
+    _currentHost = host.trimmed();
+    if (_currentHost.isEmpty())
+    {
+        auto errorMsg = "Got an empty host, cannot ping that";
+        qWarning() << errorMsg;
+        emit gotError(errorMsg);
+        return;
+    }
+
+    QRegularExpressionMatch match = _startsWithHTTP.match(_currentHost);
+    if (_usingPing)
+    {
+        if (match.hasMatch())
+        {
+            _currentHost = _currentHost.replace(_startsWithHTTP, "");
+        }
+    }
+    else
+    {
+        if (!match.hasMatch())
+        {
+            _currentHost = _currentHost.prepend("http://");
+        }
+    }
+
+    _ping.setArguments(getArgs4ping() << _currentHost);
 
     // TODO make the timer value a variable in config
     _timer.start(1000);
@@ -215,7 +266,16 @@ void Backend::on_btn_stop_clicked()
 //    ui->btn_ping->setVisible(true);
 
     _timer.stop();
-    _ping.kill();
+
+    if (_usingPing)
+    {
+        _ping.kill();
+    }
+    else
+    {
+        // TODO cancel HTTP HEAD
+        _httpRequestTimer.invalidate();
+    }
 
 //    QQueue< QPair<int, QString> > pckts = pingData.get_packets();
 //    for (int i = 1; i < pckts.count(); i++)
@@ -282,21 +342,50 @@ QString Backend::getLicensedTo()
 
 void Backend::requestPingFinished(QNetworkReply *reply)
 {
+    auto requestTime = _httpRequestTimer.elapsed();
+    _httpRequestTimer.invalidate();
+
+    //qDebug() << "Current host:" << _httpRequest->url();
+    //delete _httpRequest;
+
     int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-    QByteArray data = reply->readAll();
+//    QByteArray data;
+//    if (reply->isOpen())
+//    {
+//        data = reply->readAll();
+//    }
+    //qDebug() << status << "|" << requestTime << "ms |";//<< data;
 
-    qDebug() << status << "|" << data;
+    auto packet = QPair<int, QString>(
+        0,
+        QString("%1 ms").arg(QString::number(requestTime))
+    );
+    //qDebug() << packet;
 
-    if (status != 200)
+    if (requestTime > _lostTresholdMS) { packet.first = 1; }
+    else
     {
-        QString errorMessage = data;
-        QNetworkReply::NetworkError err = reply->error();
-        if (status == 0) {
-            // dictionary: http://doc.qt.io/qt-5/qnetworkreply.html#NetworkError-enum
-            errorMessage = QString("QNetworkReply::NetworkError code: %1").arg(QString::number(err));
+        if (status != 200)
+        {
+            QString errorMessage = "Unknown network error";
+            QNetworkReply::NetworkError err = reply->error();
+            if (err == 0)
+            {
+                // dictionary: http://doc.qt.io/qt-5/qnetworkreply.html#NetworkError-enum
+                errorMessage = QString("HTTP status: %1").arg(QString::number(err));
+            }
+            else
+            {
+                if (err == QNetworkReply::OperationCanceledError) { packet.first = 1; }
+                else
+                {
+                    qDebug() << "Network error:" << err;
+                    packet.first = 2;
+                    packet.second = errorMessage;
+                }
+            }
         }
-
-        emit gotError(QString("Code %1 | %2").arg(status).arg(errorMessage));
-        return;
     }
+
+    processPingResults(packet);
 }
