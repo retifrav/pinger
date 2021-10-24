@@ -46,6 +46,8 @@ ApplicationWindow {
         property alias width: mainWindow.width
         property alias height: mainWindow.height
 
+        property bool usingPingUtility: true
+
         property bool showReport: false
         property bool makeSoundReceived: false
         property bool makeSoundLost: false
@@ -84,7 +86,7 @@ ApplicationWindow {
                 text: qsTr("Preferences...")
                 role: MenuItem.PreferencesRole
                 shortcut: "Ctrl+,"
-                onTriggered: dialogSettings.show()
+                onTriggered: showSettingsDialog()
             }
 
             MenuSeparator {}
@@ -414,6 +416,7 @@ ApplicationWindow {
 
                             onClicked: {
                                 addToLog("Pinging stopped");
+                                btn_report.focus = true;
 
                                 backend.on_btn_stop_clicked();
                                 //loading.visible = false;
@@ -436,7 +439,7 @@ ApplicationWindow {
                                     ? Styles.colorLost
                                     : results.AvgLatency >= 60 ? Styles.colorError : Styles.colorReceived;
                                 totalAverageLatency.text = `<font color="${latencyColor}">${results.AvgLatency}ms</font>`;
-                                conclusion.text = results.Sent < minimumRequiredPackets
+                                conclusion.text = results.Sent < minimumRequiredPackets && !debugMode
                                     ? qsTr(`Not enough data to make a proper conclusion. Let the program to send at least ${minimumRequiredPackets} packets.`)
                                     : makeConclusion(
                                         results.LostPercent,
@@ -856,7 +859,7 @@ ApplicationWindow {
                         IconButton {
                             id: btn_settings
                             source: "qrc:/images/settings.png"
-                            onClicked: { dialogSettings.show(); }
+                            onClicked: { showSettingsDialog(); }
                             ToolTip.delay: Styles.toolTipDelay
                             ToolTip.timeout: Styles.toolTipTimeout
                             ToolTip.visible: hovered
@@ -979,6 +982,13 @@ ApplicationWindow {
                     font.bold: true
                 }
                 DialogSwitch {
+                    id: switchUsingPingUtility
+                    Layout.fillWidth: true
+                    text: qsTr("using ping utility")
+                    helpTooltip: "send ICMP requests with ping tool or send HTTP HEAD requests"
+                    checked: settings.usingPingUtility
+                }
+                DialogSwitch {
                     id: switchShowReport
                     Layout.fillWidth: true
                     text: qsTr("show report automatically")
@@ -1021,6 +1031,7 @@ ApplicationWindow {
                 DialogButton {
                     text: "Save"
                     onClicked: {
+                        settings.usingPingUtility = switchUsingPingUtility.checked;
                         settings.showReport = switchShowReport.checked;
                         settings.makeSoundReceived = switchSoundReceived.checked;
                         settings.makeSoundLost = switchSoundLost.checked;
@@ -1031,9 +1042,6 @@ ApplicationWindow {
                     text: "Cancel"
                     onClicked: {
                         dialogSettings.close();
-                        switchShowReport.checked = settings.showReport;
-                        switchSoundReceived.checked = settings.makeSoundReceived;
-                        switchSoundLost.checked = settings.makeSoundLost;
                     }
                 }
             }
@@ -1213,6 +1221,15 @@ ApplicationWindow {
         );
     }
 
+    function showSettingsDialog()
+    {
+        switchUsingPingUtility.checked = settings.usingPingUtility;
+        switchShowReport.checked = settings.showReport;
+        switchSoundReceived.checked = settings.makeSoundReceived;
+        switchSoundLost.checked = settings.makeSoundLost;
+        dialogSettings.show();
+    }
+
     function makeConclusion(lostPercent, averageLatency)
     {
 //        console.log(
@@ -1268,30 +1285,32 @@ ApplicationWindow {
         }
 
         let conclusionLatency = "unknown";
-        if (averageLatencyNumber < 15)
+        let latencyFactor = settings.usingPingUtility === true ? 1 : 3;
+        //console.debug(`Latency factor: ${latencyFactor}`);
+        if (averageLatencyNumber < 15 * latencyFactor)
         {
             conclusionLatency = `<font color="${Styles.colorReceived}">almost non-existent</font>`;
         }
-        else if (averageLatencyNumber < 30)
+        else if (averageLatencyNumber < 30 * latencyFactor)
         {
             conclusionLatency = `<font color="${Styles.colorReceived}">very low</font>`;
         }
-        else if (averageLatencyNumber < 40)
+        else if (averageLatencyNumber < 40 * latencyFactor)
         {
             conclusionLatency = `<font color="${Styles.colorReceived}">low</font>`;
             conclusionScore -= 1;
         }
-        else if (averageLatencyNumber < 60)
+        else if (averageLatencyNumber < 60 * latencyFactor)
         {
             conclusionLatency = `<font color="${Styles.colorError}">okay</font>`;
             conclusionScore -= 2;
         }
-        else if (averageLatencyNumber < 80)
+        else if (averageLatencyNumber < 80 * latencyFactor)
         {
             conclusionLatency = `<font color="${Styles.colorLost}">quite high</font>`;
             conclusionScore -= 3;
         }
-        else if (averageLatencyNumber < 100)
+        else if (averageLatencyNumber < 100 * latencyFactor)
         {
             conclusionLatency = `<font color="${Styles.colorLost}">high</font>`;
             conclusionScore -= 4;

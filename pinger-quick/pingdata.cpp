@@ -41,6 +41,11 @@ int PingData::get_pcktReceived() { return pcktReceived; }
 int PingData::get_pcktSent() { return pcktSent; }
 int PingData::get_packetsQueueSize() { return packetsQueueSize; }
 
+int PingData::get_packetsQueueCount()
+{
+    return packetsQueue.size();
+}
+
 QList<int> *PingData::get_packetsQueueTimes()
 {
     QList<int> *times = new QList<int>();

@@ -18,6 +18,7 @@ public:
     float get_lostPercentage();
     float get_receivedPercentage();
     int get_packetsQueueSize();
+    int get_packetsQueueCount();
     QList<int> *get_packetsQueueTimes();
     float get_lastPacketTime();
     float get_avgTime();

@@ -31,7 +31,7 @@ Window {
     }
 
     Shortcut {
-        sequence: "Esc"
+        sequences: [ "Esc", "Space" ]
         onActivated: root.close()
     }
 }

@@ -8,6 +8,7 @@ FormText {
 
     HoverHandler {
         id: hvHnd
+        cursorShape: Qt.WhatsThisCursor
         //enabled: parent.visible
         /*onHoveredChanged: {
             console.debug(`${parent.text} hover changed to: ${this.hovered}`);

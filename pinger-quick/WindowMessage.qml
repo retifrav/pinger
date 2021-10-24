@@ -75,7 +75,7 @@ Window {
     }
 
     Shortcut {
-        sequences: [ "Esc", "Return" ]
+        sequences: [ "Esc", "Space", "Return" ]
         onActivated: root.close()
     }
 }

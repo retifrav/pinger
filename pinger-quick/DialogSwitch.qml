@@ -4,6 +4,8 @@ import QtQuick.Controls//2.15
 Switch {
     id: root
 
+    property string helpTooltip
+
     indicator: Rectangle {
         id: indicatorBase
         implicitWidth: 55
@@ -25,10 +27,21 @@ Switch {
         }
     }
 
-    contentItem: DialogText {
-        text: root.text
-        font.pointSize: Styles.dialogFontSize
-        verticalAlignment: Text.AlignVCenter
+    contentItem: Row {
         leftPadding: root.indicator.width + root.spacing
+        DialogText {
+            text: root.text
+            font.pointSize: Styles.dialogFontSize
+            //verticalAlignment: Text.AlignVCenter
+        }
+        FormTextWithHover {
+            leftPadding: 3
+            color: Styles.buttonsTextColor
+            //verticalAlignment: Text.AlignVCenter
+            text: "(?)"
+            font.pointSize: Styles.dialogFontSize
+            tooltipText: qsTr(helpTooltip)
+            visible: helpTooltip.length > 0
+        }
     }
 }

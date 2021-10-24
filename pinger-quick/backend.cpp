@@ -1,16 +1,18 @@
 #include "backend.h"
 
-Backend::Backend(QObject* parent) : QObject(parent)
+Backend::Backend(QObject *parent) : QObject(parent)
 {
     //qDebug() << "Settings file:" << _settings.fileName();
 
-    _usingPing = false;
+    _usingPingUtility = _settings.value("usingPingUtility").toBool();
 
     _currentHost = QString();
 
     _ping.setProgram("ping");
 
     _lostTresholdMS = 1001;
+
+    _preflightRequestSent = false;
 
     _timer.setSingleShot(false);
 
@@ -38,7 +40,8 @@ Backend::Backend(QObject* parent) : QObject(parent)
     );
 
     _managerPing = new QNetworkAccessManager(this);
-    _managerPing->setAutoDeleteReplies(true);
+    // if this is enabled, don't forget to delete/deleteLater() them yourself
+    //_managerPing->setAutoDeleteReplies(true);
     _managerPing->setTransferTimeout(_lostTresholdMS);
     connect(
         _managerPing, &QNetworkAccessManager::finished,
@@ -47,6 +50,11 @@ Backend::Backend(QObject* parent) : QObject(parent)
     //qDebug() << "Auto delete replies:" << _managerPing->autoDeleteReplies();
 
     _licensedTo = "";
+}
+
+bool Backend::isUsingPingUtility()
+{
+    return _usingPingUtility;
 }
 
 QJsonObject Backend::getVersionInfo()
@@ -171,7 +179,7 @@ int Backend::adjustSpread(int diff)
 
 void Backend::startPing()
 {
-    if (_usingPing) // calling ping CLI tool to send ICMP requests
+    if (_usingPingUtility) // calling ping CLI tool to send ICMP requests
     {
         if (_ping.state() == 0)
         {
@@ -192,7 +200,12 @@ void Backend::startPing()
         {
             auto httpRequest = QNetworkRequest(QUrl(_currentHost));
             _httpRequestTimer.start();
-            _managerPing->head(httpRequest);
+            if (_currentPendingReply != nullptr)
+            {
+                _currentPendingReply->deleteLater();
+            }
+            _currentPendingReply = _managerPing->head(httpRequest);
+            //qDebug() << "started";
         }
     }
 }
@@ -216,18 +229,26 @@ int Backend::getQueueSize()
     return _pingData.get_packetsQueueSize();
 }
 
+int Backend::getQueueCount()
+{
+    return _pingData.get_packetsQueueCount();
+}
+
 void Backend::on_btn_ping_clicked(QString host)
 {
 //    ui->btn_stop->setVisible(true);
 //    ui->btn_ping->setVisible(false);
 
     _pingData.resetEverything();
+    _preflightRequestSent = false;
 //    ui->lw_output->clear();
 
 //    ui->lbl_sent->setText("0");
 //    ui->lbl_received->setText("0");
 //    ui->lbl_lost->setText("0");
 //    ui->lbl_lostPercentage->setText("0%");
+
+    _usingPingUtility = _settings.value("usingPingUtility").toBool();
 
     _currentHost = host.trimmed();
     if (_currentHost.isEmpty())
@@ -239,7 +260,7 @@ void Backend::on_btn_ping_clicked(QString host)
     }
 
     QRegularExpressionMatch match = _startsWithHTTP.match(_currentHost);
-    if (_usingPing)
+    if (_usingPingUtility)
     {
         if (match.hasMatch())
         {
@@ -267,13 +288,18 @@ void Backend::on_btn_stop_clicked()
 
     _timer.stop();
 
-    if (_usingPing)
+    if (_usingPingUtility)
     {
         _ping.kill();
     }
     else
     {
-        // TODO cancel HTTP HEAD
+        // the STOP button can be clicked before new reply object is created by timer
+        if (_currentPendingReply != nullptr)
+        {
+            _currentPendingReply->abort();
+            //qDebug() << "aborted";
+        }
         _httpRequestTimer.invalidate();
     }
 
@@ -342,19 +368,27 @@ QString Backend::getLicensedTo()
 
 void Backend::requestPingFinished(QNetworkReply *reply)
 {
-    auto requestTime = _httpRequestTimer.elapsed();
-    _httpRequestTimer.invalidate();
+    qint64 requestTime = 0;
+    if(_httpRequestTimer.isValid())
+    {
+        requestTime = _httpRequestTimer.elapsed();
+        _httpRequestTimer.invalidate();
+    }
+
+    //qDebug() << "Current queue size:" << getQueueCount();
 
     //qDebug() << "Current host:" << _httpRequest->url();
     //delete _httpRequest;
 
     int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    auto err = reply->error();
 //    QByteArray data;
 //    if (reply->isOpen())
 //    {
 //        data = reply->readAll();
 //    }
-    //qDebug() << status << "|" << requestTime << "ms |";//<< data;
+
+    //qDebug() << status << "|" << err << "|" << requestTime << "ms |";//<< data;
 
     auto packet = QPair<int, QString>(
         0,
@@ -362,13 +396,14 @@ void Backend::requestPingFinished(QNetworkReply *reply)
     );
     //qDebug() << packet;
 
+    //qDebug() << "Packets in queue:" << getQueueCount();
+
     if (requestTime > _lostTresholdMS) { packet.first = 1; }
     else
     {
         if (status != 200)
         {
             QString errorMessage = "Unknown network error";
-            QNetworkReply::NetworkError err = reply->error();
             if (err == 0)
             {
                 // dictionary: http://doc.qt.io/qt-5/qnetworkreply.html#NetworkError-enum
@@ -376,15 +411,28 @@ void Backend::requestPingFinished(QNetworkReply *reply)
             }
             else
             {
-                if (err == QNetworkReply::OperationCanceledError) { packet.first = 1; }
-                else
+                switch (err)
                 {
-                    qDebug() << "Network error:" << err;
-                    packet.first = 2;
-                    packet.second = errorMessage;
+                    case QNetworkReply::OperationCanceledError:
+                        return;
+                    case QNetworkReply::NoError:
+                        packet.first = 1;
+                            break;
+                    default:
+                        qDebug() << "Network error:" << err;
+                        packet.first = 2;
+                        packet.second = errorMessage;
                 }
             }
         }
+    }
+
+    // first HTTP request is always the slowest, skip its processing (if it is successful)
+    if (!_usingPingUtility && !_preflightRequestSent)
+    {
+        //qDebug() << "Kind of a pre-flight HTTP request, skipping it";
+        _preflightRequestSent = true;
+        if (status == 200) { return; }
     }
 
     processPingResults(packet);

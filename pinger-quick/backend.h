@@ -48,6 +48,7 @@ public slots:
     void processPingResults(QPair<int, QString> packet);
     QJsonObject getPingData();
     int getQueueSize();
+    int getQueueCount();
     // just in case overriding the close event to kill the pinging process
     void closeEvent();
     void dumpTelemetry(QString telemetry);
@@ -55,6 +56,7 @@ public slots:
     QJsonObject getVersionInfo();
     void showAboutQt();
     QString getLicensedTo();
+    bool isUsingPingUtility();
 
 private slots:
     void requestPingFinished(QNetworkReply *reply);
@@ -63,10 +65,12 @@ private:
     int adjustSpread(int diff);
 
     const QString _applicationName = "Pinger";
-    bool _usingPing;
+    bool _usingPingUtility;
     QString _currentHost;
     QProcess _ping;
     QElapsedTimer _httpRequestTimer;
+    QNetworkReply *_currentPendingReply;
+    bool _preflightRequestSent;
     int _lostTresholdMS;
     QTimer _timer;
     QNetworkAccessManager *_managerPing;

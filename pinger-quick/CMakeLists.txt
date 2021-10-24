@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 
 set(version_major 1)
-set(version_minor 1)
+set(version_minor 2)
 set(version_revision 0)
 set(version_commit "00000000000")
 string(TIMESTAMP version_date UTC)
