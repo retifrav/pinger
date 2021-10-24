@@ -12,6 +12,7 @@
 #include <QApplication>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
+#include <QElapsedTimer>
 
 #include "build-info.h"
 #include "pingdata.h"

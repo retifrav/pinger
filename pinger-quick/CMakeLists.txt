@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.20)
 
 set(version_major 1)
 set(version_minor 2)
-set(version_revision 0)
+set(version_revision 1)
 set(version_commit "00000000000")
 string(TIMESTAMP version_date UTC)
 
@@ -55,8 +55,8 @@ set(CMAKE_AUTORCC ON)
 # for Sublime Text LSP
 #set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-find_package(QT NAMES Qt6 COMPONENTS Quick Qml REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Quick Qml Charts Multimedia REQUIRED)
+find_package(QT NAMES Qt6 Qt5 REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Quick Qml Charts Multimedia REQUIRED)
 
 if(UNIX)
     if(NOT APPLE)

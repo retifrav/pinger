@@ -1,11 +1,11 @@
-import QtQuick//2.15
-import QtQuick.Window//2.15
-import QtQuick.Controls//2.15
-import QtQuick.Layouts//1.15
-//import QtGraphicalEffects 1.15
-import Qt5Compat.GraphicalEffects
-import QtCharts//2.15
-import Qt.labs.settings
+import QtQuick 2.15
+import QtQuick.Window 2.15
+import QtQuick.Controls 2.15
+import QtQuick.Layouts 1.15
+import QtGraphicalEffects 1.15
+//import Qt5Compat.GraphicalEffects
+import QtCharts 2.15
+import Qt.labs.settings 1.1
 import Qt.labs.platform 1.1
 //import QtQuick.Controls 1.4 as QQC1
 //import QtQuick.Controls.Styles 1.4 as QQC1S
@@ -37,6 +37,8 @@ ApplicationWindow {
 
     property int latencyChartWidth: backend.getQueueSize() // chart view width in packets
     property int minimumRequiredPackets: 50
+    property int latencyFactor: settings.usingPingUtility === true ? 1 : 4;
+    property int latencyFactorAvg: latencyFactor === 1 ? 1 : latencyFactor / 2;
 
     Settings {
         id: settings
@@ -429,15 +431,17 @@ ApplicationWindow {
 
                                 let results = backend.getPingData();
 
+                                //console.debug("Latency factor:", latencyFactor, latencyFactorAvg)
+
                                 totalPacketsSent.text = results.Sent;
                                 let percentColor = results.ReceivedPercent < 98
                                     ? results.ReceivedPercent < 95 ? Styles.colorLost : Styles.colorError
                                     : Styles.colorReceived;
                                 totalPacketsReceived.text = `${results.Received} (<font color="${percentColor}">${results.ReceivedPercent}%</font>)`;
                                 totalPacketsLost.text = `${results.Lost} (<font color="${percentColor}">${results.LostPercent}%</font>)`;
-                                let latencyColor = results.AvgLatency >= 80
+                                let latencyColor = results.AvgLatency >= 80 * latencyFactorAvg
                                     ? Styles.colorLost
-                                    : results.AvgLatency >= 60 ? Styles.colorError : Styles.colorReceived;
+                                    : results.AvgLatency >= 60 * latencyFactorAvg ? Styles.colorError : Styles.colorReceived;
                                 totalAverageLatency.text = `<font color="${latencyColor}">${results.AvgLatency}ms</font>`;
                                 conclusion.text = results.Sent < minimumRequiredPackets && !debugMode
                                     ? qsTr(`Not enough data to make a proper conclusion. Let the program to send at least ${minimumRequiredPackets} packets.`)
@@ -680,15 +684,15 @@ ApplicationWindow {
                                     radius: width * 0.5
                                     color: packetColor
                                 }
-//                                Glow {
-//                                    anchors.fill: packetStatus
-//                                    radius: 10
-//                                    //samples: 20
-//                                    transparentBorder: true
-//                                    color: packetStatus.color
-//                                    spread: 0
-//                                    source: packetStatus
-//                                }
+                                Glow {
+                                    anchors.fill: packetStatus
+                                    radius: 10
+                                    samples: 20
+                                    transparentBorder: true
+                                    color: packetStatus.color
+                                    spread: 0
+                                    source: packetStatus
+                                }
                                 FormText {
                                     anchors.right: parent.right
                                     text: time
@@ -764,8 +768,8 @@ ApplicationWindow {
                             Glow {
                                 id: glowPacketsPieChart
                                 anchors.fill: packetsPieChart
-                                radius: 30
-                                //samples: 37
+                                radius: 18
+                                samples: 37
                                 transparentBorder: true
                                 color: Styles.colorReceived
                                 source: packetsPieChart
@@ -1285,7 +1289,6 @@ ApplicationWindow {
         }
 
         let conclusionLatency = "unknown";
-        let latencyFactor = settings.usingPingUtility === true ? 1 : 3;
         //console.debug(`Latency factor: ${latencyFactor}`);
         if (averageLatencyNumber < 15 * latencyFactor)
         {
