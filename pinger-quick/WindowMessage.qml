@@ -5,12 +5,11 @@ import QtQuick.Controls 2.15
 Window {
     id: root
 
-    property string title
+    property alias windowTitle: root.title
     property string statusImage
     property string textHeader
     property string textMain
 
-    title: root.title
     modality: Qt.WindowModal
 
     width: 450

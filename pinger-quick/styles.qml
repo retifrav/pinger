@@ -40,7 +40,7 @@ Item {
     property int dialogPaddingBottom: 15
 
     property int dialogHeaderBottomMargin: 15
-    property int dialogSectionTopMargin: 10
+    property int dialogSectionTopMargin: 12
     property int dialogSubHeaderBottomMargin: 5
     property int dialogRowSpacing: 3
 

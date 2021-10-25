@@ -934,7 +934,7 @@ ApplicationWindow {
 
     WindowMessage {
         id: dialogAbout
-        title: `About ${applicationName}`
+        windowTitle: `About ${applicationName}`
         textHeader: applicationName
         textMain: applicationVersionString
         statusImage: "/images/logo.png"
@@ -942,7 +942,7 @@ ApplicationWindow {
 
     WindowMessage {
         id: dialogLicense
-        title: "License"
+        windowTitle: "License"
         textHeader: title
         textMain: mainWindow.licensedTo.length === 0
             ? "Unregistered."
@@ -952,7 +952,7 @@ ApplicationWindow {
 
     WindowMessage {
         id: dialogNoHost
-        title: "No host provided"
+        windowTitle: "No host provided"
         textHeader: title
         textMain: "In order to ping some host, you need to provide either its domain name or its IP address."
         statusImage: "/images/warning.png"
@@ -960,7 +960,8 @@ ApplicationWindow {
 
     WindowDialog {
         id: dialogSettings
-        title: "Settings"
+        windowTitle: "Settings"
+        windowHeight: 400
         visible: false
 
         contents: ColumnLayout
@@ -979,6 +980,7 @@ ApplicationWindow {
             }
 
             ColumnLayout {
+                Layout.leftMargin: Styles.dialogPaddingLeft
                 DialogText {
                     Layout.bottomMargin: Styles.dialogSubHeaderBottomMargin
                     text: "General"
@@ -1002,6 +1004,7 @@ ApplicationWindow {
             }
 
             ColumnLayout {
+                Layout.leftMargin: Styles.dialogPaddingLeft
                 Layout.fillWidth: true
                 Layout.topMargin: Styles.dialogSectionTopMargin
 
@@ -1054,7 +1057,7 @@ ApplicationWindow {
 
     WindowDialog {
         id: dialogReport
-        title: "Report"
+        windowTitle: "Report"
         visible: false
 
         contents: ColumnLayout
