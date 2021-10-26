@@ -313,23 +313,23 @@ void Backend::on_btn_stop_clicked()
 void Backend::closeEvent()
 {
     // kill the ping process when MainWindow closes
-    _ping.kill();
+    if (_usingPingUtility) { _ping.kill(); }
 
-    // save window geometry
-//    if (this->windowState() == Qt::WindowMaximized ||this->windowState() == Qt::WindowFullScreen)
-//    {
-//        settings->setValue("window/fullscreen", 1);
-//    }
-//    else
-//    {
-//        settings->setValue("window/fullscreen", 0);
-//        settings->setValue("window/x", this->pos().rx());
-//        settings->setValue("window/y", this->pos().ry());
-//        settings->setValue("window/width", this->width());
-//        settings->setValue("window/height", this->height());
-//    }
+    // save window geometry (if it's a Qt Widgets application)
+    /*if (this->windowState() == Qt::WindowMaximized ||this->windowState() == Qt::WindowFullScreen)
+    {
+        settings->setValue("window/fullscreen", 1);
+    }
+    else
+    {
+        settings->setValue("window/fullscreen", 0);
+        settings->setValue("window/x", this->pos().rx());
+        settings->setValue("window/y", this->pos().ry());
+        settings->setValue("window/width", this->width());
+        settings->setValue("window/height", this->height());
+    }*/
 
-    qInfo() << "Application closed";
+    //qDebug() << "Application closed";
 }
 
 void Backend::dumpTelemetry(QString telemetry)

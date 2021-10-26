@@ -312,7 +312,6 @@ ApplicationWindow {
     }
 
     onClosing: {
-        console.debug("Does it ever fire?");
         backend.closeEvent();
     }
 
