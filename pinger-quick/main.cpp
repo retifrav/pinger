@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
     {
         if (strcmp(argv[1], "--version") == 0)
         {
-            QTextStream(stdout) << QString("Version: %1.%2.%3, commit: %4, built on: %5").arg(
+            QTextStream(stdout) << QString("Version: %1.%2.%3\nCommit: %4\nBuilt on: %5").arg(
                 QString::number(decovar::pinger::versionMajor),
                 QString::number(decovar::pinger::versionMinor),
                 QString::number(decovar::pinger::versionRevision),
@@ -21,9 +21,15 @@ int main(int argc, char *argv[])
 
         if (strcmp(argv[1], "--help") == 0)
         {
-            QTextStream(stdout) << QString("There is no help information yet. %1").arg(
-                "Although, you can check the application version with --version"
-            ) << Qt::endl;
+            QTextStream(stdout) << "Pinger - network connection quality analyzer\n"
+                                << "Copyright (C) 2017, Declaration of VAR\n\n"
+                                << QString("Source code: %1\n").arg(
+                                       QString::fromStdString(decovar::pinger::repositoryURL)
+                                   )
+                                << QString("License (GPLv3): %1").arg(
+                                       QString::fromStdString(decovar::pinger::licenseURL)
+                                   )
+                                << Qt::endl;
             return EXIT_SUCCESS;
         }
 

@@ -49,7 +49,7 @@ Backend::Backend(QObject *parent) : QObject(parent)
     );
     //qDebug() << "Auto delete replies:" << _managerPing->autoDeleteReplies();
 
-    _licensedTo = "";
+    //_licensedTo = "";
 }
 
 bool Backend::isUsingPingUtility()
@@ -68,11 +68,13 @@ QJsonObject Backend::getVersionInfo()
 //    );
     QJsonObject version
     {
-        {"major",    QString::number(decovar::pinger::versionMajor)},
-        {"minor",    QString::number(decovar::pinger::versionMinor)},
-        {"revision", QString::number(decovar::pinger::versionRevision)},
-        {"commit",   QString::fromStdString(decovar::pinger::versionCommit)},
-        {"date",     QString::fromStdString(decovar::pinger::versionDate)}
+        { "major",      QString::number(decovar::pinger::versionMajor)         },
+        { "minor",      QString::number(decovar::pinger::versionMinor)         },
+        { "revision",   QString::number(decovar::pinger::versionRevision)      },
+        { "commit",     QString::fromStdString(decovar::pinger::versionCommit) },
+        { "date",       QString::fromStdString(decovar::pinger::versionDate)   },
+        { "repository", QString::fromStdString(decovar::pinger::repositoryURL) },
+        { "license",    QString::fromStdString(decovar::pinger::licenseURL)    }
     };
     return version;
 }
@@ -361,10 +363,10 @@ void Backend::showAboutQt()
     QApplication::aboutQt();
 }
 
-QString Backend::getLicensedTo()
-{
-    return _licensedTo;
-}
+//QString Backend::getLicensedTo()
+//{
+//    return _licensedTo;
+//}
 
 void Backend::requestPingFinished(QNetworkReply *reply)
 {

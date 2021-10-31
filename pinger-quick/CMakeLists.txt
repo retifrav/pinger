@@ -6,40 +6,14 @@ set(version_revision 1)
 set(version_commit "00000000000")
 string(TIMESTAMP version_date UTC)
 
-execute_process(
-    COMMAND git rev-parse --short=11 HEAD
-    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../"
-    RESULT_VARIABLE gitResult
-    ERROR_VARIABLE gitError
-    OUTPUT_VARIABLE gitOut
-    OUTPUT_STRIP_TRAILING_WHITESPACE
+list(APPEND CMAKE_MODULE_PATH
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake"
 )
-if(NOT gitResult EQUAL 0)
-    message(WARNING "Git command status: ${gitResult}")
-    if(NOT gitError STREQUAL "")
-        message(WARNING "${gitError}")
-    endif()
-    message(WARNING "Couldn't get commit hash from Git. Will fallback to default value")
-else()
-    #message(${gitOut})
-    #string(REPLACE "build-" "" gitBuildNumber ${gitOut})
-    #set(version_commit ${gitBuildNumber})
-    set(version_commit ${gitOut})
-endif()
-file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/include/build-info.h"
-    "#ifndef BUILD_INFO_H\n"
-    "#define BUILD_INFO_H\n\n"
-    "namespace decovar\n{\n"
-    "\tnamespace pinger\n\t{\n"
-    "\t\tconst int versionMajor = ${version_major};\n"
-    "\t\tconst int versionMinor = ${version_minor};\n"
-    "\t\tconst int versionRevision = ${version_revision};\n"
-    "\t\tconst std::string versionCommit = \"${version_commit}\";\n"
-    "\t\tconst std::string versionDate = \"${version_date}\";\n"
-    "\t}\n}\n\n"
-    "#endif // BUILD_INFO_H"
-)
-message(STATUS "Version: ${version_major}.${version_minor}.${version_revision}, ${version_commit}")
+
+include(GenerateVersion)
+message(STATUS "Generated version: \
+${version_major}.${version_minor}.\
+${version_revision}, ${version_commit}")
 
 project("Pinger"
     DESCRIPTION "Network connection quality analyzer"

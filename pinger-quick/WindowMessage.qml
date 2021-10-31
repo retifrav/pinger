@@ -6,6 +6,7 @@ Window {
     id: root
 
     property alias windowTitle: root.title
+    property alias windowHeight: root.height
     property string statusImage
     property string textHeader
     property string textMain

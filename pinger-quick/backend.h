@@ -56,7 +56,7 @@ public slots:
     QString getApplicationName();
     QJsonObject getVersionInfo();
     void showAboutQt();
-    QString getLicensedTo();
+    //QString getLicensedTo();
     bool isUsingPingUtility();
 
 private slots:
@@ -79,7 +79,7 @@ private:
     PingData _pingData;
     QSettings _settings;
     QString _telemetryFile;
-    QString _licensedTo;
+    //QString _licensedTo;
 
     const QRegularExpression _startsWithHTTP = QRegularExpression("^(http|https):\\/\\/");
 };

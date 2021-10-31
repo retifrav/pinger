@@ -21,9 +21,10 @@ ApplicationWindow {
     minimumWidth: 900
     height: 650
     minimumHeight: 500
-    title: mainWindow.licensedTo.length === 0
+    /*title: mainWindow.licensedTo.length === 0
         ? `${applicationName} [unregistered]`
-        : applicationName
+        : applicationName*/
+    title: applicationName
 
     readonly property string applicationName: backend.getApplicationName()
     readonly property var applicationVersion: backend.getVersionInfo()
@@ -31,7 +32,7 @@ ApplicationWindow {
         .concat(`<br><b>Commit:</b> ${applicationVersion.commit}`)
         .concat(`<br><b>Built on:</b> ${applicationVersion.date}`)
     readonly property bool enableMenuBar: true//Qt.platform.os === "osx"
-    readonly property string licensedTo: backend.getLicensedTo()
+    //readonly property string licensedTo: backend.getLicensedTo()
 
     property bool debugMode: true
 
@@ -118,14 +119,22 @@ ApplicationWindow {
                     //console.debug(Qt.platform.os, Qt.platform.pluginName)
                     backend.showAboutQt();
                 }
-                visible: mainWindow.debugMode
+                //visible: mainWindow.debugMode
             }
 
-            MenuSeparator {}
+            MenuItem {
+                text: "Source code"
+                onTriggered: {
+                    Qt.openUrlExternally(applicationVersion.repository)
+                }
+            }
 
             MenuItem {
-                text: qsTr("License")
-                onTriggered: { dialogLicense.show(); }
+                text: qsTr("License (GPLv3)")
+                onTriggered: {
+                    //dialogLicense.show();
+                    Qt.openUrlExternally(applicationVersion.license)
+                }
             }
         }
     }
@@ -939,7 +948,7 @@ ApplicationWindow {
         statusImage: "/images/logo.png"
     }
 
-    WindowMessage {
+    /*WindowMessage {
         id: dialogLicense
         windowTitle: "License"
         textHeader: title
@@ -947,7 +956,7 @@ ApplicationWindow {
             ? "Unregistered."
             : `<b>Registered to</b>: ${mainWindow.licensedTo}`
         statusImage: "/images/logo.png"
-    }
+    }*/
 
     WindowMessage {
         id: dialogNoHost
