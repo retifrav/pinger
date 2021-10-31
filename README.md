@@ -2,7 +2,7 @@
 
 Network connection quality analyzer.
 
-![Pinger](/misc/screenshot-report-macos.png "Pinger")
+![Pinger](/misc/screenshot-main-macos.png "Pinger")
 
 The application sends pinging requests to a selected host and tracks the following statistics:
 
