@@ -352,6 +352,8 @@ ApplicationWindow {
                     Layout.preferredHeight: parent.height * 0.1
                     Layout.minimumHeight: 50
                     Layout.maximumHeight: 70
+                    border.color: backend.usingPingUtility ? Styles.colorReceived : Styles.colorError
+                    border.width: backend.pinging ? 1 : 0
 
                     RowLayout {
                         anchors.fill: parent
@@ -361,24 +363,51 @@ ApplicationWindow {
                         FormLabelHeader {
                             //anchors.verticalCenter: parent.verticalCenter
                             //Layout.alignment: Qt.AlignBaseline
+                            Layout.alignment: Qt.AlignVCenter
                             text: "Host"
                         }
 
-                        TextInput {
-                            id: host
+                        Item
+                        {
                             Layout.fillWidth: true
+                            Layout.fillHeight: true
                             Layout.leftMargin: 10
                             Layout.rightMargin: 10
-                            Layout.alignment: Qt.AlignVCenter
-                            enabled: btn_ping.visible
-                            font.pointSize: parent.height > 0 ? parent.height / 3.5 : 16
-                            color: Styles.buttonsTextColor
-                            clip: true
 
-                            text: "ya.ru"
+                            TextInput {
+                                id: host
+                                anchors.verticalCenter: parent.verticalCenter
+                                width: parent.width
+                                clip: true
+                                enabled: btn_ping.visible
+                                font.pointSize: Styles.sectionHeaderFontSize
+                                color: Styles.buttonsTextColor
 
-                            Keys.onReturnPressed: {
-                                btn_ping.clicked();
+                                text: "ya.ru"
+
+                                Keys.onReturnPressed: {
+                                    btn_ping.clicked();
+                                }
+
+                                Rectangle {
+                                    anchors.right: parent.right
+                                    color: "transparent"
+                                    border.color: backend.usingPingUtility
+                                        ? Styles.colorReceived
+                                        : Styles.colorError
+                                    width: pingingModeLabel.contentWidth + 16
+                                    height: pingingModeLabel.contentHeight + 10
+                                    visible: backend.pinging
+
+                                    Text {
+                                        id: pingingModeLabel
+                                        anchors.centerIn: parent
+                                        text: backend.usingPingUtility ? "ICMP" : "HTTP"
+                                        color: backend.usingPingUtility
+                                            ? Styles.colorReceived
+                                            : Styles.colorError
+                                    }
+                                }
                             }
                         }
 

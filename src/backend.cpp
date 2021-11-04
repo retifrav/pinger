@@ -4,6 +4,8 @@ Backend::Backend(QObject *parent) : QObject(parent)
 {
     //qDebug() << "Settings file:" << _settings.fileName();
 
+    _pinging = false;
+
     _usingPingUtility = _settings.value("usingPingUtility").toBool();
 
     _currentHost = QString();
@@ -251,6 +253,7 @@ void Backend::on_btn_ping_clicked(QString host)
 //    ui->lbl_lostPercentage->setText("0%");
 
     _usingPingUtility = _settings.value("usingPingUtility").toBool();
+    emit usingPingUtilityChanged();
 
     _currentHost = host.trimmed();
     if (_currentHost.isEmpty())
@@ -281,6 +284,9 @@ void Backend::on_btn_ping_clicked(QString host)
 
     // TODO make the timer value a variable in config
     _timer.start(1000);
+
+    _pinging = true;
+    emit pingingChanged();
 }
 
 void Backend::on_btn_stop_clicked()
@@ -310,6 +316,9 @@ void Backend::on_btn_stop_clicked()
 //    {
 //        qDebug() << pckts.at(i);//.first << pckts.at(i).second;
 //    }
+
+    _pinging = false;
+    emit pingingChanged();
 }
 
 void Backend::closeEvent()
@@ -361,6 +370,11 @@ QString Backend::getApplicationName()
 void Backend::showAboutQt()
 {
     QApplication::aboutQt();
+}
+
+bool Backend::isPinging()
+{
+    return _pinging;
 }
 
 //QString Backend::getLicensedTo()

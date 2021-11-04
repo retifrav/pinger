@@ -21,6 +21,10 @@
 class Backend : public QObject
 {
     Q_OBJECT
+
+    Q_PROPERTY(bool usingPingUtility READ isUsingPingUtility NOTIFY usingPingUtilityChanged)
+    Q_PROPERTY(bool pinging READ isPinging NOTIFY pingingChanged)
+
 public:
     explicit Backend(QObject *parent = nullptr);
 
@@ -40,6 +44,8 @@ signals:
         int maxAxisY
     );
     void gotError(QString errorMessage);
+    void pingingChanged();
+    void usingPingUtilityChanged();
 
 public slots:
     void on_btn_ping_clicked(QString host);
@@ -57,6 +63,7 @@ public slots:
     QJsonObject getVersionInfo();
     void showAboutQt();
     //QString getLicensedTo();
+    bool isPinging();
     bool isUsingPingUtility();
 
 private slots:
@@ -66,6 +73,7 @@ private:
     int adjustSpread(int diff);
 
     const QString _applicationName = "Pinger";
+    bool _pinging;
     bool _usingPingUtility;
     QString _currentHost;
     QProcess _ping;
