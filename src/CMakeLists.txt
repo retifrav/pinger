@@ -82,6 +82,19 @@ else()
     endif()
 endif()
 
+get_target_property(QT_TARGET_TYPE Qt${QT_VERSION_MAJOR}::Core TYPE)
+if(${QT_TARGET_TYPE} STREQUAL "STATIC_LIBRARY")
+    find_package(Qt${QT_VERSION_MAJOR} COMPONENTS QmlImportScanner REQUIRED)
+    if(${QT_VERSION_MAJOR} EQUAL 5)
+        # available only from Qt 5.14
+        qt5_import_qml_plugins(${CMAKE_PROJECT_NAME})
+    elseif(${QT_VERSION_MAJOR} EQUAL 6)
+        qt6_import_qml_plugins(${CMAKE_PROJECT_NAME})
+    else()
+        message(WARNING "It is unknown if Qt with major version ${QT_VERSION_MAJOR} has an import_qml_plugins function")
+    endif()
+endif()
+
 set(sources
     main.cpp
     functions.cpp
