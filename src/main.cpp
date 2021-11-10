@@ -1,10 +1,13 @@
 #include <QApplication>
 #include <QQmlApplicationEngine>
+#include <QQmlContext>
 #include <QFont>
 #include "backend.h"
 
 int main(int argc, char *argv[])
 {
+    bool debugMode = false;
+
     if (argc == 2)
     {
         if (strcmp(argv[1], "--version") == 0)
@@ -31,6 +34,11 @@ int main(int argc, char *argv[])
                                    )
                                 << Qt::endl;
             return EXIT_SUCCESS;
+        }
+
+        if (strcmp(argv[1], "--debug") == 0)
+        {
+            debugMode = true;
         }
 
         // don't do that for Qt applications, they can take a lot of special Qt parameters
@@ -75,6 +83,8 @@ int main(int argc, char *argv[])
     app.setFont(defaultFont);
 
     QQmlApplicationEngine engine;
+
+    engine.rootContext()->setContextProperty("debugMode", QVariant(debugMode));
 
     qmlRegisterType<Backend>("dev.decovar.Backend", 1, 0, "Backend");
     qmlRegisterSingletonType(

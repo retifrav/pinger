@@ -34,8 +34,6 @@ ApplicationWindow {
     readonly property bool enableMenuBar: true//Qt.platform.os === "osx"
     //readonly property string licensedTo: backend.getLicensedTo()
 
-    property bool debugMode: true
-
     property int latencyChartWidth: backend.getQueueSize() // chart view width in packets
     property int minimumRequiredPackets: 50
     property int latencyFactor: settings.usingPingUtility === true ? 1 : 4;
@@ -119,7 +117,7 @@ ApplicationWindow {
                     //console.debug(Qt.platform.os, Qt.platform.pluginName)
                     backend.showAboutQt();
                 }
-                //visible: mainWindow.debugMode
+                //visible: debugMode
             }
 
             MenuItem {
@@ -312,12 +310,10 @@ ApplicationWindow {
                 "packetsModelCount": packetsModel.count
             });
             addToLog(telemetry);
-            if (debugMode === true)
-            {
-                backend.dumpTelemetry(`[${getCurrentDateTime()}] ${telemetry}`);
-            }
+            backend.dumpTelemetry(`[${getCurrentDateTime()}] ${telemetry}`);
         }
         context: Qt.ApplicationShortcut
+        enabled: debugMode
     }
 
     onClosing: {
