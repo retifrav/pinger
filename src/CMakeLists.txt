@@ -93,6 +93,14 @@ if(${QT_TARGET_TYPE} STREQUAL "STATIC_LIBRARY")
     else()
         message(WARNING "It is unknown if Qt with major version ${QT_VERSION_MAJOR} has an import_qml_plugins function")
     endif()
+
+    # static C++ runtime on Windows
+    # not the right way to do it, apparently
+    #if(WIN32)
+    #    #set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Release>:Release>")
+    #    #set(CMAKE_CXX_FLAGS_RELEASE "/MD")
+    #    #set(CMAKE_CXX_FLAGS_DEBUG "/MDd")
+    #endif()
 endif()
 
 set(sources
@@ -142,10 +150,11 @@ if (UNIX)
         # )
     else()
         target_link_libraries(${CMAKE_PROJECT_NAME}
-            ${CMAKE_THREAD_LIBS_INIT}
-            ${X11_LIBRARIES}
-            ${CMAKE_DL_LIBS}
-            )
+            PRIVATE
+                ${CMAKE_THREAD_LIBS_INIT}
+                ${X11_LIBRARIES}
+                ${CMAKE_DL_LIBS}
+        )
     endif()
 endif()
 
