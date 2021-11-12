@@ -2,6 +2,18 @@
 
 Network connection quality analyzer.
 
+<!-- MarkdownTOC -->
+
+- [How it works](#how-it-works)
+- [Platforms support](#platforms-support)
+- [3rd-party](#3rd-party)
+- [FAQ](#faq)
+    - [How to use checksums](#how-to-use-checksums)
+    - [Why 7z for Mac OS distribution and not DMG](#why-7z-for-mac-os-distribution-and-not-dmg)
+    - [Why still Qt 5 and not Qt 6](#why-still-qt-5-and-not-qt-6)
+
+<!-- /MarkdownTOC -->
+
 ![Pinger](./misc/screenshot-main-macos.png "Pinger")
 
 The application sends pinging requests to a selected host and tracks the following statistics:
@@ -18,12 +30,49 @@ There are two modes of pinging the host:
 - via system `ping` utility and ICMP requests. Most precise and reliable;
 - via HTTP HEAD requests. Not as good, but might be the only option on systems without `ping`.
 
-## Supported platforms
+## Platforms support
 
-Thanks to Qt, the application builds and runs on:
+The application is built with Qt and so it is cross-platform.
 
-- Mac OS
-- Windows
-- GNU/Linux
+|  Platform | Status                                                  |
+|----------:|:--------------------------------------------------------|
+|    Mac OS | *works fine, pre-built binary available*                |
+|   Windows | *works fine, pre-built binary available*                |
+| GNU/Linux | *has certain issues, not distributing pre-built binary* |
+|       iOS | *not checked*                                           |
+|   Android | *not checked*                                           |
+|         ? | *?*                                                     |
 
-Might also work (*but not tested*) on iOS, Android and other target platforms supported by Qt.
+## 3rd-party
+
+- built with [Qt](https://qt.io)
+- [sounds](/src/sounds) are of unknown origin
+- some of the [icons](/src/sounds) are also of unknown origin
+
+## FAQ
+
+### How to use checksums
+
+SHA256:
+
+```
+$ shasum -c ./pinger-v1.2.2-macos11.7z.sha256
+./pinger-v1.2.2-macos11.7z: OK
+```
+
+PGP (*the key is [here](https://decovar.dev/about/retif-public.asc)*):
+
+```
+$ gpg --verify ./pinger-v1.2.2-macos11.7z.sig ./pinger-v1.2.2-macos11.7z
+gpg: Signature made Fri Nov 12 20:24:37 2021 CET
+gpg:                using RSA key E984212EC3E4CA2AFAA37E98713EE1F732D42E96
+gpg: Good signature
+```
+
+### Why 7z for Mac OS distribution and not DMG
+
+Because 7z archive is considerably smaller than a DMG image. So the question would be rather what's the point of using DMG.
+
+### Why still Qt 5 and not Qt 6
+
+Qt 6 still has a [number of issues](https://github.com/retifrav/pinger/issues/4), included degraded performance.
