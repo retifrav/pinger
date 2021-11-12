@@ -47,7 +47,7 @@ The application is built with Qt and so it is cross-platform.
 
 - built with [Qt](https://qt.io)
 - [sounds](/src/sounds) are of unknown origin
-- some of the [icons](/src/images) are also of unknown origin
+- some of the [icons](/src/images) are of unknown origin
 
 ## FAQ
 
@@ -75,4 +75,4 @@ Because 7z archive is considerably smaller than a DMG image. So the question wou
 
 ### Why still Qt 5 and not Qt 6
 
-Qt 6 still has a [number of issues](https://github.com/retifrav/pinger/issues/4), included degraded performance.
+Qt 6 still has a [number of issues](https://github.com/retifrav/pinger/issues/4), including degraded performance.
