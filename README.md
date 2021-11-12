@@ -47,7 +47,7 @@ The application is built with Qt and so it is cross-platform.
 
 - built with [Qt](https://qt.io)
 - [sounds](/src/sounds) are of unknown origin
-- some of the [icons](/src/sounds) are also of unknown origin
+- some of the [icons](/src/images) are also of unknown origin
 
 ## FAQ
 
