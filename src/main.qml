@@ -384,27 +384,27 @@ ApplicationWindow {
                                 Keys.onReturnPressed: {
                                     btn_ping.clicked();
                                 }
+                            }
 
-                                Rectangle {
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    anchors.right: parent.right
-                                    color: "transparent"
-                                    border.color: backend.usingPingUtility
+                            Rectangle {
+                                anchors.verticalCenter: parent.verticalCenter
+                                anchors.right: parent.right
+                                color: "transparent"
+                                border.color: backend.usingPingUtility
+                                    ? Styles.colorReceived
+                                    : Styles.colorError
+                                width: pingingModeLabel.contentWidth + 16
+                                height: pingingModeLabel.contentHeight + 10
+                                visible: backend.pinging
+
+                                Text {
+                                    id: pingingModeLabel
+                                    anchors.centerIn: parent
+                                    text: backend.usingPingUtility ? "ICMP" : "HTTP"
+                                    font.pointSize: Styles.dialogFontSize
+                                    color: backend.usingPingUtility
                                         ? Styles.colorReceived
                                         : Styles.colorError
-                                    width: pingingModeLabel.contentWidth + 12
-                                    height: pingingModeLabel.contentHeight + 7
-                                    visible: backend.pinging
-
-                                    Text {
-                                        id: pingingModeLabel
-                                        anchors.centerIn: parent
-                                        text: backend.usingPingUtility ? "ICMP" : "HTTP"
-                                        font.pointSize: Styles.dialogFontSize
-                                        color: backend.usingPingUtility
-                                            ? Styles.colorReceived
-                                            : Styles.colorError
-                                    }
                                 }
                             }
                         }
