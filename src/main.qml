@@ -24,7 +24,7 @@ ApplicationWindow {
     /*title: mainWindow.licensedTo.length === 0
         ? `${applicationName} [unregistered]`
         : applicationName*/
-    title: applicationName
+    title: debugMode ? `${applicationName} [debug mode]` : applicationName
 
     readonly property string applicationName: backend.getApplicationName()
     readonly property var applicationVersion: backend.getVersionInfo()
@@ -379,7 +379,7 @@ ApplicationWindow {
                                 font.pointSize: Styles.sectionHeaderFontSize
                                 color: Styles.buttonsTextColor
 
-                                text: "ya.ru"
+                                text: host2ping.length > 3 ? host2ping : "ya.ru"
 
                                 Keys.onReturnPressed: {
                                     btn_ping.clicked();
@@ -1189,7 +1189,8 @@ ApplicationWindow {
                 DialogButton {
                     text: "Save report"
                     onClicked: {
-                        addToLog("Initiated saving the report");
+                        //addToLog("Initiated saving the report");
+                        console.warn("Saving reports is not implemented yet");
                     }
                 }
                 Item { Layout.fillWidth: true }

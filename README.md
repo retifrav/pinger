@@ -45,7 +45,7 @@ The application is built with Qt and so it is cross-platform.
 
 ## 3rd-party
 
-- built with [Qt](https://qt.io)
+- built with [Qt](https://qt.io) ([GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html))
 - [sounds](/src/sounds) are of unknown origin
 - some of the [icons](/src/images) are of unknown origin
 

@@ -1,3 +1,4 @@
+#include <QCommandLineParser>
 #include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
@@ -7,53 +8,6 @@
 
 int main(int argc, char *argv[])
 {
-    bool debugMode = false;
-
-    if (argc == 2)
-    {
-        if (strcmp(argv[1], "--version") == 0)
-        {
-            QTextStream(stdout) << QString("Version: %1.%2.%3\nCommit: %4\nBuilt on: %5").arg(
-                QString::number(decovar::pinger::versionMajor),
-                QString::number(decovar::pinger::versionMinor),
-                QString::number(decovar::pinger::versionRevision),
-                QString::fromStdString(decovar::pinger::versionCommit),
-                QString::fromStdString(decovar::pinger::versionDate)
-            ) << Qt::endl;
-            return EXIT_SUCCESS;
-        }
-
-        if (strcmp(argv[1], "--help") == 0)
-        {
-            QTextStream(stdout) << "Pinger - network connection quality analyzer\n"
-                                << "Copyright (C) 2017, Declaration of VAR\n\n"
-                                << QString("Source code: %1\n").arg(
-                                       QString::fromStdString(decovar::pinger::repositoryURL)
-                                   )
-                                << QString("License (GPLv3): %1").arg(
-                                       QString::fromStdString(decovar::pinger::licenseURL)
-                                   )
-                                << Qt::endl;
-            return EXIT_SUCCESS;
-        }
-
-        if (strcmp(argv[1], "--debug") == 0)
-        {
-            debugMode = true;
-        }
-
-        // don't do that for Qt applications, they can take a lot of special Qt parameters
-        //QTextStream(stdout) << "Unsupported argument" << Qt::endl;
-        //return EXIT_FAILURE;
-    }
-
-    // don't do that for Qt applications, they can take a lot of special Qt parameters
-    /*if (argc > 2)
-    {
-        QTextStream(stderr) << "Unsupported amount of arguments" << Qt::endl;
-        return EXIT_FAILURE;
-    }*/
-
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
@@ -62,7 +16,8 @@ int main(int argc, char *argv[])
     // there is a note about this on https://doc.qt.io/qt-5/qtcharts-index.html
     QApplication app(argc, argv);
 
-    QString appName = "Pinger";
+    const QString appName = "Pinger";
+    const QString applicationDescription = "Pinger - network connection quality analyzer";
     app.setApplicationName(appName);
     app.setApplicationDisplayName(appName);
     // don't set domain and organization name on Mac OS,
@@ -79,6 +34,72 @@ int main(int argc, char *argv[])
             QString::number(decovar::pinger::versionRevision)
         )
     );
+
+    QCommandLineParser parser;
+    parser.setApplicationDescription(applicationDescription);
+    parser.addHelpOption();
+    parser.addPositionalArgument(
+        "host",
+        QCoreApplication::translate("main", "Host to ping")
+    );
+    parser.addOptions({
+        {
+            "version",
+            QCoreApplication::translate("main", "Show version information")
+        },
+        {
+            "debug",
+            QCoreApplication::translate("main", "Enable debug mode")
+        },
+        {
+            "license",
+            QCoreApplication::translate("main", "Show license information")
+        }/*,
+        {
+            "host",
+            QCoreApplication::translate("main", "Host to ping"),
+            QCoreApplication::translate("main", "host")
+        }*/
+    });
+    parser.process(app);
+
+    const bool showLicense = parser.isSet("license");
+    if (showLicense)
+    {
+        QTextStream(stdout) << QString("%1\n").arg(applicationDescription)
+                            << "Copyright (C) 2017, Declaration of VAR\n\n"
+                            << QString("Source code: %1\n").arg(
+                                   QString::fromStdString(decovar::pinger::repositoryURL)
+                               )
+                            << QString("License (GPLv3): %1").arg(
+                                   QString::fromStdString(decovar::pinger::licenseURL)
+                               )
+                            << Qt::endl;
+        return EXIT_SUCCESS;
+    }
+
+    const bool showVersion = parser.isSet("version");
+    if (showVersion)
+    {
+        QTextStream(stdout) << QString("Version: %1.%2.%3\nCommit: %4\nBuilt on: %5").arg(
+            QString::number(decovar::pinger::versionMajor),
+            QString::number(decovar::pinger::versionMinor),
+            QString::number(decovar::pinger::versionRevision),
+            QString::fromStdString(decovar::pinger::versionCommit),
+            QString::fromStdString(decovar::pinger::versionDate)
+        ) << Qt::endl;
+        return EXIT_SUCCESS;
+    }
+
+    const QStringList args = parser.positionalArguments();
+    const bool debugMode = parser.isSet("debug");
+    QString host2ping = args.size() > 0 ? args.at(0) : "";//parser.value("host");
+    if (!host2ping.isEmpty() && host2ping.length() < 4)
+    {
+        host2ping = "";
+        qWarning() << "Provided host value is too short, it will be ignored";
+    }
+    //qDebug() << "Debug mode:" << debugMode << "|" << "host:" << host2ping;
 
     // https://doc.qt.io/qt-5/scalability.html#calculating-scaling-ratio
     qreal refDpi = 216.;
@@ -105,6 +126,7 @@ int main(int argc, char *argv[])
 
     engine.rootContext()->setContextProperty("debugMode", QVariant(debugMode));
     engine.rootContext()->setContextProperty("fontSizeRatio", QVariant(fontSizeRatio));
+    engine.rootContext()->setContextProperty("host2ping", QVariant(host2ping));
 
     qmlRegisterType<Backend>("dev.decovar.Backend", 1, 0, "Backend");
     qmlRegisterSingletonType(
