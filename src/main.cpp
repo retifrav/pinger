@@ -2,6 +2,7 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QFont>
+#include <QScreen>
 #include "backend.h"
 
 int main(int argc, char *argv[])
@@ -79,12 +80,31 @@ int main(int argc, char *argv[])
         )
     );
 
-    QFont defaultFont("Verdana", 14);
+    // https://doc.qt.io/qt-5/scalability.html#calculating-scaling-ratio
+    qreal refDpi = 216.;
+    qreal refHeight = 1776.;
+    qreal refWidth = 1080.;
+    QRect rect = QGuiApplication::primaryScreen()->geometry();
+    qreal height = qMax(rect.width(), rect.height());
+    qreal width = qMin(rect.width(), rect.height());
+    qreal dpi = QGuiApplication::primaryScreen()->logicalDotsPerInch();
+    /*auto scalingRatio = qMin(
+        height / refHeight,
+        width / refWidth
+    );*/
+    auto fontSizeRatio = qMin(
+        height * refDpi / (dpi * refHeight),
+        width * refDpi / (dpi * refWidth)
+    );
+    //qDebug() << scalingRatio << fontSizeRatio;
+
+    QFont defaultFont("Verdana");
     app.setFont(defaultFont);
 
     QQmlApplicationEngine engine;
 
     engine.rootContext()->setContextProperty("debugMode", QVariant(debugMode));
+    engine.rootContext()->setContextProperty("fontSizeRatio", QVariant(fontSizeRatio));
 
     qmlRegisterType<Backend>("dev.decovar.Backend", 1, 0, "Backend");
     qmlRegisterSingletonType(

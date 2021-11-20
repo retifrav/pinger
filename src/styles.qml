@@ -4,14 +4,19 @@ import QtQuick 2.15
 import QtQuick.Window 2.15
 
 Item {
-    property real basePixelDensity: 5
-    function calculatedFontSize(fontSize) { return fontSize * Screen.pixelDensity / basePixelDensity; }
+    //property real basePixelDensity: 5
+    function calculatedFontSize(fontSize, adjustment)
+    {
+        //return fontSize * Screen.pixelDensity / basePixelDensity;
+        return (fontSize - adjustment * fontSizeRatio) * fontSizeRatio;
+    }
 
-    property int sectionHeaderFontSize: calculatedFontSize(22)
-    property int headerFontSize: calculatedFontSize(20)
-    property int normalFontSize: calculatedFontSize(19)
-    property int dialogFontSize: calculatedFontSize(15)
-    property int consoleFontSize: calculatedFontSize(14)
+    property int baseFontSize: 8
+    property int sectionHeaderFontSize: calculatedFontSize(baseFontSize, 0)
+    property int headerFontSize: calculatedFontSize(baseFontSize, 0.4)
+    property int normalFontSize: calculatedFontSize(baseFontSize, 0.5)
+    property int dialogFontSize: calculatedFontSize(baseFontSize, 0.8)
+    property int consoleFontSize: calculatedFontSize(baseFontSize, 0.9)
 
     property int layoutSpacing: 20
 
@@ -48,4 +53,10 @@ Item {
 
     property int toolTipDelay: 500
     property int toolTipTimeout: 3000
+
+    /*Component.onCompleted: {
+        console.debug("Font size ratio:", fontSizeRatio)
+        console.debug("Device pixel ratio:", Screen.devicePixelRatio);
+        console.debug("Pixel density:", Screen.pixelDensity);
+    }*/
 }
