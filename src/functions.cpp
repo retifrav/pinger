@@ -5,9 +5,12 @@ QStringList getArgs4ping()
     #if defined(Q_OS_WIN)
         return QStringList() << "-n" << "1"
                              << "-w" << "1000";
-    #else
+    #elif defined(Q_OS_MACOS)
         return QStringList() << "-c" << "1"
                              << "-t" << "1";
+    #else // GNU/Linux
+        return QStringList() << "-c" << "1"
+                             << "-W" << "1";
     #endif
 }
 
