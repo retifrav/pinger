@@ -48,12 +48,16 @@ int main(int argc, char *argv[])
             QCoreApplication::translate("main", "Show version information")
         },
         {
-            "debug",
-            QCoreApplication::translate("main", "Enable debug mode")
-        },
-        {
             "license",
             QCoreApplication::translate("main", "Show license information")
+        },
+        {
+            "dont-start-pinging",
+            QCoreApplication::translate("main", "Don't start pinging right after launch")
+        },
+        {
+            "debug",
+            QCoreApplication::translate("main", "Enable debug mode")
         }/*,
         {
             "host",
@@ -91,8 +95,10 @@ int main(int argc, char *argv[])
         return EXIT_SUCCESS;
     }
 
-    const QStringList args = parser.positionalArguments();
     const bool debugMode = parser.isSet("debug");
+    const bool dontStartPinging = parser.isSet("dont-start-pinging");
+
+    const QStringList args = parser.positionalArguments();
     QString host2ping = args.size() > 0 ? args.at(0) : "";//parser.value("host");
     if (!host2ping.isEmpty() && host2ping.length() < 4)
     {
@@ -125,6 +131,7 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
 
     engine.rootContext()->setContextProperty("debugMode", QVariant(debugMode));
+    engine.rootContext()->setContextProperty("dontStartPinging", QVariant(dontStartPinging));
     engine.rootContext()->setContextProperty("fontSizeRatio", QVariant(fontSizeRatio));
     engine.rootContext()->setContextProperty("host2ping", QVariant(host2ping));
 

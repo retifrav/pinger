@@ -284,6 +284,7 @@ ApplicationWindow {
             drawer.opened ? drawer.close() : drawer.open();
         }
         context: Qt.ApplicationShortcut
+        enabled: debugMode
     }
 
     Shortcut {
@@ -1375,7 +1376,7 @@ ApplicationWindow {
         //addToLog(JSON.stringify(applicationVersion));
 
         // start pinging right after launching
-        if (host.text.trim().length !== 0) { btn_ping.clicked(); }
+        if (host.text.trim().length !== 0 && dontStartPinging !== true) { btn_ping.clicked(); }
         else { host.focus = true; }
     }
 }
