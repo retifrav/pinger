@@ -5,6 +5,8 @@ Network connection quality analyzer.
 <!-- MarkdownTOC -->
 
 - [How it works](#how-it-works)
+    - [ping/ICMP](#pingicmp)
+    - [HTTP HEAD](#http-head)
 - [Platforms support](#platforms-support)
 - [3rd-party](#3rd-party)
 - [FAQ](#faq)
@@ -27,8 +29,19 @@ In the end it also does some analytics on the collected data.
 
 There are two modes of pinging the host:
 
-- via system `ping` utility and ICMP requests. Most precise and reliable;
-- via HTTP HEAD requests. Not as good, but might be the only option on systems without `ping`.
+- via system `ping` utility and ICMP requests;
+- via HTTP HEAD requests.
+
+### ping/ICMP
+
+Runs system `ping` utility and parses the output. Has two obvious disadvantages:
+
+- not every system might allow applications to launch CLI tools such as `ping` (*or `ping` might not be even available in the system*);
+- parsing the `ping` output is not reliable (*different format on different platforms, multi-language*).
+
+### HTTP HEAD
+
+Simple HTTP HEAD requests. Far less reliable/precise than [ping](#pingicmp) in estimating latency values. At the same time, there is no need to rely on external CLI tool (*and parse its output in different languages*), and sending HTTP requests will work on any platform.
 
 ## Platforms support
 

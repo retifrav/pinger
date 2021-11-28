@@ -9,14 +9,18 @@ QStringList getArgs4ping();
 
 // Time (delay/latency) is reported differently on differen OSes:
 //
-// - Windows: Reply from 87.250.250.242: bytes=32 time=27ms TTL=245
-// - Linux: 64 bytes from ya.ru (87.250.250.242): icmp_seq=1 ttl=128 time=30.4 ms
-// - Mac OS: 64 bytes from 87.250.250.242: icmp_seq=0 ttl=245 time=37.710 ms
+// - Windows:
+//     + EN: Reply from 87.250.250.242: bytes=32 time=27ms TTL=245
+//     + RU: Ответ от 87.250.250.242: число байт=32 время=58мс TTL=54
+// - GNU/Linux:
+//     + EN: 64 bytes from ya.ru (87.250.250.242): icmp_seq=1 ttl=128 time=30.4 ms
+// - Mac OS:
+//     + EN: 64 bytes from 87.250.250.242: icmp_seq=0 ttl=245 time=37.710 ms
 //
 // So we need to use RegEx to get numerical value. It wil be int,
 // because fractions of milliseconds are of no interest
 #if defined(Q_OS_WIN)
-    const QRegularExpression timeRegEx = QRegularExpression("(?:time(?:=|<))(\\d+)(\\w+)");
+    const QRegularExpression timeRegEx = QRegularExpression("(?:(time|время)(?:=|<))(\\d+)(\\w+)");
     const QRegularExpression errorRegEx = QRegularExpression("(?:bytes of data:\r\n)(.*)\\.\r\n");
 #else
     const QRegularExpression timeRegEx = QRegularExpression("(?:time=)(\\d+).* (\\w+)");
