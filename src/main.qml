@@ -1027,7 +1027,7 @@ ApplicationWindow {
                     id: switchUsingPingUtility
                     Layout.fillWidth: true
                     text: qsTr("using ping utility")
-                    helpTooltip: "send ICMP requests with ping tool or send HTTP HEAD requests"
+                    helpTooltip: "Sending ICMP requests via ping tool (ON) or just HTTP HEAD requests (OFF)"
                     checked: settings.usingPingUtility
                 }
                 DialogSwitch {
