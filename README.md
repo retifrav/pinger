@@ -1,13 +1,12 @@
 # Pinger
 
-Network connection quality analyzer.
-
 <!-- MarkdownTOC -->
 
+- [About](#about)
 - [How it works](#how-it-works)
     - [ping/ICMP](#pingicmp)
     - [HTTP HEAD](#http-head)
-- [Platforms support](#platforms-support)
+- [Platforms](#platforms)
 - [3rd-party](#3rd-party)
 - [FAQ](#faq)
     - [How to use checksums](#how-to-use-checksums)
@@ -15,6 +14,10 @@ Network connection quality analyzer.
     - [Why still Qt 5 and not Qt 6](#why-still-qt-5-and-not-qt-6)
 
 <!-- /MarkdownTOC -->
+
+## About
+
+Network connection quality analyzer.
 
 ![Pinger](./misc/screenshot-main-macos.png "Pinger")
 
@@ -43,7 +46,7 @@ Runs system `ping` utility and parses the output. Has two obvious disadvantages:
 
 Simple HTTP HEAD requests. Far less reliable/precise than [ping](#pingicmp) in estimating latency values. At the same time, there is no need to rely on external CLI tool (*and parse its output in different languages*), and sending HTTP requests will work on any platform.
 
-## Platforms support
+## Platforms
 
 The application is built with Qt and so it is cross-platform.
 
