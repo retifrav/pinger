@@ -1,5 +1,5 @@
 _stuff/
-build-*/*
+build*/*
 
 *.pro.user*
 *.txt.user*

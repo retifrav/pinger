@@ -29,10 +29,12 @@ QPair<int, QString> parsePingOutput(int pingExitCode, QString pingOutput)
             QRegularExpressionMatch match = timeRegEx.match(pingOutput);
             if (match.hasMatch())
             {
+                //qDebug() << match;
                 rez.first = 0;
                 rez.second = QString("%1 %2").arg(
-                    match.captured(1),
-                    match.captured(2)
+                    // depending on Windows SDK that was used to build the application...
+                    match.captured(2), // ...need to use 1 (for older SDK) or 2 (for newer SDK)
+                    match.captured(3)  // ...need to use 2 (for older SDK) or 3 (for newer SDK)
                 );
             }
             else

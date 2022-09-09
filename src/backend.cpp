@@ -155,7 +155,7 @@ void Backend::processPingResults(QPair<int, QString> packet)
     minLatency -= spread;/*adjustSpread(minLatency);*/ if (minLatency < 0) { minLatency = 0; }
     delete times;
 
-    //qDebug() << pckt.first << " | " << pckt.second;
+    //qDebug() << packet.first << " | " << packet.second;
     emit gotPingResults(
         packet.first,
         packet.second,
