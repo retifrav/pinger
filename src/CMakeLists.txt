@@ -32,7 +32,7 @@ set(CMAKE_AUTORCC ON)
 #set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # building with Qt 5 would requite some changes, so Qt 6 is explicitly the one
-find_package(Qt6 REQUIRED COMPONENTS Core Quick Qml Charts Multimedia)
+find_package(Qt6 REQUIRED COMPONENTS Core Quick QuickControls2 Qml Charts Multimedia)
 
 qt_standard_project_setup()
 
@@ -119,6 +119,7 @@ target_include_directories(${CMAKE_PROJECT_NAME}
 target_link_libraries(${CMAKE_PROJECT_NAME}
     PRIVATE
         Qt${QT_VERSION_MAJOR}::Quick
+        Qt${QT_VERSION_MAJOR}::QuickControls2
         Qt${QT_VERSION_MAJOR}::Qml
         Qt${QT_VERSION_MAJOR}::Charts
         Qt${QT_VERSION_MAJOR}::Multimedia

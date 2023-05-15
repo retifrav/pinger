@@ -4,6 +4,8 @@
 #include <QQmlContext>
 #include <QFont>
 #include <QScreen>
+#include <QQuickStyle>
+
 #include "backend.h"
 
 int main(int argc, char *argv[])
@@ -106,6 +108,9 @@ int main(int argc, char *argv[])
         qWarning() << "Provided host value is too short, it will be ignored";
     }
     //qDebug() << "Debug mode:" << debugMode << "|" << "host:" << host2ping;
+
+    // starting with Qt 6 one needs to specify the style
+    QQuickStyle::setStyle("Basic");
 
     // https://doc.qt.io/qt-5/scalability.html#calculating-scaling-ratio
     qreal refDpi = 216.;
