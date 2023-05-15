@@ -34,7 +34,7 @@ Backend::Backend(QObject *parent) : QObject(parent)
     }
     _telemetryFile = appLocalDataLocation.filePath("telemetry.log");
 
-    connect(&_timer, &QTimer::timeout,this, &Backend::startPing);
+    connect(&_timer, &QTimer::timeout, this, &Backend::startPing);
     connect(
         &_ping, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
         //this, &Backend::pinged

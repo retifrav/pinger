@@ -7,6 +7,7 @@
 #include <QQuickStyle>
 
 #include "backend.h"
+#include "clipboardproxy.h"
 
 int main(int argc, char *argv[])
 {
@@ -113,9 +114,9 @@ int main(int argc, char *argv[])
     QQuickStyle::setStyle("Basic");
 
     // https://doc.qt.io/qt-5/scalability.html#calculating-scaling-ratio
-    qreal refDpi = 216.;
-    qreal refHeight = 1776.;
-    qreal refWidth = 1080.;
+    qreal refDpi = 216.0;
+    qreal refHeight = 1776.0;
+    qreal refWidth = 1080.0;
     QRect rect = QGuiApplication::primaryScreen()->geometry();
     qreal height = qMax(rect.width(), rect.height());
     qreal width = qMin(rect.width(), rect.height());
@@ -141,6 +142,8 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("host2ping", QVariant(host2ping));
 
     qmlRegisterType<Backend>("dev.decovar.Backend", 1, 0, "Backend");
+    qmlRegisterType<ClipboardProxy>("dev.decovar.Clipboard", 1, 0, "Clipboard");
+
     qmlRegisterSingletonType(
         QUrl(QStringLiteral("qrc:///styles.qml")),
         "ApplicationStyles",

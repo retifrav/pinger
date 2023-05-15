@@ -7,6 +7,7 @@ import Qt5Compat.GraphicalEffects
 import QtCharts
 import Qt.labs.platform
 import dev.decovar.Backend 1.0
+import dev.decovar.Clipboard 1.0
 import ApplicationStyles 1.0
 
 ApplicationWindow {
@@ -35,6 +36,8 @@ ApplicationWindow {
     property int minimumRequiredPackets: 50
     property int latencyFactor: settings.usingPingUtility === true ? 1 : 4;
     property int latencyFactorAvg: latencyFactor === 1 ? 1 : latencyFactor / 2;
+
+    property var results
 
     Settings {
         id: settings
@@ -237,6 +240,24 @@ ApplicationWindow {
             });
             // TODO improve behaviour for resizing window
             if (packets.atYEnd) { packets.positionViewAtEnd(); }
+        }
+    }
+
+    Clipboard {
+        id: clipboard
+
+        onDataChanged: {
+            if (debugMode === true)
+            {
+                console.debug("Clipboard data changed");
+            }
+        }
+
+        onSelectionChanged: {
+            if (debugMode === true)
+            {
+                console.debug("Clipboard selection changed");
+            }
         }
     }
 
@@ -462,7 +483,7 @@ ApplicationWindow {
 
                                 packets.visible = false;
 
-                                let results = backend.getPingData();
+                                results = backend.getPingData();
 
                                 //console.debug("Latency factor:", latencyFactor, latencyFactorAvg)
 
@@ -1185,10 +1206,22 @@ ApplicationWindow {
                 spacing: 5
 
                 DialogButton {
-                    text: "Save report"
+                    text: "Copy to clipboard"
                     onClicked: {
-                        //addToLog("Initiated saving the report");
-                        console.warn("Saving reports is not implemented yet");
+                        clipboard.text = "Total packets sent: %1\n\
+Packets received: %2 (%3\%)\n\
+Packets lost: %4 (%5\%)\n\
+Average latency: %6ms\n\n\
+%7"
+                            .arg(results.Sent)
+                            .arg(results.Received).arg(results.ReceivedPercent)
+                            .arg(results.Lost).arg(results.LostPercent)
+                            .arg(results.AvgLatency)
+                            .arg(
+                                results.Sent < minimumRequiredPackets && !debugMode
+                                ? qsTr(`Not enough data to make a proper conclusion. Let the program to send at least ${minimumRequiredPackets} packets.`)
+                                : makeConclusion(results.LostPercent, results.AvgLatency, true)
+                            );
                     }
                 }
                 Item { Layout.fillWidth: true }
@@ -1271,7 +1304,7 @@ ApplicationWindow {
         dialogSettings.show();
     }
 
-    function makeConclusion(lostPercent, averageLatency)
+    function makeConclusion(lostPercent, averageLatency, plainText = false)
     {
 //        console.log(
 //            `Making conclusion with ${lostPercent}% packets lost and ${averageLatency}ms average latency`
@@ -1285,43 +1318,61 @@ ApplicationWindow {
         let conclusionReliability = "unknown";
         if (lostPercentNumber === 0)
         {
-            conclusionReliability = `<font color="${Styles.colorReceived}">excellent</font>`;
+            conclusionReliability = plainText
+                ? "excellent"
+                : `<font color="${Styles.colorReceived}">excellent</font>`;
         }
         else if (lostPercentNumber < 0.5)
         {
-            conclusionReliability = `<font color="${Styles.colorReceived}">very good</font>`;
+            conclusionReliability = plainText
+                ? "very good"
+                : `<font color="${Styles.colorReceived}">very good</font>`;
         }
         else if (lostPercentNumber < 1)
         {
-            conclusionReliability = `<font color="${Styles.colorReceived}">quite good</font>`;
+            conclusionReliability = plainText
+                ? "quite good"
+                : `<font color="${Styles.colorReceived}">quite good</font>`
         }
         else if (lostPercentNumber < 2)
         {
-            conclusionReliability = `<font color="${Styles.colorReceived}">good</font>`;
+            conclusionReliability = plainText
+                ? "good"
+                : `<font color="${Styles.colorReceived}">good</font>`;
         }
         else if (lostPercentNumber < 5)
         {
-            conclusionReliability = `<font color="${Styles.colorError}">okay</font>`;
+            conclusionReliability = plainText
+                ? "okay"
+                : `<font color="${Styles.colorError}">okay</font>`;
             conclusionScore -= 2;
         }
         else if (lostPercentNumber < 10)
         {
-            conclusionReliability = `<font color="${Styles.colorLost}">rather bad</font>`;
+            conclusionReliability = plainText
+                ? "rather bad"
+                : `<font color="${Styles.colorLost}">rather bad</font>`;
             conclusionScore -= 4;
         }
         else if (lostPercentNumber < 20)
         {
-            conclusionReliability = `<font color="${Styles.colorLost}">quite bad</font>`;
+            conclusionReliability = plainText
+                ? "quite bad"
+                : `<font color="${Styles.colorLost}">quite bad</font>`;
             conclusionScore -= 6;
         }
         else if (lostPercentNumber < 30)
         {
-            conclusionReliability = `<font color="${Styles.colorLost}">very bad</font>`;
+            conclusionReliability = plainText
+                ? "very bad"
+                : `<font color="${Styles.colorLost}">very bad</font>`;
             conclusionScore -= 8;
         }
         else
         {
-            conclusionReliability = `<font color="${Styles.colorLost}">outrageously horrible</font>`;
+            conclusionReliability = plainText
+                ? "outrageously horrible"
+                : `<font color="${Styles.colorLost}">outrageously horrible</font>`;
             conclusionScore -= 10;
         }
 
@@ -1329,39 +1380,59 @@ ApplicationWindow {
         //console.debug(`Latency factor: ${latencyFactor}`);
         if (averageLatencyNumber < 15 * latencyFactor)
         {
-            conclusionLatency = `<font color="${Styles.colorReceived}">almost non-existent</font>`;
+            conclusionLatency = plainText
+                ? "almost non-existent"
+                : `<font color="${Styles.colorReceived}">almost non-existent</font>`;
         }
         else if (averageLatencyNumber < 30 * latencyFactor)
         {
-            conclusionLatency = `<font color="${Styles.colorReceived}">very low</font>`;
+            conclusionLatency = plainText
+                ? "very low"
+                : `<font color="${Styles.colorReceived}">very low</font>`;
         }
         else if (averageLatencyNumber < 40 * latencyFactor)
         {
-            conclusionLatency = `<font color="${Styles.colorReceived}">low</font>`;
+            conclusionLatency = plainText
+                ? "low"
+                : `<font color="${Styles.colorReceived}">low</font>`;
             conclusionScore -= 1;
         }
         else if (averageLatencyNumber < 60 * latencyFactor)
         {
-            conclusionLatency = `<font color="${Styles.colorError}">okay</font>`;
+            conclusionLatency = plainText
+                ? "okay"
+                : `<font color="${Styles.colorError}">okay</font>`;
             conclusionScore -= 2;
         }
         else if (averageLatencyNumber < 80 * latencyFactor)
         {
-            conclusionLatency = `<font color="${Styles.colorLost}">quite high</font>`;
+            conclusionLatency = plainText
+                ? "quite high"
+                : `<font color="${Styles.colorLost}">quite high</font>`;
             conclusionScore -= 3;
         }
         else if (averageLatencyNumber < 100 * latencyFactor)
         {
-            conclusionLatency = `<font color="${Styles.colorLost}">high</font>`;
+            conclusionLatency = plainText
+                ? "high"
+                : `<font color="${Styles.colorLost}">high</font>`;
             conclusionScore -= 4;
         }
         else
         {
-            conclusionLatency = `<font color="${Styles.colorLost}">very high</font>`;
+            conclusionLatency = plainText
+                ? "very high"
+                : `<font color="${Styles.colorLost}">very high</font>`;
             conclusionScore -= 5;
         }
 
-        let rez = [
+        let rez = plainText
+        ? [
+              `Your internet connection reliability is ${conclusionReliability}. `,
+              `The latency is ${conclusionLatency}. `,
+              `Total score: ${conclusionScore < 0 ? 0 : conclusionScore}/10.`
+        ]
+        : [
             `Your internet connection reliability is <b>${conclusionReliability}</b>. `,
             `The latency is <b>${conclusionLatency}</b>. `,
             `Total score: <b>${conclusionScore < 0 ? 0 : conclusionScore}/10</b>.`

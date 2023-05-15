@@ -88,15 +88,17 @@ endif()
 
 set(sources
     main.cpp
+    backend.cpp
     functions.cpp
     pingdata.cpp
-    backend.cpp
+    clipboardproxy.cpp
 )
 
 set(files_for_ide
     backend.h
     functions.h
     pingdata.h
+    clipboardproxy.h
 )
 
 qt_add_resources(sources qml.qrc)
