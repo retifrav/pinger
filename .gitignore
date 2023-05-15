@@ -1,5 +1,7 @@
-_stuff/
-build*/*
+_stuff
+
+build
+install
 
 *.pro.user*
 *.txt.user*

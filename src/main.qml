@@ -1,14 +1,11 @@
-import QtQuick 2.15
-import QtQuick.Window 2.15
-import QtQuick.Controls 2.15
-import QtQuick.Layouts 1.15
-import QtGraphicalEffects 1.15
-//import Qt5Compat.GraphicalEffects
-import QtCharts 2.15
-import Qt.labs.settings 1.1
-import Qt.labs.platform 1.1
-//import QtQuick.Controls 1.4 as QQC1
-//import QtQuick.Controls.Styles 1.4 as QQC1S
+import QtCore
+import QtQuick
+import QtQuick.Window
+import QtQuick.Controls
+import QtQuick.Layouts
+import Qt5Compat.GraphicalEffects
+import QtCharts
+import Qt.labs.platform
 import dev.decovar.Backend 1.0
 import ApplicationStyles 1.0
 

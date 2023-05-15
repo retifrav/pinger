@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.22)
 
 set(version_major 1)
 set(version_minor 2)
@@ -21,6 +21,8 @@ project("Pinger"
     LANGUAGES CXX
 )
 
+option(USE_QT_CRAZY_DEPLOYMENT_SCRIPT "Using qt_generate_deploy_script() to install dependencies" 0)
+
 set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_AUTOMOC ON)
@@ -29,14 +31,14 @@ set(CMAKE_AUTORCC ON)
 # for Sublime Text LSP
 #set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Quick Qml Charts Multimedia REQUIRED)
+# building with Qt 5 would requite some changes, so Qt 6 is explicitly the one
+find_package(Qt6 REQUIRED COMPONENTS Core Quick Qml Charts Multimedia)
 
-if(UNIX)
-    if(NOT APPLE)
-        find_package(Threads REQUIRED)
-        find_package(X11 REQUIRED)
-    endif()
+qt_standard_project_setup()
+
+if(UNIX AND NOT APPLE)
+    find_package(Threads REQUIRED)
+    find_package(X11 REQUIRED)
 endif()
 
 if(APPLE)
@@ -48,50 +50,31 @@ if(APPLE)
     )
 endif()
 
-if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    if(APPLE)
-        qt_add_executable(${CMAKE_PROJECT_NAME}
-            MACOSX_BUNDLE
-            ${application_icon}
-            MANUAL_FINALIZATION
-        )
-    elseif(WIN32)
-        qt_add_executable(${CMAKE_PROJECT_NAME}
-            WIN32
-            resources.rc
-            MANUAL_FINALIZATION
-        )
-    else()
-        qt_add_executable(${CMAKE_PROJECT_NAME}
-            MANUAL_FINALIZATION
-        )
-    endif()
+if(APPLE)
+    qt_add_executable(${CMAKE_PROJECT_NAME}
+        MACOSX_BUNDLE
+        ${application_icon}
+        MANUAL_FINALIZATION
+    )
+elseif(WIN32)
+    qt_add_executable(${CMAKE_PROJECT_NAME}
+        WIN32
+        resources.rc
+        MANUAL_FINALIZATION
+    )
 else()
-    if(APPLE)
-        add_executable(${CMAKE_PROJECT_NAME}
-            MACOSX_BUNDLE
-            ${application_icon}
-        )
-    elseif(WIN32)
-        add_executable(${CMAKE_PROJECT_NAME}
-            WIN32
-            resources.rc
-        )
-    else()
-        add_executable(${CMAKE_PROJECT_NAME})
-    endif()
+    qt_add_executable(${CMAKE_PROJECT_NAME}
+        MANUAL_FINALIZATION
+    )
 endif()
 
 get_target_property(QT_TARGET_TYPE Qt${QT_VERSION_MAJOR}::Core TYPE)
 if(${QT_TARGET_TYPE} STREQUAL "STATIC_LIBRARY")
     find_package(Qt${QT_VERSION_MAJOR} COMPONENTS QmlImportScanner REQUIRED)
-    if(${QT_VERSION_MAJOR} EQUAL 5)
-        # available only from Qt 5.14
-        qt5_import_qml_plugins(${CMAKE_PROJECT_NAME})
-    elseif(${QT_VERSION_MAJOR} EQUAL 6)
+    if(${QT_VERSION_MAJOR} EQUAL 6)
         qt6_import_qml_plugins(${CMAKE_PROJECT_NAME})
     else()
-        message(WARNING "It is unknown if Qt with major version ${QT_VERSION_MAJOR} has an import_qml_plugins function")
+        message(WARNING "It is unknown if Qt ${QT_VERSION_MAJOR} has import_qml_plugins() function")
     endif()
 
     # static C++ runtime on Windows
@@ -168,10 +151,34 @@ if (APPLE)
     )
 endif()
 
-if(QT_VERSION_MAJOR EQUAL 6)
-    qt_import_qml_plugins(${CMAKE_PROJECT_NAME})
-    qt_finalize_executable(${CMAKE_PROJECT_NAME})
+qt_import_qml_plugins(${CMAKE_PROJECT_NAME})
+qt_finalize_executable(${CMAKE_PROJECT_NAME})
+
+# --- installation and deployment
+
+install(TARGETS ${CMAKE_PROJECT_NAME}
+    BUNDLE DESTINATION .
+)
+
+if(USE_QT_CRAZY_DEPLOYMENT_SCRIPT)
+    if(APPLE)
+        set(executable_path "$<TARGET_FILE_NAME:${CMAKE_PROJECT_NAME}>.app")
+    else()
+        set(executable_path "\${QT_DEPLOY_BIN_DIR}/$<TARGET_FILE_NAME:${CMAKE_PROJECT_NAME}>")
+    endif()
+
+    qt_generate_deploy_script(
+        TARGET ${CMAKE_PROJECT_NAME}
+        OUTPUT_SCRIPT deploy_script
+        CONTENT "
+    qt_deploy_runtime_dependencies(
+        EXECUTABLE \"${executable_path}\"
+        GENERATE_QT_CONF
+        #VERBOSE
+    )")
+
+    # install runtime dependencies (and tons of other stuff)
+    install(SCRIPT ${deploy_script})
 endif()
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_BINARY_DIR})
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_BINARY_DIR})
+

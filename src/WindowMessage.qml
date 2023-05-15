@@ -1,12 +1,13 @@
-import QtQuick 2.15
-import QtQuick.Window 2.15
-import QtQuick.Controls 2.15
+import QtQuick
+import QtQuick.Window
+import QtQuick.Controls
 
 Window {
     id: root
 
     property alias windowTitle: root.title
     property alias windowHeight: root.height
+
     property string statusImage
     property string textHeader
     property string textMain
