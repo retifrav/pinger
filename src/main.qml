@@ -652,16 +652,15 @@ ApplicationWindow {
                                 id: btn_pieChart
                                 Layout.preferredWidth: lbl_headerPackets.height
                                 Layout.preferredHeight: lbl_headerPackets.height
-                                source: packets.visible
+                                imageSource: packets.visible
                                         ? "qrc:/images/pie.png"
                                         : "qrc:/images/table.png"
-
-                                onClicked: {
-                                    packets.visible = !packets.visible;
-                                }
                                 tooltipText: packets.visible
                                     ? qsTr("Show pie chart")
                                     : qsTr("Show packets list")
+                                onClicked: {
+                                    packets.visible = !packets.visible;
+                                }
                             }
 //                            Image {
 //                                id: loading
@@ -916,45 +915,33 @@ ApplicationWindow {
 
                         IconButton {
                             id: btn_settings
-                            source: "qrc:/images/settings.png"
+                            imageSource: "qrc:/images/settings.png"
+                            tooltipText: qsTr("Open settings")
                             onClicked: { showSettingsDialog(); }
-                            ToolTip.delay: Styles.toolTipDelay
-                            ToolTip.timeout: Styles.toolTipTimeout
-                            ToolTip.visible: hovered
-                            ToolTip.text: qsTr("Open settings")
                         }
 //                        IconButton {
 //                            id: btn_reload
-//                            source: "qrc:/images/reload.png"
+//                            imageSource: "qrc:/images/reload.png"
 //                            //onClicked: { settings.makeSoundReceived = true; }
 //                        }
                         IconButton {
                             id: btn_report
-                            source: "qrc:/images/info.png"
-                            onClicked: { dialogReport.show(); }
-                            ToolTip.delay: Styles.toolTipDelay
-                            ToolTip.timeout: Styles.toolTipTimeout
-                            ToolTip.visible: hovered
-                            ToolTip.text: qsTr("Show report")
                             visible: false
+                            imageSource: "qrc:/images/info.png"
+                            tooltipText: qsTr("Show report")
+                            onClicked: { dialogReport.show(); }
                         }
                         /*IconButton {
                             id: btn_export
-                            source: "qrc:/images/export.png"
-                            ToolTip.delay: Styles.toolTipDelay
-                            ToolTip.timeout: Styles.toolTipTimeout
-                            ToolTip.visible: hovered
-                            ToolTip.text: qsTr("Save report")
                             visible: false
+                            imageSource: "qrc:/images/export.png"
+                            tooltipText: qsTr("Save report")
                         }*/
                         /*IconButton {
                             id: btn_log
-                            source: "qrc:/images/log.png"
+                            imageSource: "qrc:/images/log.png"
+                            tooltipText: qsTr("Open application log")
                             onClicked: { drawer.open(); }
-                            ToolTip.delay: Styles.toolTipDelay
-                            ToolTip.timeout: Styles.toolTipTimeout
-                            ToolTip.visible: hovered
-                            ToolTip.text: qsTr("Open application log")
                         }*/
                     }
                 }

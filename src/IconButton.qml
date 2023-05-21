@@ -9,8 +9,8 @@ ToolButton {
     text: ""
     //implicitWidth: height
     //Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-    property string source
-    property string tooltipText
+    property alias imageSource: img.source
+    property alias tooltipText: tltp.text
 
     background: Rectangle {
         id: btnBack
@@ -26,15 +26,15 @@ ToolButton {
     }
 
     ToolTip {
+        id: tltp
         delay: Styles.toolTipDelay
         timeout: Styles.toolTipTimeout
         visible: root.hovered
         font.pointSize: Styles.consoleFontSize
-        text: root.tooltipText
     }
 
     Image {
-        id: image
+        id: img
         fillMode: Image.PreserveAspectFit
         anchors.centerIn: root
         sourceSize.height: root.background.height - 6
@@ -42,8 +42,8 @@ ToolButton {
         source: root.source
     }
 //    ColorOverlay {
-//        anchors.fill: image
-//        source: image
+//        anchors.fill: img
+//        source: img
 //        color: Styles.labelsColor
 //    }
 }
