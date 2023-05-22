@@ -39,6 +39,27 @@ ApplicationWindow {
 
     property var results
 
+    // we don't want everyone to spam the same host, so every new user (without settings saved yet)
+    // gets a random host from this list, which is then saved to settings
+    property var hostnames: [
+        "ya.ru",
+        "vk.com",
+        "mail.ru",
+        "google.com",
+        "youtube.com",
+        "microsoft.com",
+        "live.com",
+        "bing.com",
+        "amazon.com",
+        "aws.com",
+        "apple.com",
+        "discord.com",
+        "ftp.se.debian.org",
+        "ftp.de.debian.org",
+        "ftp.us.debian.org",
+        "pornhub.com"
+    ]
+
     Settings {
         id: settings
 
@@ -46,6 +67,8 @@ ApplicationWindow {
         property alias y: mainWindow.y
         property alias width: mainWindow.width
         property alias height: mainWindow.height
+
+        property string hostname
 
         property bool usingPingUtility: true
 
@@ -398,10 +421,25 @@ ApplicationWindow {
                                 font.pointSize: Styles.sectionHeaderFontSize
                                 color: Styles.buttonsTextColor
 
-                                text: host2ping.length > 3 ? host2ping : "ya.ru"
-
                                 Keys.onReturnPressed: {
                                     btn_ping.clicked();
+                                }
+
+                                // that one includes programmatical changes
+                                //onTextChanged: {
+                                //    console.debug(`Host text changed to: ${text}`);
+                                //}
+
+                                // that one excludes programmatical changes
+                                // and reacts on every user input
+                                //onTextEdited: {
+                                //    console.debug(`Host text edited to: ${text}`);
+                                //}
+
+                                // that one only reacts when user submits his input
+                                onEditingFinished: {
+                                    //console.debug(`Host text set to: ${text}`);
+                                    settings.hostname = text
                                 }
                             }
 
@@ -1413,22 +1451,44 @@ Average latency: %6ms\n\n\
             conclusionScore -= 5;
         }
 
+        let conclusionLatencyNote = "";
+        if (averageLatencyNumber > 80 * latencyFactor)
+        {
+            conclusionLatencyNote = " (or the target host is too far from your machine)";
+        }
+
         let rez = plainText
         ? [
               `Your internet connection reliability is ${conclusionReliability}. `,
-              `The latency is ${conclusionLatency}. `,
+              `The latency is ${conclusionLatency}${conclusionLatencyNote}. `,
               `Total score: ${conclusionScore < 0 ? 0 : conclusionScore}/10.`
         ]
         : [
             `Your internet connection reliability is <b>${conclusionReliability}</b>. `,
-            `The latency is <b>${conclusionLatency}</b>. `,
+            `The latency is <b>${conclusionLatency}</b>${conclusionLatencyNote}. `,
             `Total score: <b>${conclusionScore < 0 ? 0 : conclusionScore}/10</b>.`
         ];
         return rez.join("");
     }
 
+    function getRandomHostname()
+    {
+        return mainWindow.hostnames[
+            Math.floor(Math.random() * mainWindow.hostnames.length)
+        ];
+    }
+
     Component.onCompleted: {
         //addToLog(JSON.stringify(applicationVersion));
+
+        if (settings.hostname.length === 0)
+        {
+            const randomHostname = getRandomHostname();
+            console.log(`There was no hostname saved in settings, will set it to ${randomHostname}`);
+            settings.hostname = randomHostname;
+        }
+        // hostnames shorter than 4 symbols (including dot) are already filtered out in main.cpp
+        host.text = host2ping.length > 0 ? host2ping : settings.hostname;
 
         // start pinging right after launching
         if (host.text.trim().length !== 0 && dontStartPinging !== true) { btn_ping.clicked(); }
