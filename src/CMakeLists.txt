@@ -31,7 +31,9 @@ set(CMAKE_AUTORCC ON)
 # for Sublime Text LSP
 #set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# building with Qt 5 would requite some changes, so Qt 6 is explicitly the one
+# building with Qt 5 will require certain changes/downgrading, so Qt 6 is explicitly the one,
+# but if you still want to build exactly with Qt 5, the upgrade happened in the following commit:
+# 21b9b34919593d54972b5ec376e23f86db5d8f44
 find_package(Qt6 REQUIRED COMPONENTS Core Quick QuickControls2 Qml Charts Multimedia)
 
 qt_standard_project_setup()
