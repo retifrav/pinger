@@ -123,6 +123,89 @@ ApplicationWindow {
         }
 
         Menu {
+            id: controlsMenu
+            title: qsTr("Controls")
+            visible: mainWindow.enableMenuBar
+
+            MenuItem {
+                text: qsTr("Start pinging")
+                enabled: !backend.pinging
+                shortcut: "Ctrl+P"
+                onTriggered: btn_ping.clicked()
+            }
+
+            MenuItem {
+                text: qsTr("Stop pinging")
+                enabled: backend.pinging
+                shortcut: "Ctrl+S"
+                onTriggered: btn_stop.clicked()
+            }
+
+            MenuSeparator {}
+
+            MenuItem {
+                text: qsTr("Set a random hostname")
+                visible: !backend.pinging
+                shortcut: "Ctrl+R"
+                onTriggered: {
+                    if (!backend.pinging)
+                    {
+                        const randomHostname = getRandomHostname();
+                        host.text = randomHostname;
+                        settings.hostname = randomHostname;
+                    }
+                    else
+                    {
+                        console.error(
+                            [
+                                `A hostname change has been requested,`,
+                                `but this is not allowed during the ongoing pinging.`
+                            ]
+                            .join(" ")
+                        );
+                    }
+                }
+            }
+        }
+
+        Menu {
+            id: debugMenu
+            title: qsTr("Debug")
+            visible: mainWindow.enableMenuBar && debugMode
+
+            MenuItem {
+                text: drawer.opened ? qsTr("Close drawer") : qsTr("Open drawer")
+                shortcut: "Ctrl+D"
+                enabled: debugMode
+                onTriggered: {
+                    drawer.opened ? drawer.close() : drawer.open();
+                }
+            }
+
+            MenuItem {
+                text: qsTr("Write telemetry data")
+                shortcut: "Ctrl+T"
+                enabled: debugMode
+                onTriggered: {
+                    const telemetry = JSON.stringify({
+                        "chartSeriesLatencyAxisX": {
+                            "min": chartSeriesLatencyAxisX.min,
+                            "max": chartSeriesLatencyAxisX.max
+                        },
+                        "chartSeriesLatencyAxisY": {
+                            "min": chartSeriesLatencyAxisY.min,
+                            "max": chartSeriesLatencyAxisY.max
+                        },
+                        "seriesLatencyCount": seriesLatency.count,
+                        "packetsModelCount": packetsModel.count
+                    });
+                    addToLog(telemetry);
+                    backend.dumpTelemetry(`[${getCurrentDateTime()}] ${telemetry}`);
+                }
+            }
+        }
+
+        Menu {
             id: editMenu
             title: qsTr("?")
             visible: mainWindow.enableMenuBar
@@ -319,43 +402,11 @@ ApplicationWindow {
     }
 
     Shortcut {
-        id: shortcutOpenDrawer
-        sequence: "Ctrl+D"
-        onActivated: {
-            drawer.opened ? drawer.close() : drawer.open();
-        }
-        context: Qt.ApplicationShortcut
-        enabled: debugMode
-    }
-
-    Shortcut {
         id: shortcutFocusHost
         sequence: "Ctrl+L"
         onActivated: {
             host.focus = true
         }
-    }
-
-    Shortcut {
-        sequence: "Ctrl+T"
-        onActivated: {
-            let telemetry = JSON.stringify({
-                "chartSeriesLatencyAxisX": {
-                    "min": chartSeriesLatencyAxisX.min,
-                    "max": chartSeriesLatencyAxisX.max
-                },
-                "chartSeriesLatencyAxisY": {
-                    "min": chartSeriesLatencyAxisY.min,
-                    "max": chartSeriesLatencyAxisY.max
-                },
-                "seriesLatencyCount": seriesLatency.count,
-                "packetsModelCount": packetsModel.count
-            });
-            addToLog(telemetry);
-            backend.dumpTelemetry(`[${getCurrentDateTime()}] ${telemetry}`);
-        }
-        context: Qt.ApplicationShortcut
-        enabled: debugMode
     }
 
     onClosing: {
