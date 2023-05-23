@@ -1233,11 +1233,14 @@ ApplicationWindow {
                 DialogButton {
                     text: "Copy to clipboard"
                     onClicked: {
-                        clipboard.text = "Total packets sent: %1\n\
-Packets received: %2 (%3\%)\n\
-Packets lost: %4 (%5\%)\n\
-Average latency: %6ms\n\n\
-%7"
+                        clipboard.text = [
+                            `Total packets sent: %1\n`,
+                            `Packets received: %2 (%3\%)\n`,
+                            `Packets lost: %4 (%5\%)\n`,
+                            `Average latency: %6ms\n\n`,
+                            `%7`
+                        ]
+                        .join("")
                             .arg(results.Sent)
                             .arg(results.Received).arg(results.ReceivedPercent)
                             .arg(results.Lost).arg(results.LostPercent)
@@ -1459,16 +1462,16 @@ Average latency: %6ms\n\n\
 
         let rez = plainText
         ? [
-              `Your internet connection reliability is ${conclusionReliability}. `,
-              `The latency is ${conclusionLatency}${conclusionLatencyNote}. `,
+              `Your internet connection reliability is ${conclusionReliability}.`,
+              `The latency is ${conclusionLatency}${conclusionLatencyNote}.`,
               `Total score: ${conclusionScore < 0 ? 0 : conclusionScore}/10.`
         ]
         : [
-            `Your internet connection reliability is <b>${conclusionReliability}</b>. `,
-            `The latency is <b>${conclusionLatency}</b>${conclusionLatencyNote}. `,
+            `Your internet connection reliability is <b>${conclusionReliability}</b>.`,
+            `The latency is <b>${conclusionLatency}</b>${conclusionLatencyNote}.`,
             `Total score: <b>${conclusionScore < 0 ? 0 : conclusionScore}/10</b>.`
         ];
-        return rez.join("");
+        return rez.join(" ");
     }
 
     function getRandomHostname()
