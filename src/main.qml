@@ -417,7 +417,7 @@ ApplicationWindow {
                                 anchors.verticalCenter: parent.verticalCenter
                                 width: parent.width
                                 clip: true
-                                enabled: btn_ping.visible
+                                enabled: !backend.pinging
                                 font.pointSize: Styles.sectionHeaderFontSize
                                 color: Styles.buttonsTextColor
 
@@ -473,6 +473,7 @@ ApplicationWindow {
                             Layout.fillHeight: true
 
                             text: "PING"
+                            visible: !backend.pinging
 
                             onClicked: {
                                 if (host.text.trim().length === 0)
@@ -483,7 +484,6 @@ ApplicationWindow {
                                 else
                                 {
                                     clearPreviousData();
-                                    btn_ping.visible = false;
                                     backend.on_btn_ping_clicked(host.text);
                                     btn_report.visible = false;
                                     //btn_export.visible = false;
@@ -506,7 +506,7 @@ ApplicationWindow {
                             //colorGlow: buttonDown ? "#CC817E" : "#E57373"
 
                             text: "STOP"
-                            visible: !btn_ping.visible
+                            visible: backend.pinging
 
                             onClicked: {
                                 addToLog("Pinging stopped");
@@ -515,7 +515,6 @@ ApplicationWindow {
                                 backend.on_btn_stop_clicked();
                                 //loading.visible = false;
                                 //loadingAnimation.running = false;
-                                btn_ping.visible = true;
                                 btn_report.visible = true;
                                 //btn_export.visible = true;
 
