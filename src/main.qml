@@ -404,6 +404,7 @@ ApplicationWindow {
     Shortcut {
         id: shortcutFocusHost
         sequence: "Ctrl+L"
+        enabled: !backend.pinging
         onActivated: {
             host.focus = true
         }
