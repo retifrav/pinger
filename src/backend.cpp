@@ -36,8 +36,9 @@ Backend::Backend(QObject *parent) : QObject(parent)
 
     connect(&_timer, &QTimer::timeout, this, &Backend::startPing);
     connect(
-        &_ping, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
-        //this, &Backend::pinged
+        &_ping,
+        QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
+        this,
         [=](int exitCode, QProcess::ExitStatus exitStatus) { pinged(exitCode, exitStatus); }
     );
 
