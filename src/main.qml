@@ -141,7 +141,9 @@ ApplicationWindow {
                 onTriggered: btn_stop.clicked()
             }
 
-            MenuSeparator {}
+            MenuSeparator {
+                visible: !backend.pinging
+            }
 
             MenuItem {
                 text: qsTr("Set a random hostname")
@@ -226,6 +228,8 @@ ApplicationWindow {
                 //visible: debugMode
             }
 
+            MenuSeparator {}
+
             MenuItem {
                 text: "Source code"
                 onTriggered: {
@@ -281,7 +285,7 @@ ApplicationWindow {
                 "packetColor": packetColor
             });
             //if (packetsModel.count > backend.getQueueSize()) { packetsModel.remove(0); }
-            // TODO improve behaviour for resizing window
+            // TODO: improve behaviour for resizing window
             if (packets.atYEnd) { packets.positionViewAtEnd(); }
             //if (packets.contentHeight > packets.height) { packetsModel.remove(0); }
 
@@ -344,7 +348,7 @@ ApplicationWindow {
                 "time": "-",
                 "packetColor": Styles.colorError
             });
-            // TODO improve behaviour for resizing window
+            // TODO: improve behaviour for resizing window
             if (packets.atYEnd) { packets.positionViewAtEnd(); }
         }
     }
