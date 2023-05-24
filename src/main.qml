@@ -1193,6 +1193,7 @@ ApplicationWindow {
         id: dialogReport
         windowTitle: "Report"
         visible: false
+        windowHeight: 380
 
         contents: ColumnLayout
         {

@@ -9,15 +9,19 @@ Item {
     {
         //return fontSize * Screen.pixelDensity / basePixelDensity;
 
-        const clc = Math.floor((fontSize - adjustment * fontSizeRatio) * fontSizeRatio);
+        const clc = Math.floor((fontSize - adjustment) * fontSizeRatio);
         //console.debug(`${whatFor} font size: ${clc}`);
         return clc;
     }
 
-    // there might be a more complex condition required here
-    property int baseFontSize: fontSizeRatio > 0.7
-        ? 28
-        : 24;
+    // this really looks like shit, there must be a better way
+    property int baseFontSize: fontSizeRatio < 0.5
+        ? 32
+        : fontSizeRatio < 0.6
+            ? 30
+            : fontSizeRatio > 0.7
+                ? 28
+                : 24;
     property int sectionHeaderFontSize: calculatedFontSize(baseFontSize, 0, "section")
     property int headerFontSize: calculatedFontSize(baseFontSize, 1.0, "header")
     property int normalFontSize: calculatedFontSize(baseFontSize, 3.0, "normal")
@@ -41,7 +45,7 @@ Item {
 
     // dialogs
 
-    property int dialogWindowWidth: 500
+    property int dialogWindowWidth: 550
     property int dialogWindowHeight: 350
 
     property int dialogBorderWidth: 1

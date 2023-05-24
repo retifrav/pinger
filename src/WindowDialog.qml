@@ -6,6 +6,7 @@ Window {
     id: root
 
     property alias windowTitle: root.title
+    property alias windowWidth: root.width
     property alias windowHeight: root.height
     default property alias contents: placeholder.data
 
