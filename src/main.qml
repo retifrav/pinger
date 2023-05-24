@@ -1457,52 +1457,62 @@ ApplicationWindow {
 
         let conclusionLatency = "unknown";
         //console.debug(`Latency factor: ${latencyFactor}`);
-        if (averageLatencyNumber < 15 * latencyFactor)
+        if (lostPercentNumber < 100)
         {
-            conclusionLatency = plainText
-                ? "almost non-existent"
-                : `<font color="${Styles.colorReceived}">almost non-existent</font>`;
+            if (averageLatencyNumber < 15 * latencyFactor)
+            {
+                conclusionLatency = plainText
+                    ? "almost non-existent"
+                    : `<font color="${Styles.colorReceived}">almost non-existent</font>`;
+            }
+            else if (averageLatencyNumber < 30 * latencyFactor)
+            {
+                conclusionLatency = plainText
+                    ? "very low"
+                    : `<font color="${Styles.colorReceived}">very low</font>`;
+            }
+            else if (averageLatencyNumber < 40 * latencyFactor)
+            {
+                conclusionLatency = plainText
+                    ? "low"
+                    : `<font color="${Styles.colorReceived}">low</font>`;
+                conclusionScore -= 1;
+            }
+            else if (averageLatencyNumber < 60 * latencyFactor)
+            {
+                conclusionLatency = plainText
+                    ? "okay"
+                    : `<font color="${Styles.colorError}">okay</font>`;
+                conclusionScore -= 2;
+            }
+            else if (averageLatencyNumber < 80 * latencyFactor)
+            {
+                conclusionLatency = plainText
+                    ? "quite high"
+                    : `<font color="${Styles.colorLost}">quite high</font>`;
+                conclusionScore -= 3;
+            }
+            else if (averageLatencyNumber < 100 * latencyFactor)
+            {
+                conclusionLatency = plainText
+                    ? "high"
+                    : `<font color="${Styles.colorLost}">high</font>`;
+                conclusionScore -= 4;
+            }
+            else
+            {
+                conclusionLatency = plainText
+                    ? "very high"
+                    : `<font color="${Styles.colorLost}">very high</font>`;
+                conclusionScore -= 5;
+            }
         }
-        else if (averageLatencyNumber < 30 * latencyFactor)
+        else // with 100% packets loss it is impossible to qualify the latency
         {
             conclusionLatency = plainText
-                ? "very low"
-                : `<font color="${Styles.colorReceived}">very low</font>`;
-        }
-        else if (averageLatencyNumber < 40 * latencyFactor)
-        {
-            conclusionLatency = plainText
-                ? "low"
-                : `<font color="${Styles.colorReceived}">low</font>`;
-            conclusionScore -= 1;
-        }
-        else if (averageLatencyNumber < 60 * latencyFactor)
-        {
-            conclusionLatency = plainText
-                ? "okay"
-                : `<font color="${Styles.colorError}">okay</font>`;
-            conclusionScore -= 2;
-        }
-        else if (averageLatencyNumber < 80 * latencyFactor)
-        {
-            conclusionLatency = plainText
-                ? "quite high"
-                : `<font color="${Styles.colorLost}">quite high</font>`;
-            conclusionScore -= 3;
-        }
-        else if (averageLatencyNumber < 100 * latencyFactor)
-        {
-            conclusionLatency = plainText
-                ? "high"
-                : `<font color="${Styles.colorLost}">high</font>`;
-            conclusionScore -= 4;
-        }
-        else
-        {
-            conclusionLatency = plainText
-                ? "very high"
-                : `<font color="${Styles.colorLost}">very high</font>`;
-            conclusionScore -= 5;
+                ? "unknown"
+                : `<font color="${Styles.colorLost}">unknown</font>`;
+            conclusionScore -= 10;
         }
 
         let conclusionLatencyNote = "";

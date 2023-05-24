@@ -81,13 +81,13 @@ QQueue<QPair<int, QString> > PingData::get_packets() { return packetsQueue; }
 float PingData::get_lostPercentage()
 {
     if (pcktSent == 0) { return 0; }
-    return static_cast<float>(pcktLost) / static_cast<float>(pcktSent) * 100;;
+    return static_cast<float>(pcktLost) / static_cast<float>(pcktSent) * 100;
 }
 
 float PingData::get_receivedPercentage()
 {
     if (pcktSent == 0) { return 0; }
-    return static_cast<float>(pcktReceived) / static_cast<float>(pcktSent) * 100;;
+    return static_cast<float>(pcktReceived) / static_cast<float>(pcktSent) * 100;
 }
 
 void PingData::addPacket(QPair<int, QString> pckt)
