@@ -156,16 +156,16 @@ ApplicationWindow {
                         host.text = randomHostname;
                         settings.hostname = randomHostname;
                     }
-                    else
-                    {
-                        console.error(
-                            [
-                                `A hostname change has been requested,`,
-                                `but this is not allowed during the ongoing pinging.`
-                            ]
-                            .join(" ")
-                        );
-                    }
+                    //else
+                    //{
+                    //    console.error(
+                    //        [
+                    //            `A hostname change has been requested,`,
+                    //            `but this is not allowed during the ongoing pinging.`
+                    //        ]
+                    //        .join(" ")
+                    //    );
+                    //}
                 }
             }
         }

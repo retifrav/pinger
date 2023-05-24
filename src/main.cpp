@@ -113,23 +113,25 @@ int main(int argc, char *argv[])
     // starting with Qt 6 one needs to specify the style
     QQuickStyle::setStyle("Basic");
 
-    // https://doc.qt.io/qt-5/scalability.html#calculating-scaling-ratio
-    qreal refDpi = 216.0;
-    qreal refHeight = 1776.0;
-    qreal refWidth = 1080.0;
+    // https://doc.qt.io/qt-6/scalability.html#calculating-scaling-ratio
+    qreal refWidth = 3840.0;
+    qreal refHeight = 2160.0;
+    qreal refDpi = 200.26; // https://www.sven.de/dpi/
     QRect rect = QGuiApplication::primaryScreen()->geometry();
     qreal height = qMax(rect.width(), rect.height());
     qreal width = qMin(rect.width(), rect.height());
     qreal dpi = QGuiApplication::primaryScreen()->logicalDotsPerInch();
-    /*auto scalingRatio = qMin(
-        height / refHeight,
-        width / refWidth
-    );*/
     auto fontSizeRatio = qMin(
         height * refDpi / (dpi * refHeight),
         width * refDpi / (dpi * refWidth)
     );
-    //qDebug() << scalingRatio << fontSizeRatio;
+    //qDebug() << fontSizeRatio;
+
+    //auto scalingRatio = qMin(
+    //    height / refHeight,
+    //    width / refWidth
+    //);
+    //qDebug() << scalingRatio;
 
     QFont defaultFont("Verdana");
     app.setFont(defaultFont);

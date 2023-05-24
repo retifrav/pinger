@@ -5,18 +5,24 @@ import QtQuick.Window
 
 Item {
     //property real basePixelDensity: 5
-    function calculatedFontSize(fontSize, adjustment)
+    function calculatedFontSize(fontSize, adjustment, whatFor = "unknown")
     {
         //return fontSize * Screen.pixelDensity / basePixelDensity;
-        return (fontSize - adjustment * fontSizeRatio) * fontSizeRatio;
+
+        const clc = Math.floor((fontSize - adjustment * fontSizeRatio) * fontSizeRatio);
+        //console.debug(`${whatFor} font size: ${clc}`);
+        return clc;
     }
 
-    property int baseFontSize: 8
-    property int sectionHeaderFontSize: calculatedFontSize(baseFontSize, 0)
-    property int headerFontSize: calculatedFontSize(baseFontSize, 0.4)
-    property int normalFontSize: calculatedFontSize(baseFontSize, 0.5)
-    property int dialogFontSize: calculatedFontSize(baseFontSize, 0.8)
-    property int consoleFontSize: calculatedFontSize(baseFontSize, 0.9)
+    // there might be a more complex condition required here
+    property int baseFontSize: fontSizeRatio > 0.7
+        ? 28
+        : 24;
+    property int sectionHeaderFontSize: calculatedFontSize(baseFontSize, 0, "section")
+    property int headerFontSize: calculatedFontSize(baseFontSize, 1.0, "header")
+    property int normalFontSize: calculatedFontSize(baseFontSize, 3.0, "normal")
+    property int dialogFontSize: calculatedFontSize(baseFontSize, 6.0, "dialog")
+    property int consoleFontSize: calculatedFontSize(baseFontSize, 8.0, "console")
 
     property int layoutSpacing: 20
 
