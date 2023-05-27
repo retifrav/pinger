@@ -82,7 +82,7 @@ ApplicationWindow {
         property int visibility: Window.Maximized
     }
 
-    // application menu, not native
+    // application menu, not native, but should work on all platforms(?)
     /*menuBar: MenuBar {
         Menu {
            title: qsTr("&File")
@@ -97,7 +97,8 @@ ApplicationWindow {
        }
     }*/
 
-    // native application menu, mostly for Mac OS
+    // native application menu
+    // isn't always (never?) available on GNU/Linux: https://doc.qt.io/qt-6/qml-qt-labs-platform-menubar.html#details
     MenuBar {
         id: menuBar
 
