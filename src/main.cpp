@@ -110,9 +110,6 @@ int main(int argc, char *argv[])
     }
     //qDebug() << "Debug mode:" << debugMode << "|" << "host:" << host2ping;
 
-    // starting with Qt 6 one needs to specify the style
-    QQuickStyle::setStyle("Basic");
-
     // https://doc.qt.io/qt-6/scalability.html#calculating-scaling-ratio
     qreal refWidth = 3840.0;
     qreal refHeight = 2160.0;
@@ -125,13 +122,42 @@ int main(int argc, char *argv[])
         height * refDpi / (dpi * refHeight),
         width * refDpi / (dpi * refWidth)
     );
-    //qDebug() << fontSizeRatio;
 
     //auto scalingRatio = qMin(
     //    height / refHeight,
     //    width / refWidth
     //);
     //qDebug() << scalingRatio;
+
+    if (debugMode)
+    {
+        const QString platformName = QGuiApplication::platformName();
+        const QString applicationDisplayName = QGuiApplication::applicationDisplayName();
+        const QString desktopFileName = QGuiApplication::desktopFileName();
+        const auto primaryScreen = QGuiApplication::primaryScreen();
+
+        qDebug().noquote().nospace() << "[DEBUG] Application configuration:" << Qt::endl
+            << "- platform plugin: " << (platformName.isEmpty()           ? "[ NOT SET ]" : platformName) << Qt::endl
+            << "- primary screen: " << primaryScreen->name() << "/" << primaryScreen->name()
+                                    << " | " << primaryScreen->size()
+                                    << " | " << primaryScreen->devicePixelRatio() << Qt::endl
+            << "- calculated font size ratio: " << fontSizeRatio << Qt::endl
+            << "- layout direction: " << QGuiApplication::layoutDirection() << Qt::endl
+            << "- display name: " << (applicationDisplayName.isEmpty() ? "[ NOT SET ]" : applicationDisplayName) << Qt::endl
+            << "- desktop file name: " << (desktopFileName.isEmpty()        ? "[ NOT SET ]" : desktopFileName) << Qt::endl;
+
+        //QTextStream qts(stdout);
+        //qts << QString("Application configuration:\n%1\n%2\n%3\n%4").arg(
+        //    QString("- platform plugin: %1").arg(platformName.isEmpty() ? "[ NOT SET ]" : platformName),
+        //    QString("- display name: %1").arg(applicationDisplayName.isEmpty() ? "[ NOT SET ]" : applicationDisplayName),
+        //    QString("- desktop file name: %1").arg(desktopFileName.isEmpty() ? "[ NOT SET ]" : desktopFileName),
+        //    QString("- layout direction: %1").arg(layoutDirection)
+        //    ) << Qt::endl << Qt::endl;
+        //qts.flush();
+    }
+
+    // starting with Qt 6 one needs to specify the style
+    QQuickStyle::setStyle("Basic");
 
     QFont defaultFont("Verdana");
     app.setFont(defaultFont);
