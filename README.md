@@ -11,7 +11,7 @@
 - [FAQ](#faq)
     - [How to use checksums](#how-to-use-checksums)
     - [Why 7z for Mac OS distribution and not DMG](#why-7z-for-mac-os-distribution-and-not-dmg)
-    - [Why still Qt 5 and not Qt 6](#why-still-qt-5-and-not-qt-6)
+    - [Why Qt 6 only](#why-qt-6-only)
 
 <!-- /MarkdownTOC -->
 
@@ -89,6 +89,6 @@ gpg: Good signature
 
 Because 7z archive is considerably smaller than a DMG image. So the question would be rather what's the point of using DMG.
 
-### Why still Qt 5 and not Qt 6
+### Why Qt 6 only
 
-Qt 6 still has a [number of issues](https://github.com/retifrav/pinger/issues/4), including degraded performance.
+Upgrading to Qt 6 required making certain changes, which are not compatible with Qt 5. Nevertheless, it shouldn't be too hard to "downgrade" back to Qt 5, if you would really need that. Most of the migration effort happened in [this](https://github.com/retifrav/pinger/commit/21b9b34919593d54972b5ec376e23f86db5d8f44) and [that](https://github.com/retifrav/pinger/commit/2f9bf4b44c41e5ef281bd1dc4c9bc9240a4cab5e) commits.
