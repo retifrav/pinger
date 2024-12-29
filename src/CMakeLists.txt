@@ -31,28 +31,48 @@ set(CMAKE_AUTORCC ON)
 # for Sublime Text LSP
 #set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    find_package(Threads REQUIRED)
+    #find_package(X11 REQUIRED)
+
+    # assuming that FFmpeg backend is used for Qt Multimedia
+    find_package(FFmpeg REQUIRED)
+endif()
+
 # building with Qt 5 will require certain changes/downgrading, so Qt 6 is explicitly the one,
 # but if you still want to build exactly with Qt 5, the upgrade happened in the following commit:
 # 21b9b34919593d54972b5ec376e23f86db5d8f44
-find_package(Qt6 REQUIRED COMPONENTS Core Quick QuickControls2 Qml Charts Multimedia)
+#
+# quite annoying, but it has to be all capital `QT` in the first find_package()
+find_package(QT NAMES Qt6 COMPONENTS Core REQUIRED) # the Core is needed for `qt_standard_project_setup()` below
+# not sure why it needs to be found again
+find_package(Qt${QT_VERSION_MAJOR}
+    COMPONENTS
+        Core
+        Quick
+        QuickControls2
+        Qml
+        Charts
+        Multimedia
+    REQUIRED
+)
+if(Qt${QT_VERSION_MAJOR}_FOUND)
+    get_filename_component(QT_HOME "${Qt${QT_VERSION_MAJOR}_DIR}/../../.." ABSOLUTE)
+    message(STATUS "Found Qt ${Qt${QT_VERSION_MAJOR}_VERSION}: ${QT_HOME}")
+else()
+    message(FATAL_ERROR "Couldn't find Qt")
+endif()
 
 qt_standard_project_setup()
 
-if(UNIX AND NOT APPLE)
-    find_package(Threads REQUIRED)
-    find_package(X11 REQUIRED)
-endif()
-
-if(APPLE)
+if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     set(MACOSX_BUNDLE_ICON_FILE pinger.icns)
     set(application_icon "${CMAKE_CURRENT_SOURCE_DIR}/${MACOSX_BUNDLE_ICON_FILE}")
     set_source_files_properties(${application_icon}
         PROPERTIES
             MACOSX_PACKAGE_LOCATION "Resources"
     )
-endif()
 
-if(APPLE)
     qt_add_executable(${CMAKE_PROJECT_NAME}
         MACOSX_BUNDLE
         ${application_icon}
@@ -129,24 +149,24 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         Qt${QT_VERSION_MAJOR}::Multimedia
 )
 
-if (UNIX)
-    if (APPLE)
-        # target_link_libraries(${CMAKE_PROJECT_NAME}
-        #     "-framework Cocoa"
-        #     "-framework IOKit"
-        #     "-framework CoreVideo"
-        # )
-    else()
-        target_link_libraries(${CMAKE_PROJECT_NAME}
-            PRIVATE
-                ${CMAKE_THREAD_LIBS_INIT}
-                ${X11_LIBRARIES}
-                ${CMAKE_DL_LIBS}
-        )
-    endif()
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    target_link_libraries(${CMAKE_PROJECT_NAME}
+        PRIVATE
+            ${CMAKE_THREAD_LIBS_INIT}
+            #${X11_LIBRARIES}
+            ${CMAKE_DL_LIBS}
+            # assuming that FFmpeg backend is used for Qt Multimedia
+            FFmpeg::FFmpeg
+    )
 endif()
 
-if (APPLE)
+if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    # target_link_libraries(${CMAKE_PROJECT_NAME}
+    #     "-framework Cocoa"
+    #     "-framework IOKit"
+    #     "-framework CoreVideo"
+    # )
+
     set_target_properties(${CMAKE_PROJECT_NAME}
         PROPERTIES # https://cmake.org/cmake/help/latest/prop_tgt/MACOSX_BUNDLE_INFO_PLIST.html
             MACOSX_BUNDLE_BUNDLE_NAME "Pinger" # CFBundleIdentifier
@@ -166,7 +186,7 @@ install(TARGETS ${CMAKE_PROJECT_NAME}
 )
 
 if(USE_QT_CRAZY_DEPLOYMENT_SCRIPT)
-    if(APPLE)
+    if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
         set(executable_path "$<TARGET_FILE_NAME:${CMAKE_PROJECT_NAME}>.app")
     else()
         set(executable_path "\${QT_DEPLOY_BIN_DIR}/$<TARGET_FILE_NAME:${CMAKE_PROJECT_NAME}>")
